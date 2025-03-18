@@ -3,7 +3,7 @@
 Projekt zespołowy realizowany w ramach przedmiotu Inżynieria Oprogramowania. Aplikacja webowa do zarządzania ocenami, planem lekcji i użytkownikami w szkole.
 
 ## Stack technologiczny
-- **Frontend:** Vue.js/Angular
+- **Frontend:** Vue.js
 - **Backend:** Spring Boot (Java)
 - **Baza danych:** PostgreSQL
 - **Narzędzia:** Docker, GitHub Actions
