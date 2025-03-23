@@ -2,11 +2,20 @@
 
 Projekt zespołowy realizowany w ramach przedmiotu Inżynieria Oprogramowania. Aplikacja webowa do zarządzania ocenami, planem lekcji i użytkownikami w szkole.
 
+## O projekcie
+
+Dziennik Elektroniczny to kompleksowa aplikacja webowa zaprojektowana do zarządzania wszystkimi aspektami funkcjonowania szkoły, w tym:
+- zarządzanie ocenami i wynikami uczniów
+- prowadzenie elektronicznej dokumentacji szkolnej
+- zarządzanie planem lekcji
+- komunikacja między nauczycielami, uczniami i rodzicami
+- generowanie raportów i statystyk
+
 ## Stack technologiczny
-- **Frontend:** Vue.js
+- **Frontend:** Angular
 - **Backend:** Spring Boot (Java)
 - **Baza danych:** PostgreSQL
-- **Narzędzia:** Docker, GitHub Actions
+- **Narzędzia:** Docker, GitHub Actions, Nx
 
 ## Struktura branchy
 W projekcie używamy dwóch głównych branchy oraz branchy funkcyjnych:
@@ -23,6 +32,48 @@ W projekcie używamy dwóch głównych branchy oraz branchy funkcyjnych:
    - Tworzone z `develop` do implementacji poszczególnych funkcjonalności.
    - Nazwy branchy powinny być opisowe, np. `feature/user-authentication`, `feature/grades-management`.
    - Po zakończeniu pracy nad funkcjonalnością tworzony jest **merge request (MR)** do `develop`.
+
+## Konwencja commitów
+
+W tym projekcie używamy standardu [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) do formatowania wiadomości commitów. Przestrzeganie tej konwencji pomaga nam automatycznie generować zmiany w CHANGELOG, określać wersje semantyczne oraz ułatwia przeglądanie historii projektu.
+
+### Format wiadomości commit
+
+```
+<typ>[opcjonalny zakres]: <opis>
+
+[opcjonalne ciało]
+
+[opcjonalne stopki]
+```
+
+### Typy commitów
+- **feat**: nowa funkcjonalność (koreluje z MINOR w wersjonowaniu semantycznym)
+- **fix**: poprawka błędu (koreluje z PATCH w wersjonowaniu semantycznym)
+- **docs**: zmiany w dokumentacji
+- **style**: zmiany formatowania, które nie wpływają na kod (białe znaki, formatowanie, brakujące średniki itp.)
+- **refactor**: refaktoryzacja kodu produkcyjnego
+- **test**: dodawanie testów, refaktoryzacja testów
+- **chore**: aktualizacja zadań rutynowych, zarządzanie paczkami
+- **build**: zmiany wpływające na system budowania lub zależności zewnętrzne
+- **ci**: zmiany w konfiguracji CI/CD i skryptach
+
+### Przykłady
+
+```
+feat(auth): dodanie logowania przez Google
+
+fix(grades): naprawienie błędu w obliczaniu średniej
+
+docs: aktualizacja dokumentacji API
+
+feat(ui)!: przeprojektowanie interfejsu użytkownika
+
+BREAKING CHANGE: zmiana wymaga zaktualizowania zależności klienta
+```
+
+### Breaking Changes
+Breaking changes (zmiany łamiące kompatybilność) powinny być oznaczone wykrzyknikiem po typie/zakresie lub uwzględnione w sekcji stopki jako `BREAKING CHANGE:`.
 
 ## Instrukcja działania w repozytorium
 
@@ -53,10 +104,10 @@ git checkout -b feature/user-authentication
 ```
 
 ### 3. Praca na branchu funkcyjnym
-Wprowadź zmiany w kodzie. Regularnie commituj zmiany z opisowymi komunikatami:
+Wprowadź zmiany w kodzie. Regularnie commituj zmiany zgodnie z konwencją Conventional Commits:
 ```bash
 git add .
-git commit -m "Dodano logowanie użytkownika"
+git commit -m "feat(auth): dodano logowanie użytkownika"
 ```
 Wypychaj zmiany do zdalnego repozytorium:
 ```bash
@@ -110,7 +161,7 @@ git checkout develop
 git checkout -b release/v1.0.0
 # Wprowadź poprawki.
 git add .
-git commit -m "Przygotowanie do wdrożenia v1.0.0"
+git commit -m "chore(release): przygotowanie do wdrożenia v1.0.0"
 git push origin release/v1.0.0
 # Przejdź do GitHub/GitLab.
 # Utwórz MR z release/v1.0.0 do main.
@@ -130,4 +181,55 @@ git checkout develop
 git merge main
 git push origin develop
 ```
+
+## Uruchomienie projektu
+
+### Wymagania wstępne
+- Node.js (wersja 16 lub wyższa)
+- Java 17 lub wyższa
+- Docker i Docker Compose
+- PostgreSQL 13 lub wyższy
+
+### Uruchomienie środowiska deweloperskiego
+1. Uruchom bazę danych PostgreSQL:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. Uruchom backend:
+   ```bash
+   cd backend
+   ./mvnw spring-boot:run
+   ```
+
+3. Uruchom frontend:
+   ```bash
+   cd frontend
+   npm install
+   npm start
+   ```
+
+4. Aplikacja będzie dostępna pod adresem http://localhost:4200
+
+## Testowanie
+- Testy jednostkowe backend:
+  ```bash
+  cd backend
+  ./mvnw test
+  ```
+
+- Testy jednostkowe frontend:
+  ```bash
+  cd frontend
+  npm test
+  ```
+
+- Testy E2E:
+  ```bash
+  cd frontend
+  npm run e2e
+  ```
+
+## Wdrażanie
+Aplikacja jest wdrażana automatycznie po zmergowaniu do brancha `main` za pomocą GitHub Actions i jest dostępna na platformie Render.
 ```
