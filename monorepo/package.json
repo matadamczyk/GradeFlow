@@ -3,16 +3,16 @@
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
-    "start:frontend": "nx serve client",
-    "build:frontend": "nx build client",
-    "test:frontend": "nx test client",
-    "lint:frontend": "nx lint client",
-    "e2e:frontend": "nx e2e client-e2e",
-    "start:all": "concurrently \"npm run start:server\" \"npm run start:client\"",
-    "start:backend": "cd apps/server && ./mvnw spring-boot:run"
+    "start:client": "nx serve GradeFlow",
+    "build:client": "nx build GradeFlow",
+    "test:client": "nx test GradeFlow",
+    "lint:client": "nx lint GradeFlow",
+    "start:server": "cd apps/server && ./mvnw spring-boot:run",
+    "start:all": "concurrently \"npm run start:server\" \"npm run start:client\""
   },
   "private": true,
   "dependencies": {
+    "@angular-devkit/architect": "^0.1902.6",
     "@angular/common": "~19.2.0",
     "@angular/compiler": "~19.2.0",
     "@angular/core": "~19.2.0",
