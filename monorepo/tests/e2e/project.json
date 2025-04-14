@@ -1,9 +1,9 @@
 {
-  "name": "GradeFlow-e2e",
+  "name": "client-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "apps/GradeFlow-e2e/src",
-  "implicitDependencies": ["GradeFlow"],
-  "// targets": "to see all targets run: nx show project GradeFlow-e2e --web",
+  "sourceRoot": "apps/client-e2e/src",
+  "implicitDependencies": ["client"],
+  "// targets": "to see all targets run: nx show project client-e2e --web",
   "targets": {}
 }

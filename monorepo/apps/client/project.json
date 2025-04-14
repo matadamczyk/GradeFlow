@@ -1,27 +1,27 @@
 {
-  "name": "GradeFlow",
+  "name": "client",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
   "prefix": "app",
-  "sourceRoot": "apps/GradeFlow/src",
+  "sourceRoot": "apps/client/src",
   "tags": [],
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/apps/GradeFlow",
-        "index": "apps/GradeFlow/src/index.html",
-        "browser": "apps/GradeFlow/src/main.ts",
+        "outputPath": "dist/apps/client",
+        "index": "apps/client/src/index.html",
+        "browser": "apps/client/src/main.ts",
         "polyfills": ["zone.js"],
-        "tsConfig": "apps/GradeFlow/tsconfig.app.json",
+        "tsConfig": "apps/client/tsconfig.app.json",
         "assets": [
           {
             "glob": "**/*",
-            "input": "apps/GradeFlow/public"
+            "input": "apps/client/public"
           }
         ],
-        "styles": ["apps/GradeFlow/src/styles.css"],
+        "styles": ["apps/client/src/styles.css"],
         "scripts": []
       },
       "configurations": {
@@ -52,10 +52,10 @@
       "executor": "@angular-devkit/build-angular:dev-server",
       "configurations": {
         "production": {
-          "buildTarget": "GradeFlow:build:production"
+          "buildTarget": "client:build:production"
         },
         "development": {
-          "buildTarget": "GradeFlow:build:development"
+          "buildTarget": "client:build:development"
         }
       },
       "defaultConfiguration": "development"
@@ -63,7 +63,7 @@
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
       "options": {
-        "buildTarget": "GradeFlow:build"
+        "buildTarget": "client:build"
       }
     },
     "lint": {
@@ -73,15 +73,15 @@
       "executor": "@nx/vite:test",
       "outputs": ["{options.reportsDirectory}"],
       "options": {
-        "reportsDirectory": "../../coverage/apps/GradeFlow"
+        "reportsDirectory": "../../coverage/apps/client"
       }
     },
     "serve-static": {
       "executor": "@nx/web:file-server",
       "options": {
-        "buildTarget": "GradeFlow:build",
+        "buildTarget": "client:build",
         "port": 4200,
-        "staticFilePath": "dist/apps/GradeFlow/browser",
+        "staticFilePath": "dist/apps/client/browser",
         "spa": true
       }
     }
