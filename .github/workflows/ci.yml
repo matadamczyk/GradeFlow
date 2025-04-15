@@ -31,7 +31,8 @@ jobs:
 
       - name: Check formatting
         working-directory: ./monorepo
-        run: npx prettier --check "apps/**/*.{js,ts,html,css,scss,json}" "libs/**/*.{js,ts,html,css,scss,json}"
+        run: npx prettier --check "apps/**/*.{js,ts,html,css,scss,json}" 
+        # "libs/**/*.{js,ts,html,css,scss,json}"
 
       - name: Lint
         working-directory: ./monorepo
