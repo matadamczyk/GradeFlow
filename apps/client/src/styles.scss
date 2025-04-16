@@ -1,0 +1,16 @@
+/* Remove these imports as they're no longer valid in PrimeNG 19 */
+/*
+@import "primeng/resources/themes/aura/theme.css";
+@import "primeng/resources/primeng.css";
+@import "primeicons/primeicons.css";
+*/
+
+/* You still need to import the PrimeIcons for icons to work */
+@import 'primeicons/primeicons.css';
+@import url('https://fonts.googleapis.com/css2?family=Jersey+15&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Special+Gothic&family=Teko:wght@300..700&display=swap');
+
+body {
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+/* Add other global styles below */
