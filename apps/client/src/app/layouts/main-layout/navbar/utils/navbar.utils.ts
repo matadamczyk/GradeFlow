@@ -14,6 +14,11 @@ const studentNavbarItems = [
     icon: 'pi pi-star',
     routerLink: '/grades',
   },
+  {
+    label: 'Profil ucznia',
+    icon: 'pi pi-user',
+    routerLink: '/account',
+  },
 ];
 
 const teacherNavbarItems = [
@@ -22,8 +27,22 @@ const teacherNavbarItems = [
     icon: 'pi pi-home',
     routerLink: '/',
   },
+  {
+    label: 'Plan zajęć',
+    icon: 'pi pi-calendar',
+    routerLink: '/timetable',
+  },
+  {
+    label: 'Oceny',
+    icon: 'pi pi-star',
+    routerLink: '/grades',
+  },
+  {
+    label: 'Profil nauczyciela',
+    icon: 'pi pi-user',
+    routerLink: '/account',
+  },
 ];
-
 const adminNavbarItems = [
   {
     label: 'Start',
@@ -38,8 +57,22 @@ const parentNavbarItems = [
     icon: 'pi pi-home',
     routerLink: '/',
   },
+  {
+    label: 'Plan zajęć',
+    icon: 'pi pi-calendar',
+    routerLink: '/timetable',
+  },
+  {
+    label: 'Oceny',
+    icon: 'pi pi-star',
+    routerLink: '/grades',
+  },
+  {
+    label: 'Profil rodzica',
+    icon: 'pi pi-user',
+    routerLink: '/account',
+  },
 ];
-
 const navbarItems = {
   'student': studentNavbarItems,
   'teacher': teacherNavbarItems,

@@ -1,1 +1,29 @@
-<p-menubar [model]="items()"></p-menubar>
+<ng-container *ngIf="items() as items">
+  <div class="">
+    <p-menubar [model]="items">
+      <ng-template #end>
+        <div class="mx-2">
+          <p-button
+            [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
+            (onClick)="toggleDarkMode()"
+          ></p-button>
+          @if (loggedIn()) {
+          <p-button
+            label="Wyloguj się"
+            icon="pi pi-sign-out"
+            styleClass="p-button-danger"
+            (onClick)="logout()"
+          ></p-button>
+          } @else {
+          <p-button
+            label="Zaloguj się"
+            icon="pi pi-sign-in"
+            styleClass="p-button-primary"
+            (onClick)="login()"
+          ></p-button>
+          }
+        </div>
+      </ng-template>
+    </p-menubar>
+  </div>
+</ng-container>
