@@ -1,3 +1,48 @@
-::ng-deep .p-menubar {
-  justify-content: flex-end !important;
+:host ::ng-deep {
+  .p-menubar {
+    padding: 0.5rem 1rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+
+    .p-menubar-root-list {
+      margin-left: 1rem;
+    }
+
+    .p-menuitem-link {
+      padding: 0.75rem 1rem;
+
+      &:hover {
+        background-color: var(--primary-100);
+        border-radius: 4px;
+      }
+
+      .p-menuitem-icon {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .theme-toggle-button {
+    margin-right: 1rem;
+  }
+
+  .p-button {
+    margin-left: 0.5rem;
+  }
+
+  .app-logo {
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+
+    .logo-icon {
+      margin-right: 0.5rem;
+      font-size: 1.75rem;
+    }
+  }
 }
