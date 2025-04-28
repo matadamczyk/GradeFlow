@@ -9,13 +9,19 @@
     <ng-template pTemplate="end">
       <div class="flex align-items-center">
         <p-button
-          icon="{{(themeService.isDarkMode$ | async) ? 'pi pi-sun' : 'pi pi-moon'}}"
+          icon="{{
+            (themeService.isDarkMode$ | async) ? 'pi pi-sun' : 'pi pi-moon'
+          }}"
           (onClick)="toggleTheme()"
           styleClass="p-button-rounded p-button-text theme-toggle-button"
-          [pTooltip]="(themeService.isDarkMode$ | async) ? 'Przełącz na jasny motyw' : 'Przełącz na ciemny motyw'"
+          [pTooltip]="
+            (themeService.isDarkMode$ | async)
+              ? 'Przełącz na jasny motyw'
+              : 'Przełącz na ciemny motyw'
+          "
           tooltipPosition="bottom"
         ></p-button>
-        
+
         @if (loggedIn()) {
         <p-button
           label="Wyloguj się"

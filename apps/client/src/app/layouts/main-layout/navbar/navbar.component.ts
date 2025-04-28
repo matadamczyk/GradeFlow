@@ -1,4 +1,4 @@
-import { Component, computed, effect, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import { NavbarItem, navbarItems } from './utils';
 
 import { ButtonModule } from 'primeng/button';

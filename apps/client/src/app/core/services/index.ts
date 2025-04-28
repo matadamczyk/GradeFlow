@@ -1,2 +1,2 @@
 export * from './loading.service';
-export * from './theme.service'; 
+export * from './theme.service';

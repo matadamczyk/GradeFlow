@@ -6,7 +6,13 @@ import { MainLayoutComponent } from './layouts';
 import { RouterModule } from '@angular/router';
 
 @Component({
-  imports: [RouterModule, ButtonModule, InputTextModule, MainLayoutComponent, LoadingComponent],
+  imports: [
+    RouterModule,
+    ButtonModule,
+    InputTextModule,
+    MainLayoutComponent,
+    LoadingComponent,
+  ],
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',

@@ -1,18 +1,18 @@
 import { BehaviorSubject, Observable, map } from 'rxjs';
 import { DOCUMENT } from '@angular/common';
 import { Inject, Injectable } from '@angular/core';
-import { updatePreset } from '@primeng/themes';
 
 export type ThemeMode = 'light' | 'dark';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ThemeService {
   private readonly THEME_KEY = 'app-theme-mode';
   private themeSubject = new BehaviorSubject<ThemeMode>(this.getInitialTheme());
-  
-  public readonly theme$: Observable<ThemeMode> = this.themeSubject.asObservable();
+
+  public readonly theme$: Observable<ThemeMode> =
+    this.themeSubject.asObservable();
   public readonly isDarkMode$: Observable<boolean> = this.theme$.pipe(
     map((theme) => theme === 'dark')
   );
@@ -26,16 +26,20 @@ export class ThemeService {
     if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
       return savedTheme;
     }
-    
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+
+    if (
+      window.matchMedia &&
+      window.matchMedia('(prefers-color-scheme: dark)').matches
+    ) {
       return 'dark';
     }
-    
+
     return 'light';
   }
 
   public toggleTheme(): void {
-    const newTheme: ThemeMode = this.themeSubject.value === 'light' ? 'dark' : 'light';
+    const newTheme: ThemeMode =
+      this.themeSubject.value === 'light' ? 'dark' : 'light';
     this.setTheme(newTheme);
   }
 
@@ -60,4 +64,4 @@ export class ThemeService {
   public isDarkMode(): boolean {
     return this.themeSubject.value === 'dark';
   }
-} 
+}

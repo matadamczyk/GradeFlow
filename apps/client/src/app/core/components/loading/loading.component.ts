@@ -9,7 +9,7 @@ import { ProgressBarModule } from 'primeng/progressbar';
   standalone: true,
   imports: [CommonModule, ProgressBarModule],
   templateUrl: './loading.component.html',
-  styleUrl: './loading.component.scss'
+  styleUrl: './loading.component.scss',
 })
 export class LoadingComponent implements OnInit {
   isLoading = false;
@@ -17,8 +17,8 @@ export class LoadingComponent implements OnInit {
   constructor(private loadingService: LoadingService) {}
 
   ngOnInit() {
-    this.loadingService.loading$.subscribe(loading => {
+    this.loadingService.loading$.subscribe((loading) => {
       this.isLoading = loading;
     });
   }
-} 
+}

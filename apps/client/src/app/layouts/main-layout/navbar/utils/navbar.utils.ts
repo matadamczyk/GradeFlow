@@ -74,10 +74,10 @@ const parentNavbarItems = [
   },
 ];
 const navbarItems = {
-  'student': studentNavbarItems,
-  'teacher': teacherNavbarItems,
-  'admin': adminNavbarItems,
-  'parent': parentNavbarItems,
+  student: studentNavbarItems,
+  teacher: teacherNavbarItems,
+  admin: adminNavbarItems,
+  parent: parentNavbarItems,
 };
 
 export { navbarItems };
