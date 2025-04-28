@@ -1,29 +1,37 @@
 <ng-container *ngIf="items() as items">
-  <div class="">
-    <p-menubar [model]="items">
-      <ng-template #end>
-        <div class="mx-2">
-          <p-button
-            [icon]="isDarkMode() ? 'pi pi-sun' : 'pi pi-moon'"
-            (onClick)="toggleDarkMode()"
-          ></p-button>
-          @if (loggedIn()) {
-          <p-button
-            label="Wyloguj się"
-            icon="pi pi-sign-out"
-            styleClass="p-button-danger"
-            (onClick)="logout()"
-          ></p-button>
-          } @else {
-          <p-button
-            label="Zaloguj się"
-            icon="pi pi-sign-in"
-            styleClass="p-button-primary"
-            (onClick)="login()"
-          ></p-button>
-          }
-        </div>
-      </ng-template>
-    </p-menubar>
-  </div>
+  <p-menubar [model]="items">
+    <ng-template pTemplate="start">
+      <div class="app-logo">
+        <i class="pi pi-book logo-icon"></i>
+        <span>GradeFlow</span>
+      </div>
+    </ng-template>
+    <ng-template pTemplate="end">
+      <div class="flex align-items-center">
+        <p-button
+          icon="{{(themeService.isDarkMode$ | async) ? 'pi pi-sun' : 'pi pi-moon'}}"
+          (onClick)="toggleTheme()"
+          styleClass="p-button-rounded p-button-text theme-toggle-button"
+          [pTooltip]="(themeService.isDarkMode$ | async) ? 'Przełącz na jasny motyw' : 'Przełącz na ciemny motyw'"
+          tooltipPosition="bottom"
+        ></p-button>
+        
+        @if (loggedIn()) {
+        <p-button
+          label="Wyloguj się"
+          icon="pi pi-sign-out"
+          styleClass="p-button-danger"
+          (onClick)="logout()"
+        ></p-button>
+        } @else {
+        <p-button
+          label="Zaloguj się"
+          icon="pi pi-sign-in"
+          styleClass="p-button-primary"
+          (onClick)="login()"
+        ></p-button>
+        }
+      </div>
+    </ng-template>
+  </p-menubar>
 </ng-container>

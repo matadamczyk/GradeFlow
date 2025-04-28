@@ -1,13 +1,16 @@
-import { Component, signal } from '@angular/core';
+import { Component, computed, effect, signal } from '@angular/core';
 import { NavbarItem, navbarItems } from './utils';
 
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
 import { MenubarModule } from 'primeng/menubar';
+import { ThemeService } from '../../../core/services';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-navbar',
-  imports: [CommonModule, MenubarModule, ButtonModule],
+  standalone: true,
+  imports: [CommonModule, MenubarModule, ButtonModule, TooltipModule],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
@@ -18,7 +21,10 @@ export class NavbarComponent {
   );
 
   loggedIn = signal<boolean>(false);
-  isDarkMode = signal<boolean>(false);
+  isDarkMode = computed(() => this.themeService.isDarkMode());
+
+  constructor(public themeService: ThemeService) {}
+
   logout() {
     this.loggedIn.set(false);
   }
@@ -27,7 +33,7 @@ export class NavbarComponent {
     this.loggedIn.set(true);
   }
 
-  toggleDarkMode() {
-    this.isDarkMode.set(!this.isDarkMode());
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 }
