@@ -4,3 +4,5 @@ node_modules
 .vscode
 .nx
 dist
+**/target
+!apps/server/target
