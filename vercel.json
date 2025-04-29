@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "nx build client",
-  "outputDirectory": "dist/apps/client",
+  "outputDirectory": "dist/apps/client/browser",
   "framework": "angular",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
