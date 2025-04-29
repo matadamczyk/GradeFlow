@@ -2,8 +2,9 @@ services:
   - type: web
     name: gradeflow
     env: docker
-    dockerfilePath: Dockerfile
+    dockerfilePath: ./Dockerfile
     dockerContext: .
+    rootDir: .
     plan: free
     branch: main
     healthCheckPath: /actuator/health

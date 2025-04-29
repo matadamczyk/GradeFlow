@@ -1,18 +1,14 @@
 FROM maven:3.9-eclipse-temurin-21-alpine AS build
-WORKDIR /app
+WORKDIR /workspace
 
-# Copy full pom.xml
-COPY apps/server/pom.xml ./pom.xml
-# Copy source files as a separate step to be more explicit
-COPY apps/server/src ./src
+COPY . .
 
-# Build the application
-RUN mvn clean package -DskipTests
+RUN cd apps/server && mvn clean package -DskipTests
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /workspace/apps/server/target/*.jar app.jar
 
 ENV SPRING_DATASOURCE_URL=jdbc:postgresql://cursorily-becoming-peacock.data-1.use1.tembo.io:5432/postgres
 ENV SPRING_DATASOURCE_USERNAME=postgres
