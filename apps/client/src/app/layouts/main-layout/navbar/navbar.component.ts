@@ -36,7 +36,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 export class NavbarComponent implements OnInit {
   role = signal<string>('notLoggedIn');
   items = signal<NavbarItem[]>(
-    navbarItems[this.role() as keyof typeof navbarItems]
+    navbarItems[this.role() as keyof typeof navbarItems],
   );
 
   private destroyRef = inject(DestroyRef);
@@ -48,9 +48,7 @@ export class NavbarComponent implements OnInit {
 
   ngOnInit() {
     fromEvent(window, 'resize')
-      .pipe(
-        takeUntilDestroyed(this.destroyRef), 
-        throttleTime(100))
+      .pipe(takeUntilDestroyed(this.destroyRef), throttleTime(100))
       .subscribe(() => {
         this.windowWidth.set(window.innerWidth);
       });

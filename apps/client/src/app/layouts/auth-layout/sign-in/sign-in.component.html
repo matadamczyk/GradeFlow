@@ -1,30 +1,53 @@
 <div class="surface-card p-4 shadow-2 border-round w-full">
   <div class="text-center mb-5">
-      <i class="pi pi-book logo-icon" style="font-size: 3rem; margin-bottom: 1rem;"></i>
-      <div class="text-900 text-3xl font-medium mb-3">GradeFlow</div>
-      <span class="text-600 font-medium line-height-3">Nie masz jeszcze konta?</span>
-      <a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer">Stwórz dziś!</a>
+    <i
+      class="pi pi-book logo-icon"
+      style="font-size: 3rem; margin-bottom: 1rem"
+    ></i>
+    <div class="text-900 text-3xl font-medium mb-3">GradeFlow</div>
+    <span class="text-600 font-medium line-height-3"
+      >Nie masz jeszcze konta?</span
+    >
+    <a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer"
+      >Stwórz dziś!</a
+    >
   </div>
 
   <div>
     <p-floatLabel variant="on" class="mb-3 w-full">
       <label for="email1">Email</label>
-      <input id="email1" type="text" pInputText class="w-full">
+      <input id="email1" type="text" pInputText class="w-full" />
     </p-floatLabel>
 
     <p-floatLabel variant="on" class="mb-3 w-full">
       <label for="password1">Hasło</label>
-      <input id="password1" type="password" pInputText class="w-full">
+      <input id="password1" type="password" pInputText class="w-full" />
     </p-floatLabel>
 
-      <div class="flex flex-column sm:flex-row align-items-center justify-content-between mb-6 gap-2">
-          <div class="flex align-items-center">
-              <p-checkbox id="rememberme1" [binary]="true" styleClass="mr-2"></p-checkbox>
-              <label for="rememberme1" class="text-900">Zapamiętaj mnie</label>
-          </div>
-          <a class="font-medium no-underline text-blue-500 text-right cursor-pointer">Zapomniałeś hasła?</a>
+    <div
+      class="flex flex-column sm:flex-row align-items-center justify-content-between mb-6 gap-2"
+    >
+      <div class="flex align-items-center">
+        <p-checkbox
+          id="rememberme1"
+          [binary]="true"
+          styleClass="mr-2"
+        ></p-checkbox>
+        <label for="rememberme1" class="text-900">Zapamiętaj mnie</label>
       </div>
+      <a
+        class="font-medium no-underline text-blue-500 text-right cursor-pointer"
+        >Zapomniałeś hasła?</a
+      >
+    </div>
 
-      <button pButton pRipple label="Zaloguj się" icon="pi pi-user" class="w-full p-button-primary" (onClick)="login()"></button>
+    <button
+      pButton
+      pRipple
+      label="Zaloguj się"
+      icon="pi pi-user"
+      class="w-full p-button-primary"
+      (onClick)="login()"
+    ></button>
   </div>
 </div>

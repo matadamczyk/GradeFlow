@@ -15,11 +15,11 @@ export class WelcomeLayoutComponent implements OnInit, OnDestroy {
   displayedTitle = '';
   private reloadInterval: any;
   private animationInterval: any;
-  
+
   ngOnInit() {
     this.startTitleAnimation();
   }
-  
+
   ngOnDestroy() {
     if (this.reloadInterval) {
       clearInterval(this.reloadInterval);
@@ -28,11 +28,11 @@ export class WelcomeLayoutComponent implements OnInit, OnDestroy {
       clearInterval(this.animationInterval);
     }
   }
-  
+
   private startTitleAnimation() {
     let index = 0;
     this.displayedTitle = '';
-    
+
     this.animationInterval = setInterval(() => {
       if (index < this.title.length) {
         this.displayedTitle += this.title.charAt(index);

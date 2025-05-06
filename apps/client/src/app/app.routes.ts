@@ -5,7 +5,7 @@ export const appRoutes: Route[] = [
     path: '',
     loadComponent: () =>
       import('./layouts/welcome-layout/welcome-layout.component').then(
-        (m) => m.WelcomeLayoutComponent
+        (m) => m.WelcomeLayoutComponent,
       ),
     title: 'GradeFlow - Strona główna',
   },
@@ -14,7 +14,7 @@ export const appRoutes: Route[] = [
     path: 'timetable',
     loadComponent: () =>
       import('./modules/timetable/timetable.component').then(
-        (m) => m.TimetableComponent
+        (m) => m.TimetableComponent,
       ),
     title: 'Plan zajęć',
   },
@@ -22,7 +22,7 @@ export const appRoutes: Route[] = [
     path: 'grades',
     loadComponent: () =>
       import('./modules/grades/grades.component').then(
-        (m) => m.GradesComponent
+        (m) => m.GradesComponent,
       ),
     title: 'Oceny',
   },
@@ -30,23 +30,21 @@ export const appRoutes: Route[] = [
     path: 'account',
     loadComponent: () =>
       import('./modules/account/account.component').then(
-        (m) => m.AccountComponent
+        (m) => m.AccountComponent,
       ),
     title: 'Profil',
   },
   {
     path: 'about',
     loadComponent: () =>
-      import('./modules/about/about.component').then(
-        (m) => m.AboutComponent
-      ),
+      import('./modules/about/about.component').then((m) => m.AboutComponent),
     title: 'O GradeFlow',
   },
   {
     path: 'contact',
     loadComponent: () =>
       import('./modules/contact/contact.component').then(
-        (m) => m.ContactComponent
+        (m) => m.ContactComponent,
       ),
     title: 'Kontakt',
   },

@@ -8,7 +8,7 @@ import { Injectable } from '@angular/core';
 export class InitialLoadingService {
   private initialLoadingSubject = new BehaviorSubject<boolean>(true);
 
-  public readonly initialLoading$: Observable<boolean> = 
+  public readonly initialLoading$: Observable<boolean> =
     this.initialLoadingSubject.asObservable();
 
   constructor() {
@@ -20,4 +20,4 @@ export class InitialLoadingService {
   public hideInitialLoading(): void {
     this.initialLoadingSubject.next(false);
   }
-} 
+}

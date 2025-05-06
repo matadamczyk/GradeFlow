@@ -8,7 +8,13 @@ import { InputTextModule } from 'primeng/inputtext';
 
 @Component({
   selector: 'app-sign-in',
-  imports: [CommonModule, CheckboxModule, InputTextModule, ButtonModule, FloatLabelModule],
+  imports: [
+    CommonModule,
+    CheckboxModule,
+    InputTextModule,
+    ButtonModule,
+    FloatLabelModule,
+  ],
   templateUrl: './sign-in.component.html',
   styleUrl: './sign-in.component.scss',
 })
