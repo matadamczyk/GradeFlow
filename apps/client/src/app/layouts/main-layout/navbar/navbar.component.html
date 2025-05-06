@@ -23,19 +23,19 @@
         ></p-button>
 
         @if (loggedIn()) {
-          <p-button
-            [label]="isMobile() ? '' : 'Wyloguj się'"
-            icon="pi pi-sign-out"
-            styleClass="p-button-danger"
-            (onClick)="logout()"
-          ></p-button>
+        <p-button
+          [label]="isMobile() ? '' : 'Wyloguj się'"
+          icon="pi pi-sign-out"
+          styleClass="p-button-danger"
+          (onClick)="logout()"
+        ></p-button>
         } @else {
-          <p-button
-            [label]="isMobile() ? '' : 'Zaloguj się'"
-            icon="pi pi-sign-in"
-            styleClass="p-button-primary"
-            (onClick)="login()"
-          ></p-button>
+        <p-button
+          [label]="isMobile() ? '' : 'Zaloguj się'"
+          icon="pi pi-sign-in"
+          styleClass="p-button-primary"
+          (onClick)="login()"
+        ></p-button>
         }
       </div>
     </ng-template>

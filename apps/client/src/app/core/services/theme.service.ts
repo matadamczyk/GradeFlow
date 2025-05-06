@@ -14,7 +14,7 @@ export class ThemeService {
   public readonly theme$: Observable<ThemeMode> =
     this.themeSubject.asObservable();
   public readonly isDarkMode$: Observable<boolean> = this.theme$.pipe(
-    map((theme) => theme === 'dark'),
+    map((theme) => theme === 'dark')
   );
 
   constructor(@Inject(DOCUMENT) private document: Document) {
