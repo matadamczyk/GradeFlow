@@ -10,11 +10,6 @@ WORKDIR /app
 
 COPY --from=build /workspace/apps/server/target/*.jar app.jar
 
-ENV SPRING_DATASOURCE_URL=jdbc:postgresql://cursorily-becoming-peacock.data-1.use1.tembo.io:5432/postgres
-ENV SPRING_DATASOURCE_USERNAME=postgres
-ENV SPRING_DATASOURCE_PASSWORD=iZWjoHVeipK6Zazi
-ENV SERVER_PORT=8080
-
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"] 

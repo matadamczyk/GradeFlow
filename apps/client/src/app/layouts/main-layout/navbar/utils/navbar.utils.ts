@@ -1,4 +1,6 @@
-const studentNavbarItems = [
+import { NavbarItem } from './navbar.interfaces';
+
+const studentNavbarItems: NavbarItem[] = [
   {
     label: 'Start',
     icon: 'pi pi-home',
@@ -21,7 +23,7 @@ const studentNavbarItems = [
   },
 ];
 
-const teacherNavbarItems = [
+const teacherNavbarItems: NavbarItem[] = [
   {
     label: 'Start',
     icon: 'pi pi-home',
@@ -43,7 +45,7 @@ const teacherNavbarItems = [
     routerLink: '/account',
   },
 ];
-const adminNavbarItems = [
+const adminNavbarItems: NavbarItem[] = [
   {
     label: 'Start',
     icon: 'pi pi-home',
@@ -51,7 +53,7 @@ const adminNavbarItems = [
   },
 ];
 
-const parentNavbarItems = [
+const parentNavbarItems: NavbarItem[] = [
   {
     label: 'Start',
     icon: 'pi pi-home',
@@ -73,11 +75,31 @@ const parentNavbarItems = [
     routerLink: '/account',
   },
 ];
+
+const notLoggedInNavbarItems: NavbarItem[] = [
+  {
+    label: 'Start',
+    icon: 'pi pi-home',
+    routerLink: '/',
+  },
+  {
+    label: 'O Nas',
+    icon: 'pi pi-info-circle',
+    routerLink: '/about',
+  },
+  {
+    label: 'Kontakt',
+    icon: 'pi pi-phone',
+    routerLink: '/contact',
+  },
+];
+
 const navbarItems = {
   student: studentNavbarItems,
   teacher: teacherNavbarItems,
   admin: adminNavbarItems,
   parent: parentNavbarItems,
+  notLoggedIn: notLoggedInNavbarItems,
 };
 
 export { navbarItems };

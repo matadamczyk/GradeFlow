@@ -1,9 +1,9 @@
 <ng-container *ngIf="items() as items">
-  <p-menubar [model]="items">
+  <p-menubar [model]="items" styleClass="responsive-menubar">
     <ng-template pTemplate="start">
-      <div class="app-logo">
+      <div class="app-logo flex align-items-center">
         <i class="pi pi-book logo-icon"></i>
-        <span>GradeFlow</span>
+        <span class="ml-2 font-bold">GradeFlow</span>
       </div>
     </ng-template>
     <ng-template pTemplate="end">
@@ -24,14 +24,14 @@
 
         @if (loggedIn()) {
         <p-button
-          label="Wyloguj się"
+          [label]="isMobile() ? '' : 'Wyloguj się'"
           icon="pi pi-sign-out"
           styleClass="p-button-danger"
           (onClick)="logout()"
         ></p-button>
         } @else {
         <p-button
-          label="Zaloguj się"
+          [label]="isMobile() ? '' : 'Zaloguj się'"
           icon="pi pi-sign-in"
           styleClass="p-button-primary"
           (onClick)="login()"
@@ -41,3 +41,17 @@
     </ng-template>
   </p-menubar>
 </ng-container>
+
+<p-dialog
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '90vw', maxWidth: '450px' }"
+  [breakpoints]="{ '960px': '80vw', '640px': '90vw' }"
+  styleClass="auth-dialog"
+>
+  <ng-template pTemplate="content">
+    <app-sign-in></app-sign-in>
+  </ng-template>
+</p-dialog>

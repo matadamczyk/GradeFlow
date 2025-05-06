@@ -1,1 +1,32 @@
-<p>welcome-layout works!</p>
+<div class="welcome-container">
+  <div class="title-animation">
+    <div class="title-with-icon">
+      <h1>{{ displayedTitle }}</h1>
+      <i
+        class="pi pi-book"
+        [ngClass]="{ 'icon-visible': displayedTitle.length === title.length }"
+      ></i>
+    </div>
+    <p
+      class="app-description"
+      [ngClass]="{ visible: displayedTitle.length === title.length }"
+    >
+      System efektywnego zarządzania ocenami i postępami w nauce
+    </p>
+  </div>
+
+  <div
+    class="buttons-container"
+    [ngClass]="{ visible: displayedTitle.length === title.length }"
+  >
+    <div class="new-user-section">
+      <span class="new-user-label">Jesteś tu nowy?</span>
+      <p-button
+        label="Poproś o dostęp"
+        icon="pi pi-user-plus"
+        styleClass="p-button-primary access-button"
+        routerLink="/register"
+      ></p-button>
+    </div>
+  </div>
+</div>
