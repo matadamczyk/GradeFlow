@@ -1,5 +1,14 @@
-import { Component, computed, signal } from '@angular/core';
+import {
+  Component,
+  DestroyRef,
+  OnDestroy,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { NavbarItem, navbarItems } from './utils';
+import { fromEvent, throttleTime } from 'rxjs';
 
 import { ButtonModule } from 'primeng/button';
 import { CommonModule } from '@angular/common';
@@ -8,6 +17,7 @@ import { MenubarModule } from 'primeng/menubar';
 import { SignInComponent } from '../../../layouts/auth-layout/sign-in/sign-in.component';
 import { ThemeService } from '../../../core/services';
 import { TooltipModule } from 'primeng/tooltip';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-navbar',
@@ -23,11 +33,28 @@ import { TooltipModule } from 'primeng/tooltip';
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss',
 })
-export class NavbarComponent {
-  role = signal<string>('student');
+export class NavbarComponent implements OnInit {
+  role = signal<string>('notLoggedIn');
   items = signal<NavbarItem[]>(
     navbarItems[this.role() as keyof typeof navbarItems]
   );
+
+  private destroyRef = inject(DestroyRef);
+  private windowWidth = signal<number>(window.innerWidth);
+
+  isMobile = computed(() => {
+    return this.windowWidth() < 960;
+  });
+
+  ngOnInit() {
+    fromEvent(window, 'resize')
+      .pipe(
+        takeUntilDestroyed(this.destroyRef), 
+        throttleTime(100))
+      .subscribe(() => {
+        this.windowWidth.set(window.innerWidth);
+      });
+  }
 
   displayDialog = signal<boolean>(false);
 
@@ -41,7 +68,6 @@ export class NavbarComponent {
   }
 
   login() {
-    
     this.displayDialog.set(true);
   }
 
