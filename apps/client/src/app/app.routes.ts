@@ -35,6 +35,22 @@ export const appRoutes: Route[] = [
     title: 'Profil',
   },
   {
+    path: 'about',
+    loadComponent: () =>
+      import('./modules/about/about.component').then(
+        (m) => m.AboutComponent
+      ),
+    title: 'O GradeFlow',
+  },
+  {
+    path: 'contact',
+    loadComponent: () =>
+      import('./modules/contact/contact.component').then(
+        (m) => m.ContactComponent
+      ),
+    title: 'Kontakt',
+  },
+  {
     path: '**',
     redirectTo: '',
   },
