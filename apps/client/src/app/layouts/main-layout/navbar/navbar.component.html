@@ -41,3 +41,15 @@
     </ng-template>
   </p-menubar>
 </ng-container>
+
+<p-dialog
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  styleClass="w-5"
+>
+  <ng-template pTemplate="content">
+    <app-sign-in></app-sign-in>
+  </ng-template>
+</p-dialog>
