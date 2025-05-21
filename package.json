@@ -21,6 +21,8 @@
     "@angular/platform-browser-dynamic": "~19.2.0",
     "@angular/router": "~19.2.0",
     "@primeng/themes": "^19.0.10",
+    "angular-calendar-scheduler": "^18.0.2",
+    "date-fns": "^4.1.0",
     "primeflex": "^4.0.0",
     "primeicons": "^7.0.0",
     "primeng": "^19.0.10",

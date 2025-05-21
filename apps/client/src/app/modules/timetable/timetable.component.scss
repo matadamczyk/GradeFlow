@@ -1,0 +1,164 @@
+.timetable-container {
+  width: 100%;
+  height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  overflow: hidden;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--surface-300);
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+.calendar-title h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.calendar-controls {
+  display: flex;
+  gap: 12px;
+
+  @media (max-width: 576px) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.btn-group {
+  display: flex;
+  border-radius: 4px;
+  overflow: hidden;
+  
+  button {
+    padding: 6px 12px;
+    border: 1px solid var(--surface-300);
+    background-color: var(--surface-card);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:not(:last-child) {
+      border-right: none;
+    }
+
+    &:first-child {
+      border-radius: 4px 0 0 4px;
+    }
+
+    &:last-child {
+      border-radius: 0 4px 4px 0;
+    }
+
+    &.active {
+      background-color: var(--primary-500);
+      color: var(--primary-color-text);
+      border-color: var(--primary-600);
+    }
+
+    &:hover:not(.active) {
+      background-color: var(--surface-hover);
+    }
+  }
+}
+
+.calendar-content {
+  flex: 1;
+  overflow: auto;
+  position: relative;
+}
+
+.loading-spinner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--surface-ground);
+  z-index: 10;
+  opacity: 0.9;
+  
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(var(--primary-500-rgb), 0.2);
+    border-radius: 50%;
+    border-left-color: var(--primary-500);
+    animation: spin 1s linear infinite;
+    margin-bottom: 12px;
+  }
+  
+  span {
+    color: var(--text-color-secondary);
+    font-size: 14px;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+// Add custom styling for specific event types in calendar
+::ng-deep {
+  .cal-event {
+    transition: transform 0.1s, box-shadow 0.2s;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+  }
+  
+  // Add hover effect to calendar day cells
+  .cal-month-view .cal-day-cell:hover {
+    background-color: var(--surface-hover);
+  }
+  
+  // Highlight today with primary color
+  .cal-month-view .cal-day-cell.cal-today {
+    background-color: var(--primary-50);
+  }
+  
+  // Better styling for the event dots in month view
+  .cal-month-view .cal-event {
+    border: none;
+    width: 10px;
+    height: 10px;
+  }
+  
+  // Responsive adjustments for mobile
+  @media (max-width: 768px) {
+    .cal-month-view .cal-day-cell {
+      min-height: 60px;
+    }
+    
+    .cal-month-view .cal-day-number {
+      font-size: 1rem;
+      margin-right: 5px;
+      margin-top: 5px;
+    }
+  }
+}

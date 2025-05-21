@@ -1,1 +1,86 @@
-<p>timetable works!</p>
+<div class="timetable-container">
+  <div class="calendar-header">
+    <div class="calendar-title">
+      <h2>Class Timetable</h2>
+    </div>
+    <div class="calendar-controls">
+      <div class="btn-group">
+        <button class="p-button p-button-outlined" 
+                (click)="changeDate(-7)">
+          Previous
+        </button>
+        <button class="p-button p-button-outlined" 
+                (click)="resetDate()">
+          Today
+        </button>
+        <button class="p-button p-button-outlined" 
+                (click)="changeDate(7)">
+          Next
+        </button>
+      </div>
+      <div class="btn-group view-switcher">
+        <button class="p-button p-button-outlined" 
+                [class.active]="view === CalendarView.Day"
+                (click)="changeView(CalendarView.Day)">
+          Day
+        </button>
+        <button class="p-button p-button-outlined"
+                [class.active]="view === CalendarView.Week"
+                (click)="changeView(CalendarView.Week)">
+          Week
+        </button>
+        <button class="p-button p-button-outlined"
+                [class.active]="view === CalendarView.Month"
+                (click)="changeView(CalendarView.Month)">
+          Month
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="calendar-content">
+    <div *ngIf="loading" class="loading-spinner">
+      <div class="spinner"></div>
+      <span>Loading...</span>
+    </div>
+
+    <div [ngSwitch]="view">
+      <mwl-calendar-day-view
+        *ngSwitchCase="CalendarView.Day"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refreshSubject"
+        [hourSegments]="hourSegments"
+        [hourSegmentHeight]="hourSegmentHeight"
+        [dayStartHour]="dayStartHour"
+        [dayEndHour]="dayEndHour"
+        [locale]="locale"
+        (eventClicked)="eventClicked($event.event)">
+      </mwl-calendar-day-view>
+
+      <mwl-calendar-week-view
+        *ngSwitchCase="CalendarView.Week"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refreshSubject"
+        [hourSegments]="hourSegments"
+        [hourSegmentHeight]="hourSegmentHeight"
+        [dayStartHour]="dayStartHour"
+        [dayEndHour]="dayEndHour"
+        [weekStartsOn]="weekStartsOn"
+        [locale]="locale"
+        (eventClicked)="eventClicked($event.event)">
+      </mwl-calendar-week-view>
+
+      <mwl-calendar-month-view
+        *ngSwitchCase="CalendarView.Month"
+        [viewDate]="viewDate"
+        [events]="events"
+        [refresh]="refreshSubject"
+        [locale]="locale"
+        (eventClicked)="eventClicked($event.event)"
+        (dayClicked)="handleDayClick($event)">
+      </mwl-calendar-month-view>
+    </div>
+  </div>
+</div>
