@@ -1,50 +1,31 @@
-import {
-  CalendarDateFormatter,
-  CalendarEvent,
-  CalendarModule,
-  CalendarView,
-  DateAdapter
-} from 'angular-calendar';
-import { Component, OnInit, inject } from '@angular/core';
-import {
-  SchedulerDateFormatter,
-  SchedulerEventTimesChangedEvent,
-  SchedulerModule,
-  SchedulerViewDay,
-  SchedulerViewHour,
-  SchedulerViewHourSegment
-} from 'angular-calendar-scheduler';
-import { Subject, takeUntil } from 'rxjs';
-import {
-  addDays,
-  addHours,
-  addMinutes,
-  addMonths,
-  endOfDay,
-  endOfMonth,
-  endOfWeek,
-  format,
-  getDate,
-  getDay,
-  getMonth,
-  isSameDay,
-  isSameMonth,
-  setDate,
-  setHours,
-  setMinutes,
-  startOfDay,
-  startOfHour,
-  startOfMonth,
-  startOfWeek,
-  subDays,
-  subHours,
-  subMonths,
-  subWeeks
-} from 'date-fns';
+import { Component, OnInit } from '@angular/core';
 
+import { ButtonModule } from 'primeng/button';
+import { CalendarModule } from 'primeng/calendar';
+import { ColorPickerModule } from 'primeng/colorpicker';
 import { CommonModule } from '@angular/common';
+import { DialogModule } from 'primeng/dialog';
+import { DropdownModule } from 'primeng/dropdown';
 import { FormsModule } from '@angular/forms';
-import { ThemeService } from '../../core/services/theme.service';
+import { InputTextModule } from 'primeng/inputtext';
+import { MessageService } from 'primeng/api';
+import { ToastModule } from 'primeng/toast';
+
+interface ClassEvent {
+  id: number;
+  title: string;
+  start: Date;
+  end: Date;
+  color: EventColor;
+  description?: string;
+  location?: string;
+  professor?: string;
+  draggable: boolean;
+  resizable: {
+    beforeStart: boolean;
+    afterEnd: boolean;
+  };
+}
 
 interface EventColor {
   primary: string;
@@ -58,120 +39,148 @@ interface EventColor {
     CommonModule,
     FormsModule,
     CalendarModule,
-    SchedulerModule
+    ButtonModule,
+    DialogModule,
+    InputTextModule,
+    DropdownModule,
+    ColorPickerModule,
+    ToastModule
   ],
-  providers: [
-    {
-      provide: CalendarDateFormatter,
-      useClass: SchedulerDateFormatter
-    }
-  ],
+  providers: [MessageService],
   templateUrl: './timetable.component.html',
   styleUrl: './timetable.component.scss',
 })
 export class TimetableComponent implements OnInit {
-  private destroy$ = new Subject<void>();
-  private themeService = inject(ThemeService);
+  colorOptions = [
+    { primary: '#1e88e5', secondary: '#d1e8ff' }, 
+    { primary: '#43a047', secondary: '#e0f2e9' }, 
+    { primary: '#e53935', secondary: '#ffd1d1' }, 
+    { primary: '#fb8c00', secondary: '#ffeed9' }, 
+    { primary: '#8e24aa', secondary: '#ead6f3' }  
+  ];
   
-  CalendarView = CalendarView;
-  view: CalendarView = CalendarView.Week;
-  viewDate = new Date();
-  refreshSubject = new Subject<any>();
-  events: CalendarEvent[] = [];
-  locale = 'en';
-  hourSegments = 4; // 4 segments per hour = 15 min segments
-  hourSegmentHeight = 30; // Smaller height for better visualization
-  dayStartHour = 8;
-  dayEndHour = 16;
-  weekStartsOn = 1; // Monday
+  events: ClassEvent[] = [];
+  viewDate: Date = new Date();
+  displayEventDialog = false;
+  selectedEvent: ClassEvent | null = null;
+  newEvent: ClassEvent = this.createEmptyEvent();
+  isNewEvent = true;
+  
+  timeSlots = Array.from({ length: 33 }, (_, i) => {
+    const hour = Math.floor((i + 32) / 4); 
+    const minute = ((i + 32) % 4) * 15;
+    return `${hour < 10 ? '0' + hour : hour}:${minute === 0 ? '00' : minute}`;
+  });
+  
+  weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  Math = Math;
 
-  minDate = new Date();
-  maxDate = addMonths(new Date(), 1);
-
-  loading = false;
-  isDarkMode = false;
-
-  lightModeColors = {
-    math: { primary: '#1976d2', secondary: '#d1e8ff' },
-    physics: { primary: '#e91e63', secondary: '#fce4ec' },
-    cs: { primary: '#009688', secondary: '#e0f2f1' },
-    history: { primary: '#ff9800', secondary: '#fff3e0' },
-    art: { primary: '#9c27b0', secondary: '#f3e5f5' },
-    english: { primary: '#3f51b5', secondary: '#e8eaf6' },
-    chemistry: { primary: '#f44336', secondary: '#ffebee' },
-    biology: { primary: '#4caf50', secondary: '#e8f5e9' },
-    pe: { primary: '#03a9f4', secondary: '#e1f5fe' },
-    music: { primary: '#673ab7', secondary: '#ede7f6' }
-  };
-
-  darkModeColors = {
-    math: { primary: '#42a5f5', secondary: '#1565c0' },
-    physics: { primary: '#f06292', secondary: '#c2185b' },
-    cs: { primary: '#26a69a', secondary: '#00796b' },
-    history: { primary: '#ffb74d', secondary: '#f57c00' },
-    art: { primary: '#ba68c8', secondary: '#7b1fa2' },
-    english: { primary: '#7986cb', secondary: '#303f9f' },
-    chemistry: { primary: '#ef5350', secondary: '#b71c1c' },
-    biology: { primary: '#66bb6a', secondary: '#1b5e20' },
-    pe: { primary: '#29b6f6', secondary: '#01579b' },
-    music: { primary: '#9575cd', secondary: '#4527a0' }
-  };
+  constructor(private messageService: MessageService) {}
 
   ngOnInit(): void {
-    // Subscribe to theme changes
-    this.themeService.isDarkMode$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(isDark => {
-        this.isDarkMode = isDark;
-        this.loadEvents();
-      });
+    this.loadMockData();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  loadMockData(): void {
+    const mockEvents: ClassEvent[] = [
+      {
+        id: 1,
+        title: 'Mathematics',
+        start: this.setDateAndTime(1, 10, 0),
+        end: this.setDateAndTime(1, 10, 45),
+        color: this.colorOptions[0],
+        description: 'Advanced Calculus',
+        location: 'Room 101',
+        professor: 'Dr. Smith',
+        draggable: true,
+        resizable: {
+          beforeStart: true,
+          afterEnd: true
+        }
+      },
+      {
+        id: 2,
+        title: 'Physics',
+        start: this.setDateAndTime(2, 14, 15), // Tuesday, 2:15 PM
+        end: this.setDateAndTime(2, 15, 0),    // Tuesday, 3:00 PM
+        color: this.colorOptions[1],
+        description: 'Quantum Mechanics',
+        location: 'Room 203',
+        professor: 'Dr. Johnson',
+        draggable: true,
+        resizable: {
+          beforeStart: true,
+          afterEnd: true
+        }
+      },
+      {
+        id: 3,
+        title: 'Computer Science',
+        start: this.setDateAndTime(3, 9, 0),
+        end: this.setDateAndTime(3, 9, 45), 
+        color: this.colorOptions[2],
+        description: 'Algorithms and Data Structures',
+        location: 'Lab 305',
+        professor: 'Prof. Williams',
+        draggable: true,
+        resizable: {
+          beforeStart: true,
+          afterEnd: true
+        }
+      },
+      {
+        id: 4,
+        title: 'Statistics',
+        start: this.setDateAndTime(4, 13, 30),
+        end: this.setDateAndTime(4, 14, 15),
+        color: this.colorOptions[3],
+        description: 'Probability Theory',
+        location: 'Room 102',
+        professor: 'Dr. Brown',
+        draggable: true,
+        resizable: {
+          beforeStart: true,
+          afterEnd: true
+        }
+      },
+      {
+        id: 5,
+        title: 'History',
+        start: this.setDateAndTime(5, 11, 15),
+        end: this.setDateAndTime(5, 12, 0),
+        color: this.colorOptions[4],
+        description: 'World War II',
+        location: 'Room 405',
+        professor: 'Prof. Davis',
+        draggable: true,
+        resizable: {
+          beforeStart: true,
+          afterEnd: true
+        }
+      }
+    ];
+    
+    this.events = mockEvents;
   }
 
-  changeDate(days: number): void {
-    this.viewDate = addDays(this.viewDate, days);
-    this.refreshSubject.next(true);
+  private setDateAndTime(day: number, hour: number, minute = 0): Date {
+    const date = new Date();
+    const currentDay = date.getDay();
+    const daysToAdd = day - (currentDay === 0 ? 7 : currentDay);
+    
+    date.setDate(date.getDate() + daysToAdd);
+    date.setHours(hour, minute, 0, 0);
+    
+    return date;
   }
 
-  resetDate(): void {
-    this.viewDate = new Date();
-    this.refreshSubject.next(true);
-  }
-
-  handleDayClick(event: any): void {
-    this.viewDate = event.day.date;
-    this.changeView(CalendarView.Day);
-  }
-
-  // Helper function to create dates relative to the view date
-  createEventDate(dayOffset: number, hours: number, minutes = 0): Date {
-    const date = new Date(this.viewDate);
-    const targetDate = addDays(date, dayOffset);
-    return setMinutes(setHours(startOfDay(targetDate), hours), minutes);
-  }
-
-  // Helper function to create classes with specific duration
-  createClass(
-    id: number,
-    title: string,
-    dayOffset: number,
-    startHour: number,
-    startMinute: number,
-    durationMinutes: number,
-    colorType: keyof typeof this.lightModeColors
-  ): CalendarEvent {
-    const colors = this.isDarkMode ? this.darkModeColors : this.lightModeColors;
-    const start = this.createEventDate(dayOffset, startHour, startMinute);
+  private createEmptyEvent(): ClassEvent {
     return {
-      id,
-      title,
-      start,
-      end: addMinutes(start, durationMinutes),
-      color: colors[colorType],
+      id: 0,
+      title: '',
+      start: new Date(),
+      end: new Date(),
+      color: this.colorOptions[0],
       draggable: true,
       resizable: {
         beforeStart: true,
@@ -180,81 +189,125 @@ export class TimetableComponent implements OnInit {
     };
   }
 
-  loadEvents(): void {
-    this.loading = true;
+  openNewEventDialog(day: number, timeSlotIndex: number): void {
+    this.isNewEvent = true;
+    this.newEvent = this.createEmptyEvent();
     
-    // Generate events for the entire week
-    this.events = [
-      // Monday
-      this.createClass(1, 'Math Lecture', 0, 9, 0, 90, 'math'),
-      this.createClass(2, 'Computer Science Lab', 0, 11, 0, 120, 'cs'),
-      this.createClass(3, 'English Literature', 0, 14, 30, 90, 'english'),
-      this.createClass(4, 'Physics Study Group', 0, 16, 30, 60, 'physics'),
-      
-      // Tuesday
-      this.createClass(5, 'Physics Lab', 1, 8, 30, 120, 'physics'),
-      this.createClass(6, 'Chemistry Lecture', 1, 11, 0, 90, 'chemistry'),
-      this.createClass(7, 'History of Science', 1, 13, 30, 90, 'history'),
-      this.createClass(8, 'Art Workshop', 1, 16, 0, 120, 'art'),
-      
-      // Wednesday
-      this.createClass(9, 'Biology Lab', 2, 9, 0, 120, 'biology'),
-      this.createClass(10, 'Math Practice', 2, 11, 30, 90, 'math'),
-      this.createClass(11, 'Computer Science Theory', 2, 14, 0, 90, 'cs'),
-      this.createClass(12, 'Music Appreciation', 2, 16, 0, 60, 'music'),
-      
-      // Thursday
-      this.createClass(13, 'English Composition', 3, 8, 30, 90, 'english'),
-      this.createClass(14, 'Physical Education', 3, 10, 30, 60, 'pe'),
-      this.createClass(15, 'Chemistry Lab', 3, 13, 0, 120, 'chemistry'),
-      this.createClass(16, 'Computer Science Project', 3, 16, 0, 120, 'cs'),
-      
-      // Friday
-      this.createClass(17, 'Math Advanced Topics', 4, 9, 0, 90, 'math'),
-      this.createClass(18, 'Biology Lecture', 4, 11, 0, 90, 'biology'),
-      this.createClass(19, 'History Seminar', 4, 13, 30, 90, 'history'),
-      this.createClass(20, 'Art History', 4, 15, 30, 90, 'art'),
-      
-      // Some weekend activities
-      this.createClass(21, 'Study Group - Physics', 5, 10, 0, 120, 'physics'),
-      this.createClass(22, 'Music Practice', 5, 14, 0, 120, 'music'),
-      this.createClass(23, 'Biology Field Trip', 6, 9, 0, 180, 'biology'),
-      this.createClass(24, 'Chess Club', 6, 14, 0, 120, 'cs')
-    ];
+    const hour = Math.floor((timeSlotIndex + 32) / 4);
+    const minute = ((timeSlotIndex + 32) % 4) * 15;
     
-    setTimeout(() => {
-      this.loading = false;
-      this.refreshSubject.next(true);
-    }, 500);
+    this.newEvent.start = this.setDateAndTime(day, hour, minute);
+    
+    const endDate = new Date(this.newEvent.start);
+    endDate.setMinutes(endDate.getMinutes() + 45);
+    this.newEvent.end = endDate;
+    
+    this.selectedEvent = this.newEvent;
+    this.displayEventDialog = true;
   }
 
-  changeView(view: CalendarView): void {
-    this.view = view;
+  openEditEventDialog(event: ClassEvent): void {
+    this.isNewEvent = false;
+    this.selectedEvent = { ...event };
+    this.displayEventDialog = true;
   }
 
-  eventTimesChanged({ event, newStart, newEnd }: SchedulerEventTimesChangedEvent): void {
-    event.start = newStart;
-    event.end = newEnd;
-    this.refreshSubject.next(true);
+  closeEventDialog(): void {
+    this.displayEventDialog = false;
+    this.selectedEvent = null;
   }
 
-  viewDaysOptionChanged(viewDays: number): void {
-    console.log('viewDaysOptionChanged', viewDays);
+  saveEvent(): void {
+    if (!this.selectedEvent) return;
+    
+    if (!this.selectedEvent.title) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Title is required'
+      });
+      return;
+    }
+
+    if (this.isNewEvent) {
+      this.selectedEvent.id = this.events.length ? Math.max(...this.events.map(e => e.id)) + 1 : 1;
+      this.events.push({ ...this.selectedEvent });
+      this.messageService.add({
+        severity: 'success',
+        summary: 'Success',
+        detail: 'Class added to schedule'
+      });
+    } else {
+      const index = this.events.findIndex(e => e.id === this.selectedEvent?.id);
+      if (index !== -1) {
+        this.events[index] = { ...this.selectedEvent };
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success',
+          detail: 'Class updated successfully'
+        });
+      }
+    }
+    
+    this.closeEventDialog();
   }
 
-  dayHeaderClicked(day: SchedulerViewDay): void {
-    console.log('dayHeaderClicked', day);
+  deleteEvent(): void {
+    if (!this.selectedEvent) return;
+    
+    const index = this.events.findIndex(e => e.id === this.selectedEvent?.id);
+    if (index !== -1) {
+      this.events.splice(index, 1);
+      this.messageService.add({
+        severity: 'info',
+        summary: 'Info',
+        detail: 'Class removed from schedule'
+      });
+    }
+    
+    this.closeEventDialog();
   }
 
-  hourClicked(hour: SchedulerViewHour): void {
-    console.log('hourClicked', hour);
+  getDayEvents(day: number): ClassEvent[] {
+    return this.events.filter(event => {
+      return event.start.getDay() === (day === 7 ? 0 : day);
+    });
   }
 
-  segmentClicked(segment: SchedulerViewHourSegment): void {
-    console.log('segmentClicked', segment);
+  getEventsByHour(day: number, timeSlotIndex: number): ClassEvent[] {
+    const quarterHours = timeSlotIndex + 32;
+    
+    return this.events.filter(event => {
+      const eventDay = event.start.getDay();
+      const eventStartQuarters = event.start.getHours() * 4 + Math.floor(event.start.getMinutes() / 15);
+      const eventEndQuarters = event.end.getHours() * 4 + Math.ceil(event.end.getMinutes() / 15);
+      
+      return (eventDay === (day === 7 ? 0 : day)) && 
+             (eventStartQuarters <= quarterHours && eventEndQuarters > quarterHours);
+    });
   }
-
-  eventClicked(event: CalendarEvent): void {
-    console.log('eventClicked', event);
+  
+  getEventStyle(event: ClassEvent): any {
+    return {
+      backgroundColor: event.color.secondary,
+      borderLeft: `4px solid ${event.color.primary}`,
+    };
+  }
+  
+  isCurrentHour(timeSlotIndex: number): boolean {
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    
+    const slotHour = Math.floor((timeSlotIndex + 32) / 4);
+    const slotMinute = ((timeSlotIndex + 32) % 4) * 15;
+    
+    return currentHour === slotHour && 
+           currentMinute >= slotMinute && 
+           currentMinute < slotMinute + 15;
+  }
+  
+  getCellPositionClass(day: number, timeSlotIndex: number): string {
+    return `day-${day.toString()} hour-${timeSlotIndex.toString()}`;
   }
 }

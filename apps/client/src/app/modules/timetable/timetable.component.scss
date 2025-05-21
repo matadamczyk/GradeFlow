@@ -1,164 +1,286 @@
 .timetable-container {
-  width: 100%;
-  height: calc(100vh - 140px);
   display: flex;
   flex-direction: column;
-  border-radius: 8px;
-  overflow: hidden;
-  font-family: 'Roboto Condensed', sans-serif;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: var(--surface-card);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
 }
 
-.calendar-header {
+.timetable-header {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  padding: 16px 24px;
-  border-bottom: 1px solid var(--surface-300);
-
-  @media (max-width: 768px) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-}
-
-.calendar-title h2 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 500;
-  color: var(--text-color);
-}
-
-.calendar-controls {
-  display: flex;
-  gap: 12px;
-
-  @media (max-width: 576px) {
-    flex-direction: column;
-    width: 100%;
-  }
-}
-
-.btn-group {
-  display: flex;
-  border-radius: 4px;
-  overflow: hidden;
+  align-items: center;
+  margin-bottom: 1.5rem;
   
-  button {
-    padding: 6px 12px;
-    border: 1px solid var(--surface-300);
-    background-color: var(--surface-card);
+  h1 {
+    font-size: 1.75rem;
     color: var(--text-color);
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:not(:last-child) {
-      border-right: none;
-    }
-
-    &:first-child {
-      border-radius: 4px 0 0 4px;
-    }
-
-    &:last-child {
-      border-radius: 0 4px 4px 0;
-    }
-
-    &.active {
-      background-color: var(--primary-500);
-      color: var(--primary-color-text);
-      border-color: var(--primary-600);
-    }
-
-    &:hover:not(.active) {
-      background-color: var(--surface-hover);
-    }
+    margin: 0;
+    font-weight: 600;
   }
 }
 
-.calendar-content {
+.schedule-grid {
+  display: flex;
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  position: relative;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50px; // After headers
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      linear-gradient(to right, var(--surface-border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--surface-border) 1px, transparent 1px);
+    background-size: 
+      180px 20px, // Column width, row height
+      180px 20px;
+    background-position: -1px -1px;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.3;
+  }
+}
+
+.time-column, .day-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.time-column {
+  width: 90px;
+  min-width: 90px;
+  background-color: var(--surface-ground);
+  position: relative;
+  z-index: 1;
+}
+
+.day-column {
   flex: 1;
-  overflow: auto;
+  min-width: 180px;
   position: relative;
 }
 
-.loading-spinner {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.time-header, .day-header {
+  height: 50px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
+  align-items: center;
+  font-weight: 600;
+  background-color: var(--surface-section);
+  border-bottom: 1px solid var(--surface-border);
+  border-right: 1px solid var(--surface-border);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+.day-header {
+  background-color: var(--surface-hover);
+  color: var(--primary-color);
+}
+
+.time-cell {
+  height: 20px; /* 15-minute intervals */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid var(--surface-border);
+  border-right: 1px solid var(--surface-border);
+  color: var(--text-color-secondary);
+  font-size: 0.75rem;
   background-color: var(--surface-ground);
-  z-index: 10;
-  opacity: 0.9;
+  position: relative;
+  z-index: 1;
   
-  .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid rgba(var(--primary-500-rgb), 0.2);
-    border-radius: 50%;
-    border-left-color: var(--primary-500);
-    animation: spin 1s linear infinite;
-    margin-bottom: 12px;
+  &:nth-child(4n+1) {
+    font-weight: 600;
+    height: 20px;
+    border-bottom: 1px solid var(--surface-border);
   }
   
-  span {
-    color: var(--text-color-secondary);
+  &:nth-child(4n+2), 
+  &:nth-child(4n+3), 
+  &:nth-child(4n+4) {
+    border-bottom: 1px dashed var(--surface-border);
+    height: 20px;
+    color: var(--text-color-tertiary);
+    font-size: 0.7rem;
+  }
+}
+
+.schedule-cell {
+  height: 20px; /* 15-minute intervals */
+  border-bottom: 1px solid var(--surface-border);
+  border-right: 1px solid var(--surface-border);
+  padding: 0;
+  position: relative;
+  transition: background-color 0.2s;
+  
+  &:nth-child(4n+1) {
+    border-bottom: 1px solid var(--surface-border);
+  }
+  
+  &:nth-child(4n+2), 
+  &:nth-child(4n+3), 
+  &:nth-child(4n+4) {
+    border-bottom: 1px dashed var(--surface-border);
+  }
+  
+  &:hover {
+    background-color: var(--surface-hover);
+    cursor: pointer;
+  }
+}
+
+.event-card {
+  width: 100%;
+  height: 100%;
+  padding: 6px 8px;
+  border-radius: 6px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  position: absolute;
+  z-index: 3;
+  
+  /* For 45-minute classes (3 cells) */
+  height: 60px;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--focus-ring);
+    z-index: 4;
+  }
+  
+  .event-title {
+    font-weight: 600;
     font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+  
+  .event-time {
+    font-size: 12px;
+    color: var(--text-color-secondary);
+    margin-bottom: 4px;
+  }
+  
+  .event-location {
+    font-size: 12px;
+    color: var(--text-color-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    
+    i {
+      font-size: 10px;
+    }
   }
 }
 
-@keyframes spin {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
+/* Highlight current hour */
+.current-hour {
+  background-color: var(--primary-50) !important;
+}
+
+.event-form {
+  .form-group {
+    margin-bottom: 1.25rem;
+    
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+      color: var(--text-color);
+    }
   }
 }
 
-// Add custom styling for specific event types in calendar
-::ng-deep {
-  .cal-event {
-    transition: transform 0.1s, box-shadow 0.2s;
+.color-selectors {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  
+  .color-option {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 2px solid;
+    cursor: pointer;
+    transition: transform 0.2s;
     
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
-  }
-  
-  // Add hover effect to calendar day cells
-  .cal-month-view .cal-day-cell:hover {
-    background-color: var(--surface-hover);
-  }
-  
-  // Highlight today with primary color
-  .cal-month-view .cal-day-cell.cal-today {
-    background-color: var(--primary-50);
-  }
-  
-  // Better styling for the event dots in month view
-  .cal-month-view .cal-event {
-    border: none;
-    width: 10px;
-    height: 10px;
-  }
-  
-  // Responsive adjustments for mobile
-  @media (max-width: 768px) {
-    .cal-month-view .cal-day-cell {
-      min-height: 60px;
+      transform: scale(1.1);
     }
     
-    .cal-month-view .cal-day-number {
-      font-size: 1rem;
-      margin-right: 5px;
-      margin-top: 5px;
+    &.selected {
+      box-shadow: 0 0 0 2px var(--surface-ground), 0 0 0 4px var(--primary-color);
     }
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .timetable-container {
+    padding: 1rem;
+  }
+  
+  .timetable-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .time-column {
+    width: 70px;
+    min-width: 70px;
+  }
+  
+  .day-column {
+    min-width: 150px;
+  }
+  
+  .schedule-grid::before {
+    background-size: 
+      150px 20px,
+      150px 20px;
+  }
+}
+
+/* Animation for events */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.event-card {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* Debug info */
+.debug-info {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  
+  p {
+    margin: 0;
+    color: #333;
   }
 }

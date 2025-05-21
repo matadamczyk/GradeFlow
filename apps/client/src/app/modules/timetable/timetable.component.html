@@ -1,86 +1,104 @@
 <div class="timetable-container">
-  <div class="calendar-header">
-    <div class="calendar-title">
-      <h2>Class Timetable</h2>
+  <div class="timetable-header">
+    <h1>Class Schedule</h1>
+    <div class="actions">
+      <p-button label="This Week" icon="pi pi-calendar" styleClass="p-button-outlined p-button-primary"></p-button>
     </div>
-    <div class="calendar-controls">
-      <div class="btn-group">
-        <button class="p-button p-button-outlined" 
-                (click)="changeDate(-7)">
-          Previous
-        </button>
-        <button class="p-button p-button-outlined" 
-                (click)="resetDate()">
-          Today
-        </button>
-        <button class="p-button p-button-outlined" 
-                (click)="changeDate(7)">
-          Next
-        </button>
+  </div>
+
+  <div class="schedule-grid">
+    <div class="time-column">
+      <div class="time-header">Time</div>
+      <div *ngFor="let time of timeSlots; let i = index" class="time-cell" [class.current-hour]="isCurrentHour(i)">
+        <span *ngIf="i % 4 === 0">{{ time }}</span>
       </div>
-      <div class="btn-group view-switcher">
-        <button class="p-button p-button-outlined" 
-                [class.active]="view === CalendarView.Day"
-                (click)="changeView(CalendarView.Day)">
-          Day
-        </button>
-        <button class="p-button p-button-outlined"
-                [class.active]="view === CalendarView.Week"
-                (click)="changeView(CalendarView.Week)">
-          Week
-        </button>
-        <button class="p-button p-button-outlined"
-                [class.active]="view === CalendarView.Month"
-                (click)="changeView(CalendarView.Month)">
-          Month
-        </button>
+    </div>
+
+    <div *ngFor="let day of weekDays; let dayIndex = index" class="day-column">
+      <div class="day-header">{{ day }}</div>
+      <div *ngFor="let time of timeSlots; let timeIndex = index" 
+           class="schedule-cell" 
+           [class.current-hour]="isCurrentHour(timeIndex)"
+           [ngClass]="getCellPositionClass(dayIndex + 1, timeIndex)"
+           (click)="openNewEventDialog(dayIndex + 1, timeIndex)">
+        <ng-container *ngFor="let event of getEventsByHour(dayIndex + 1, timeIndex)">
+          <div *ngIf="event.start.getHours() * 4 + Math.floor(event.start.getMinutes() / 15) === timeIndex + 32"
+               class="event-card"
+               [ngStyle]="getEventStyle(event)"
+               (click)="$event.stopPropagation(); openEditEventDialog(event)">
+            <div class="event-title">{{ event.title }}</div>
+            <div class="event-time">
+              {{ event.start | date:'HH:mm' }} - {{ event.end | date:'HH:mm' }}
+            </div>
+            <div class="event-location" *ngIf="event.location">
+              <i class="pi pi-map-marker"></i> {{ event.location }}
+            </div>
+          </div>
+        </ng-container>
       </div>
     </div>
   </div>
 
-  <div class="calendar-content">
-    <div *ngIf="loading" class="loading-spinner">
-      <div class="spinner"></div>
-      <span>Loading...</span>
+  <p-dialog 
+    [(visible)]="displayEventDialog" 
+    [style]="{width: '450px'}" 
+    [header]="isNewEvent ? 'Add New Class' : 'Edit Class'"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    (onHide)="closeEventDialog()">
+    <div class="event-form" *ngIf="selectedEvent">
+      <div class="form-group">
+        <label for="title">Title*</label>
+        <input id="title" type="text" pInputText [(ngModel)]="selectedEvent.title" placeholder="Class Title" class="w-full">
+      </div>
+      
+      <div class="form-group">
+        <label for="description">Description</label>
+        <input id="description" type="text" pInputText [(ngModel)]="selectedEvent.description" placeholder="Description" class="w-full">
+      </div>
+      
+      <div class="grid">
+        <div class="col-6 form-group">
+          <label for="startTime">Start Time</label>
+          <p-calendar id="startTime" [(ngModel)]="selectedEvent.start" [showTime]="true" [timeOnly]="true" [hourFormat]="'24'" [stepMinute]="15" appendTo="body"></p-calendar>
+        </div>
+        
+        <div class="col-6 form-group">
+          <label for="endTime">End Time</label>
+          <p-calendar id="endTime" [(ngModel)]="selectedEvent.end" [showTime]="true" [timeOnly]="true" [hourFormat]="'24'" [stepMinute]="15" appendTo="body"></p-calendar>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input id="location" type="text" pInputText [(ngModel)]="selectedEvent.location" placeholder="Room Number" class="w-full">
+      </div>
+      
+      <div class="form-group">
+        <label for="professor">Professor</label>
+        <input id="professor" type="text" pInputText [(ngModel)]="selectedEvent.professor" placeholder="Professor Name" class="w-full">
+      </div>
+      
+      <div class="form-group">
+        <label for="color">Color</label>
+        <div class="color-selectors">
+          <div *ngFor="let color of colorOptions" 
+               class="color-option" 
+               [ngStyle]="{'background-color': color.secondary, 'border-color': color.primary}"
+               [ngClass]="{'selected': selectedEvent.color!.primary === color.primary}"
+               (click)="selectedEvent.color = color">
+          </div>
+        </div>
+      </div>
     </div>
+    
+    <ng-template pTemplate="footer">
+      <button pButton pRipple type="button" icon="pi pi-times" (click)="closeEventDialog()" label="Cancel" class="p-button-text"></button>
+      <button *ngIf="!isNewEvent && selectedEvent" pButton pRipple type="button" icon="pi pi-trash" (click)="deleteEvent()" label="Delete" class="p-button-danger p-button-text"></button>
+      <button pButton pRipple type="button" icon="pi pi-check" (click)="saveEvent()" label="Save" class="p-button-outlined p-button-primary"></button>
+    </ng-template>
+  </p-dialog>
 
-    <div [ngSwitch]="view">
-      <mwl-calendar-day-view
-        *ngSwitchCase="CalendarView.Day"
-        [viewDate]="viewDate"
-        [events]="events"
-        [refresh]="refreshSubject"
-        [hourSegments]="hourSegments"
-        [hourSegmentHeight]="hourSegmentHeight"
-        [dayStartHour]="dayStartHour"
-        [dayEndHour]="dayEndHour"
-        [locale]="locale"
-        (eventClicked)="eventClicked($event.event)">
-      </mwl-calendar-day-view>
-
-      <mwl-calendar-week-view
-        *ngSwitchCase="CalendarView.Week"
-        [viewDate]="viewDate"
-        [events]="events"
-        [refresh]="refreshSubject"
-        [hourSegments]="hourSegments"
-        [hourSegmentHeight]="hourSegmentHeight"
-        [dayStartHour]="dayStartHour"
-        [dayEndHour]="dayEndHour"
-        [weekStartsOn]="weekStartsOn"
-        [locale]="locale"
-        (eventClicked)="eventClicked($event.event)">
-      </mwl-calendar-week-view>
-
-      <mwl-calendar-month-view
-        *ngSwitchCase="CalendarView.Month"
-        [viewDate]="viewDate"
-        [events]="events"
-        [refresh]="refreshSubject"
-        [locale]="locale"
-        (eventClicked)="eventClicked($event.event)"
-        (dayClicked)="handleDayClick($event)">
-      </mwl-calendar-month-view>
-    </div>
-  </div>
+  <p-toast></p-toast>
 </div>
