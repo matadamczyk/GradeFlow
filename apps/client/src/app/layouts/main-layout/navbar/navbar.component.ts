@@ -34,7 +34,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent implements OnInit {
-  role = signal<string>('notLoggedIn');
+  role = signal<string>('student');
   items = signal<NavbarItem[]>(
     navbarItems[this.role() as keyof typeof navbarItems]
   );
