@@ -72,7 +72,7 @@ export class TimetableComponent implements OnInit {
     return `${hour < 10 ? '0' + hour : hour}:${minute === 0 ? '00' : minute}`;
   });
   
-  weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+  weekDays = ['Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek'];
   Math = Math;
 
   constructor(private messageService: MessageService) {}
@@ -101,8 +101,8 @@ export class TimetableComponent implements OnInit {
       {
         id: 2,
         title: 'Physics',
-        start: this.setDateAndTime(2, 14, 15), // Tuesday, 2:15 PM
-        end: this.setDateAndTime(2, 15, 0),    // Tuesday, 3:00 PM
+        start: this.setDateAndTime(2, 14, 15), 
+        end: this.setDateAndTime(2, 15, 0),    
         color: this.colorOptions[1],
         description: 'Quantum Mechanics',
         location: 'Room 203',
@@ -287,7 +287,7 @@ export class TimetableComponent implements OnInit {
     });
   }
   
-  getEventStyle(event: ClassEvent): any {
+  getEventStyle(event: ClassEvent): { backgroundColor: string; borderLeft: string } {
     return {
       backgroundColor: event.color.secondary,
       borderLeft: `4px solid ${event.color.primary}`,

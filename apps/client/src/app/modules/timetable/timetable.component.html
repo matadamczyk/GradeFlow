@@ -1,14 +1,14 @@
 <div class="timetable-container">
   <div class="timetable-header">
-    <h1>Class Schedule</h1>
+    <h1>Plan zajęć</h1>
     <div class="actions">
-      <p-button label="This Week" icon="pi pi-calendar" styleClass="p-button-outlined p-button-primary"></p-button>
+      <p-button label="Bieżący tydzień" icon="pi pi-calendar" styleClass="p-button-outlined p-button-primary"></p-button>
     </div>
   </div>
 
   <div class="schedule-grid">
     <div class="time-column">
-      <div class="time-header">Time</div>
+      <div class="time-header"></div>
       <div *ngFor="let time of timeSlots; let i = index" class="time-cell" [class.current-hour]="isCurrentHour(i)">
         <span *ngIf="i % 4 === 0">{{ time }}</span>
       </div>
