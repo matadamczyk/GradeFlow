@@ -1,21 +1,20 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { Observable } from 'rxjs';
+import { TimetableEntry, WeeklyTimetable, WorkDay } from '../../core/models';
 
+import { BadgeModule } from 'primeng/badge';
+import { ButtonModule } from 'primeng/button';
 // PrimeNG imports
 import { CardModule } from 'primeng/card';
+import { CommonModule } from '@angular/common';
+import { DividerModule } from 'primeng/divider';
+import { Observable } from 'rxjs';
+import { PanelModule } from 'primeng/panel';
+import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
-import { SkeletonModule } from 'primeng/skeleton';
-import { BadgeModule } from 'primeng/badge';
-import { TooltipModule } from 'primeng/tooltip';
-import { DividerModule } from 'primeng/divider';
-import { PanelModule } from 'primeng/panel';
-
 // Core imports
 import { TimetableService } from '../../core/services';
-import { WeeklyTimetable, TimetableEntry, WorkDay } from '../../core/models';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-timetable',
