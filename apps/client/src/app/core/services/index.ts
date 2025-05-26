@@ -1,2 +1,7 @@
 export * from './loading.service';
 export * from './theme.service';
+export * from './initial-loading.service';
+export * from './mock-data.service';
+export * from './auth.service';
+export * from './grades.service';
+export * from './timetable.service';
