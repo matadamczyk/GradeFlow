@@ -1,104 +1,246 @@
 <div class="timetable-container">
+  <!-- Header Section -->
   <div class="timetable-header">
-    <h1>Plan zajęć</h1>
-    <div class="actions">
-      <p-button label="Bieżący tydzień" icon="pi pi-calendar" styleClass="p-button-outlined p-button-primary"></p-button>
-    </div>
+    <h1 class="page-title">
+      <i class="pi pi-calendar"></i>
+      Plan Zajęć
+    </h1>
+    <p class="page-subtitle">Twój tygodniowy rozkład lekcji</p>
+    <p-button 
+      icon="pi pi-refresh" 
+      label="Odśwież" 
+      (onClick)="refreshData()"
+      [loading]="isLoading"
+      severity="secondary"
+      size="small">
+    </p-button>
   </div>
 
-  <div class="schedule-grid">
-    <div class="time-column">
-      <div class="time-header"></div>
-      <div *ngFor="let time of timeSlots; let i = index" class="time-cell" [class.current-hour]="isCurrentHour(i)">
-        <span *ngIf="i % 4 === 0">{{ time }}</span>
+  <!-- Loading Skeletons -->
+  <div *ngIf="isLoading" class="loading-content">
+    <div class="grid">
+      <div class="col-12 md:col-6">
+        <p-card header="Aktualna Lekcja">
+          <p-skeleton height="4rem"></p-skeleton>
+        </p-card>
       </div>
-    </div>
-
-    <div *ngFor="let day of weekDays; let dayIndex = index" class="day-column">
-      <div class="day-header">{{ day }}</div>
-      <div *ngFor="let time of timeSlots; let timeIndex = index" 
-           class="schedule-cell" 
-           [class.current-hour]="isCurrentHour(timeIndex)"
-           [ngClass]="getCellPositionClass(dayIndex + 1, timeIndex)"
-           (click)="openNewEventDialog(dayIndex + 1, timeIndex)">
-        <ng-container *ngFor="let event of getEventsByHour(dayIndex + 1, timeIndex)">
-          <div *ngIf="event.start.getHours() * 4 + Math.floor(event.start.getMinutes() / 15) === timeIndex + 32"
-               class="event-card"
-               [ngStyle]="getEventStyle(event)"
-               (click)="$event.stopPropagation(); openEditEventDialog(event)">
-            <div class="event-title">{{ event.title }}</div>
-            <div class="event-time">
-              {{ event.start | date:'HH:mm' }} - {{ event.end | date:'HH:mm' }}
-            </div>
-            <div class="event-location" *ngIf="event.location">
-              <i class="pi pi-map-marker"></i> {{ event.location }}
-            </div>
-          </div>
-        </ng-container>
-      </div>
-    </div>
-  </div>
-
-  <p-dialog 
-    [(visible)]="displayEventDialog" 
-    [style]="{width: '450px'}" 
-    [header]="isNewEvent ? 'Add New Class' : 'Edit Class'"
-    [modal]="true"
-    [draggable]="false"
-    [resizable]="false"
-    (onHide)="closeEventDialog()">
-    <div class="event-form" *ngIf="selectedEvent">
-      <div class="form-group">
-        <label for="title">Title*</label>
-        <input id="title" type="text" pInputText [(ngModel)]="selectedEvent.title" placeholder="Class Title" class="w-full">
-      </div>
-      
-      <div class="form-group">
-        <label for="description">Description</label>
-        <input id="description" type="text" pInputText [(ngModel)]="selectedEvent.description" placeholder="Description" class="w-full">
-      </div>
-      
-      <div class="grid">
-        <div class="col-6 form-group">
-          <label for="startTime">Start Time</label>
-          <p-calendar id="startTime" [(ngModel)]="selectedEvent.start" [showTime]="true" [timeOnly]="true" [hourFormat]="'24'" [stepMinute]="15" appendTo="body"></p-calendar>
-        </div>
-        
-        <div class="col-6 form-group">
-          <label for="endTime">End Time</label>
-          <p-calendar id="endTime" [(ngModel)]="selectedEvent.end" [showTime]="true" [timeOnly]="true" [hourFormat]="'24'" [stepMinute]="15" appendTo="body"></p-calendar>
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label for="location">Location</label>
-        <input id="location" type="text" pInputText [(ngModel)]="selectedEvent.location" placeholder="Room Number" class="w-full">
-      </div>
-      
-      <div class="form-group">
-        <label for="professor">Professor</label>
-        <input id="professor" type="text" pInputText [(ngModel)]="selectedEvent.professor" placeholder="Professor Name" class="w-full">
-      </div>
-      
-      <div class="form-group">
-        <label for="color">Color</label>
-        <div class="color-selectors">
-          <div *ngFor="let color of colorOptions" 
-               class="color-option" 
-               [ngStyle]="{'background-color': color.secondary, 'border-color': color.primary}"
-               [ngClass]="{'selected': selectedEvent.color!.primary === color.primary}"
-               (click)="selectedEvent.color = color">
-          </div>
-        </div>
+      <div class="col-12 md:col-6">
+        <p-card header="Następna Lekcja">
+          <p-skeleton height="4rem"></p-skeleton>
+        </p-card>
       </div>
     </div>
     
-    <ng-template pTemplate="footer">
-      <button pButton pRipple type="button" icon="pi pi-times" (click)="closeEventDialog()" label="Cancel" class="p-button-text"></button>
-      <button *ngIf="!isNewEvent && selectedEvent" pButton pRipple type="button" icon="pi pi-trash" (click)="deleteEvent()" label="Delete" class="p-button-danger p-button-text"></button>
-      <button pButton pRipple type="button" icon="pi pi-check" (click)="saveEvent()" label="Save" class="p-button-outlined p-button-primary"></button>
-    </ng-template>
-  </p-dialog>
+    <div class="grid mt-4">
+      <div class="col-12">
+        <p-card header="Plan Tygodniowy">
+          <p-skeleton height="20rem"></p-skeleton>
+        </p-card>
+      </div>
+    </div>
+  </div>
 
-  <p-toast></p-toast>
+  <!-- Main Content -->
+  <div *ngIf="!isLoading" class="timetable-content">
+    
+    <!-- Current and Next Lesson Cards -->
+    <div class="grid">
+      <!-- Current Lesson -->
+      <div class="col-12 md:col-6">
+        <p-card styleClass="current-lesson-card">
+          <ng-template pTemplate="header">
+            <div class="card-header current">
+              <h3>
+                <i class="pi pi-play-circle"></i>
+                Aktualna Lekcja
+              </h3>
+            </div>
+          </ng-template>
+          
+          <div *ngIf="currentLesson$ | async as currentLesson; else noCurrentLesson">
+            <div class="lesson-info">
+              <div class="lesson-subject">
+                <p-tag 
+                  [value]="currentLesson.teacherSubject.subject.name" 
+                  [style]="{'background-color': getSubjectColor(currentLesson.teacherSubject.subject.name)}"
+                  styleClass="subject-tag">
+                </p-tag>
+              </div>
+              
+              <div class="lesson-details">
+                <h4>{{ currentLesson.teacherSubject.subject.name }}</h4>
+                <p class="teacher-name">
+                  <i class="pi pi-user"></i>
+                  {{ currentLesson.teacherSubject.teacher.name }} {{ currentLesson.teacherSubject.teacher.lastname }}
+                </p>
+                <p class="lesson-time">
+                  <i class="pi pi-clock"></i>
+                  {{ currentLesson.startTime }} - {{ currentLesson.endTime }}
+                </p>
+                <p class="lesson-room" *ngIf="currentLesson.room">
+                  <i class="pi pi-map-marker"></i>
+                  Sala {{ currentLesson.room }}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #noCurrentLesson>
+            <div class="empty-state">
+              <i class="pi pi-pause-circle"></i>
+              <p>Brak aktualnej lekcji</p>
+              <small>Sprawdź plan na kolejne godziny</small>
+            </div>
+          </ng-template>
+        </p-card>
+      </div>
+
+      <!-- Next Lesson -->
+      <div class="col-12 md:col-6">
+        <p-card styleClass="next-lesson-card">
+          <ng-template pTemplate="header">
+            <div class="card-header next">
+              <h3>
+                <i class="pi pi-step-forward"></i>
+                Następna Lekcja
+              </h3>
+            </div>
+          </ng-template>
+          
+          <div *ngIf="nextLesson$ | async as nextLesson; else noNextLesson">
+            <div class="lesson-info">
+              <div class="lesson-subject">
+                <p-tag 
+                  [value]="nextLesson.teacherSubject.subject.name" 
+                  [style]="{'background-color': getSubjectColor(nextLesson.teacherSubject.subject.name)}"
+                  styleClass="subject-tag">
+                </p-tag>
+              </div>
+              
+              <div class="lesson-details">
+                <h4>{{ nextLesson.teacherSubject.subject.name }}</h4>
+                <p class="teacher-name">
+                  <i class="pi pi-user"></i>
+                  {{ nextLesson.teacherSubject.teacher.name }} {{ nextLesson.teacherSubject.teacher.lastname }}
+                </p>
+                <p class="lesson-time">
+                  <i class="pi pi-clock"></i>
+                  {{ nextLesson.startTime }} - {{ nextLesson.endTime }}
+                </p>
+                <p class="lesson-room" *ngIf="nextLesson.room">
+                  <i class="pi pi-map-marker"></i>
+                  Sala {{ nextLesson.room }}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <ng-template #noNextLesson>
+            <div class="empty-state">
+              <i class="pi pi-check-circle"></i>
+              <p>Brak kolejnych lekcji</p>
+              <small>To wszystko na dziś!</small>
+            </div>
+          </ng-template>
+        </p-card>
+      </div>
+    </div>
+
+    <!-- Weekly Timetable -->
+    <div class="grid mt-4">
+      <div class="col-12">
+        <p-card header="Plan Tygodniowy" styleClass="weekly-timetable-card">
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h3>
+                <i class="pi pi-table"></i>
+                Plan Tygodniowy
+              </h3>
+            </div>
+          </ng-template>
+
+          <div *ngIf="weeklyTimetable$ | async as weeklyTimetable">
+            <div class="timetable-grid">
+              <!-- Header Row -->
+              <div class="timetable-header-row">
+                <div class="time-header">Godzina</div>
+                <div 
+                  *ngFor="let day of weekDays" 
+                  class="day-header"
+                  [class.today]="isToday(day.key)">
+                  <span class="day-full">{{ day.label }}</span>
+                  <span class="day-short">{{ day.short }}</span>
+                </div>
+              </div>
+
+              <!-- Time Slots -->
+              <div class="timetable-body">
+                <div 
+                  *ngFor="let slot of timeSlots; let i = index" 
+                  class="time-row"
+                  [class.current-time]="isCurrentTimeSlot(slot.period)">
+                  
+                  <!-- Time Column -->
+                  <div class="time-cell">
+                    <div class="time-slot">
+                      <span class="period-number">{{ slot.period }}</span>
+                      <span class="time-range">{{ slot.start }} - {{ slot.end }}</span>
+                    </div>
+                  </div>
+
+                  <!-- Day Columns -->
+                  <div 
+                    *ngFor="let day of weekDays" 
+                    class="lesson-cell"
+                    [class.today]="isToday(day.key)"
+                    [class.current-time]="isCurrentTimeSlot(slot.period) && isToday(day.key)">
+                    
+                    <div 
+                      *ngIf="getLessonForDayAndPeriod(weeklyTimetable, day.key, slot.period) as lesson; else emptySlot"
+                      class="lesson-item"
+                      [style]="{'border-left-color': getSubjectColor(lesson.teacherSubject.subject.name)}"
+                      [pTooltip]="lesson.teacherSubject.teacher.name + ' ' + lesson.teacherSubject.teacher.lastname + (lesson.room ? ' - Sala ' + lesson.room : '')"
+                      tooltipPosition="top">
+                      
+                      <div class="lesson-content">
+                        <div class="subject-name">{{ lesson.teacherSubject.subject.name }}</div>
+                        <div class="teacher-short">{{ lesson.teacherSubject.teacher.lastname }}</div>
+                        <div class="room-info" *ngIf="lesson.room">S. {{ lesson.room }}</div>
+                      </div>
+                    </div>
+
+                    <ng-template #emptySlot>
+                      <div class="empty-slot">
+                        <span>-</span>
+                      </div>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Legend -->
+            <p-divider></p-divider>
+            <div class="timetable-legend">
+              <h4>Legenda:</h4>
+              <div class="legend-items">
+                <div class="legend-item">
+                  <div class="legend-color current-indicator"></div>
+                  <span>Aktualna godzina</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color today-indicator"></div>
+                  <span>Dzisiejszy dzień</span>
+                </div>
+                <div class="legend-item">
+                  <div class="legend-color subject-indicator"></div>
+                  <span>Przedmioty (różne kolory)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </div>
+  </div>
 </div>
