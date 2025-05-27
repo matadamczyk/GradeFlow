@@ -9,7 +9,7 @@ export default defineConfig(() => ({
   cacheDir: '../../node_modules/.vite/apps/client',
   plugins: [
     angular({
-      tsconfig: 'apps/client/tsconfig.app.json'
+      tsconfig: 'apps/client/tsconfig.app.json',
     }),
     nxViteTsPaths(),
     nxCopyAssetsPlugin(['*.md']),
