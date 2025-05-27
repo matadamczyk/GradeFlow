@@ -50,10 +50,9 @@ interface MockTimetableEntry {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class MockDataService {
-
   // Mock Subjects
   private mockSubjects: MockSubject[] = [
     { id: 1, name: 'Matematyka' },
@@ -65,7 +64,7 @@ export class MockDataService {
     { id: 7, name: 'Chemia' },
     { id: 8, name: 'Fizyka' },
     { id: 9, name: 'Informatyka' },
-    { id: 10, name: 'Wychowanie Fizyczne' }
+    { id: 10, name: 'Wychowanie Fizyczne' },
   ];
 
   // Mock Teachers
@@ -79,7 +78,7 @@ export class MockDataService {
     { id: 7, name: 'Agnieszka', lastname: 'Lewandowska' },
     { id: 8, name: 'Michał', lastname: 'Zieliński' },
     { id: 9, name: 'Magdalena', lastname: 'Szymańska' },
-    { id: 10, name: 'Robert', lastname: 'Woźniak' }
+    { id: 10, name: 'Robert', lastname: 'Woźniak' },
   ];
 
   // Mock Classes
@@ -89,16 +88,41 @@ export class MockDataService {
     { id: 3, letter: 'A', number: 2, tutor: this.mockTeachers[2] },
     { id: 4, letter: 'B', number: 2, tutor: this.mockTeachers[3] },
     { id: 5, letter: 'A', number: 3, tutor: this.mockTeachers[4] },
-    { id: 6, letter: 'B', number: 3, tutor: this.mockTeachers[5] }
+    { id: 6, letter: 'B', number: 3, tutor: this.mockTeachers[5] },
   ];
 
   // Mock Students
   private mockStudents: MockStudent[] = [
-    { id: 1, name: 'Adam', lastname: 'Nowicki', studentClass: this.mockClasses[0] },
-    { id: 2, name: 'Ewa', lastname: 'Kowalska', studentClass: this.mockClasses[0] },
-    { id: 3, name: 'Paweł', lastname: 'Wiśniewski', studentClass: this.mockClasses[1] },
-    { id: 4, name: 'Anna', lastname: 'Dąbrowska', studentClass: this.mockClasses[1] },
-    { id: 5, name: 'Marcin', lastname: 'Lewandowski', studentClass: this.mockClasses[2] }
+    {
+      id: 1,
+      name: 'Adam',
+      lastname: 'Nowicki',
+      studentClass: this.mockClasses[0],
+    },
+    {
+      id: 2,
+      name: 'Ewa',
+      lastname: 'Kowalska',
+      studentClass: this.mockClasses[0],
+    },
+    {
+      id: 3,
+      name: 'Paweł',
+      lastname: 'Wiśniewski',
+      studentClass: this.mockClasses[1],
+    },
+    {
+      id: 4,
+      name: 'Anna',
+      lastname: 'Dąbrowska',
+      studentClass: this.mockClasses[1],
+    },
+    {
+      id: 5,
+      name: 'Marcin',
+      lastname: 'Lewandowski',
+      studentClass: this.mockClasses[2],
+    },
   ];
 
   // Mock Grades
@@ -111,7 +135,7 @@ export class MockDataService {
       grade_weight: 3,
       comment: 'Bardzo dobra praca klasowa',
       subjectName: 'Matematyka',
-      teacherName: 'Anna Kowalska'
+      teacherName: 'Anna Kowalska',
     },
     {
       id: 2,
@@ -121,7 +145,7 @@ export class MockDataService {
       grade_weight: 2,
       comment: 'Doskonała odpowiedź ustna',
       subjectName: 'Matematyka',
-      teacherName: 'Anna Kowalska'
+      teacherName: 'Anna Kowalska',
     },
     {
       id: 3,
@@ -131,7 +155,7 @@ export class MockDataService {
       grade_weight: 1,
       comment: 'Zadanie domowe',
       subjectName: 'Język Polski',
-      teacherName: 'Jan Nowak'
+      teacherName: 'Jan Nowak',
     },
     {
       id: 4,
@@ -141,7 +165,7 @@ export class MockDataService {
       grade_weight: 2,
       comment: 'Sprawdzian z lektury',
       subjectName: 'Język Polski',
-      teacherName: 'Jan Nowak'
+      teacherName: 'Jan Nowak',
     },
     {
       id: 5,
@@ -151,7 +175,7 @@ export class MockDataService {
       grade_weight: 3,
       comment: 'Prezentacja grupowa',
       subjectName: 'Język Angielski',
-      teacherName: 'Maria Wiśniewska'
+      teacherName: 'Maria Wiśniewska',
     },
     {
       id: 6,
@@ -161,7 +185,7 @@ export class MockDataService {
       grade_weight: 1,
       comment: 'Kartkówka',
       subjectName: 'Historia',
-      teacherName: 'Piotr Wójcik'
+      teacherName: 'Piotr Wójcik',
     },
     {
       id: 7,
@@ -171,8 +195,8 @@ export class MockDataService {
       grade_weight: 2,
       comment: 'Test z geografii',
       subjectName: 'Geografia',
-      teacherName: 'Katarzyna Kowalczyk'
-    }
+      teacherName: 'Katarzyna Kowalczyk',
+    },
   ];
 
   // Mock Timetable
@@ -186,7 +210,7 @@ export class MockDataService {
       day: 'MON',
       startTime: '08:00',
       endTime: '08:45',
-      room: '101'
+      room: '101',
     },
     {
       lesson_id: 2,
@@ -197,7 +221,7 @@ export class MockDataService {
       day: 'MON',
       startTime: '08:55',
       endTime: '09:40',
-      room: '102'
+      room: '102',
     },
     {
       lesson_id: 3,
@@ -208,7 +232,7 @@ export class MockDataService {
       day: 'MON',
       startTime: '09:50',
       endTime: '10:35',
-      room: '103'
+      room: '103',
     },
     {
       lesson_id: 4,
@@ -219,7 +243,7 @@ export class MockDataService {
       day: 'MON',
       startTime: '10:45',
       endTime: '11:30',
-      room: '104'
+      room: '104',
     },
     {
       lesson_id: 5,
@@ -230,7 +254,7 @@ export class MockDataService {
       day: 'MON',
       startTime: '11:40',
       endTime: '12:25',
-      room: '105'
+      room: '105',
     },
     // Tuesday
     {
@@ -242,7 +266,7 @@ export class MockDataService {
       day: 'TUE',
       startTime: '08:00',
       endTime: '08:45',
-      room: '101'
+      room: '101',
     },
     {
       lesson_id: 7,
@@ -253,7 +277,7 @@ export class MockDataService {
       day: 'TUE',
       startTime: '08:55',
       endTime: '09:40',
-      room: '201'
+      room: '201',
     },
     {
       lesson_id: 8,
@@ -264,8 +288,8 @@ export class MockDataService {
       day: 'TUE',
       startTime: '09:50',
       endTime: '10:35',
-      room: '301'
-    }
+      room: '301',
+    },
   ];
 
   // Getters for mock data
@@ -295,15 +319,17 @@ export class MockDataService {
 
   // Helper methods
   getStudentById(id: number): MockStudent | undefined {
-    return this.mockStudents.find(student => student.id === id);
+    return this.mockStudents.find((student) => student.id === id);
   }
 
   getGradesByStudent(studentId: number): MockGrade[] {
-    return this.mockGrades.filter(grade => grade.student.id === studentId);
+    return this.mockGrades.filter((grade) => grade.student.id === studentId);
   }
 
   getTimetableByClass(classId: number): MockTimetableEntry[] {
-    return this.mockTimetable.filter(entry => entry.studentClass.id === classId);
+    return this.mockTimetable.filter(
+      (entry) => entry.studentClass.id === classId
+    );
   }
 
   getSubjectGrades(studentId: number) {
@@ -311,7 +337,7 @@ export class MockDataService {
     const subjectMap = new Map<string, MockGrade[]>();
 
     // Group grades by subject
-    studentGrades.forEach(grade => {
+    studentGrades.forEach((grade) => {
       if (!subjectMap.has(grade.subjectName)) {
         subjectMap.set(grade.subjectName, []);
       }
@@ -320,16 +346,24 @@ export class MockDataService {
 
     // Calculate averages for each subject
     return Array.from(subjectMap.entries()).map(([subjectName, grades]) => {
-      const average = grades.reduce((sum, grade) => sum + grade.grade_value, 0) / grades.length;
-      const weightedSum = grades.reduce((sum, grade) => sum + (grade.grade_value * grade.grade_weight), 0);
-      const totalWeight = grades.reduce((sum, grade) => sum + grade.grade_weight, 0);
+      const average =
+        grades.reduce((sum, grade) => sum + grade.grade_value, 0) /
+        grades.length;
+      const weightedSum = grades.reduce(
+        (sum, grade) => sum + grade.grade_value * grade.grade_weight,
+        0
+      );
+      const totalWeight = grades.reduce(
+        (sum, grade) => sum + grade.grade_weight,
+        0
+      );
       const weightedAverage = weightedSum / totalWeight;
 
       return {
         subjectName,
         grades,
         average: Math.round(average * 100) / 100,
-        weightedAverage: Math.round(weightedAverage * 100) / 100
+        weightedAverage: Math.round(weightedAverage * 100) / 100,
       };
     });
   }
@@ -341,10 +375,16 @@ export class MockDataService {
   getOverallAverage(studentId: number): number {
     const grades = this.getGradesByStudent(studentId);
     if (grades.length === 0) return 0;
-    
-    const weightedSum = grades.reduce((sum, grade) => sum + (grade.grade_value * grade.grade_weight), 0);
-    const totalWeight = grades.reduce((sum, grade) => sum + grade.grade_weight, 0);
-    
+
+    const weightedSum = grades.reduce(
+      (sum, grade) => sum + grade.grade_value * grade.grade_weight,
+      0
+    );
+    const totalWeight = grades.reduce(
+      (sum, grade) => sum + grade.grade_weight,
+      0
+    );
+
     return Math.round((weightedSum / totalWeight) * 100) / 100;
   }
-} 
+}
