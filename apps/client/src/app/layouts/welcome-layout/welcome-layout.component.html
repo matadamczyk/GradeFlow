@@ -19,14 +19,37 @@
     class="buttons-container"
     [ngClass]="{ visible: displayedTitle.length === title.length }"
   >
-    <div class="new-user-section">
-      <span class="new-user-label">Jesteś tu nowy?</span>
-      <p-button
-        label="Poproś o dostęp"
-        icon="pi pi-user-plus"
-        styleClass="p-button-primary access-button"
-        routerLink="/register"
-      ></p-button>
+    <div class="auth-buttons-section">
+      <div class="new-user-section">
+        <span class="new-user-label">Jesteś tu nowy?</span>
+        <p-button
+          label="Sprawdź demo"
+          icon="pi pi-eye"
+          styleClass="p-button-outlined access-button"
+          (onClick)="openLoginDialog()"
+        ></p-button>
+        <span class="new-user-label">lub</span>
+        <p-button
+          label="Poproś o dostęp"
+          icon="pi pi-user-plus"
+          (onClick)="openContactForm()"
+        ></p-button>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Dialog logowania -->
+<p-dialog
+  [(visible)]="displayDialog"
+  [modal]="true"
+  [draggable]="false"
+  [resizable]="false"
+  [style]="{ width: '90vw', maxWidth: '450px' }"
+  [breakpoints]="{ '960px': '80vw', '640px': '90vw' }"
+  styleClass="auth-dialog"
+>
+  <ng-template pTemplate="content">
+    <app-sign-in (loginSuccess)="onLoginSuccess()"></app-sign-in>
+  </ng-template>
+</p-dialog>

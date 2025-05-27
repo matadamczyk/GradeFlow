@@ -1,90 +1,211 @@
-<div class="h-screen px-4 py-8 md:px-6 lg:px-8 text-center">
-  <div class="mb-3 font-bold text-3xl">
-    <span class="text-900">GradeFlow - </span>
-    <span class="text-primary">Nowoczesny Dziennik Elektroniczny</span>
+<div class="about-container">
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <i class="pi pi-graduation-cap"></i>
+        O GradeFlow
+      </h1>
+      <p class="hero-subtitle">
+        Nowoczesny system zarządzania ocenami i postępami w nauce
+      </p>
+    </div>
   </div>
-  <div class="text-700 mb-6">
-    Kompleksowe narzędzie do zarządzania nauką i komunikacją między uczniami,
-    nauczycielami i rodzicami.
-  </div>
-  <div class="grid">
-    <div class="col-12 md:col-4 mb-4 px-5">
-      <span
-        class="p-3 shadow-2 mb-3 inline-block surface-section"
-        style="border-radius: 10px"
-      >
-        <i class="pi pi-calendar text-4xl text-primary"></i>
-      </span>
-      <div class="text-900 text-xl mb-3 font-medium">Plany Zajęć</div>
-      <span class="text-700 line-height-3"
-        >Prosty dostęp do aktualnego planu lekcji, zastępstw oraz wydarzeń
-        szkolnych w przejrzystym kalendarzu.</span
-      >
-    </div>
-    <div class="col-12 md:col-4 mb-4 px-5">
-      <span
-        class="p-3 shadow-2 mb-3 inline-block surface-section"
-        style="border-radius: 10px"
-      >
-        <i class="pi pi-chart-bar text-4xl text-primary"></i>
-      </span>
-      <div class="text-900 text-xl mb-3 font-medium">Statystyki i Analizy</div>
-      <span class="text-700 line-height-3"
-        >Szczegółowe statystyki postępów w nauce, średnie ocen i porównania
-        wyników w czasie rzeczywistym.</span
-      >
-    </div>
-    <div class="col-12 md:col-4 mb-4 px-5">
-      <span
-        class="p-3 shadow-2 mb-3 inline-block surface-section"
-        style="border-radius: 10px"
-      >
-        <i class="pi pi-check-square text-4xl text-primary"></i>
-      </span>
-      <div class="text-900 text-xl mb-3 font-medium">Sprawdziany i Zadania</div>
-      <span class="text-700 line-height-3"
-        >Przejrzysty harmonogram nadchodzących sprawdzianów, zadań domowych i
-        projektów z powiadomieniami.</span
-      >
-    </div>
-    <div class="col-12 md:col-4 mb-4 px-5">
-      <span
-        class="p-3 shadow-2 mb-3 inline-block surface-section"
-        style="border-radius: 10px"
-      >
-        <i class="pi pi-comments text-4xl text-primary"></i>
-      </span>
-      <div class="text-900 text-xl mb-3 font-medium">Komunikacja</div>
-      <span class="text-700 line-height-3"
-        >Bezpośredni kontakt między uczniami, nauczycielami i rodzicami,
-        zapewniający sprawny przepływ informacji.</span
-      >
-    </div>
-    <div class="col-12 md:col-4 mb-4 px-5">
-      <span
-        class="p-3 shadow-2 mb-3 inline-block surface-section"
-        style="border-radius: 10px"
-      >
-        <i class="pi pi-mobile text-4xl text-primary"></i>
-      </span>
-      <div class="text-900 text-xl mb-3 font-medium">Dostęp Mobilny</div>
-      <span class="text-700 line-height-3"
-        >Pełna funkcjonalność na wszystkich urządzeniach - komputerach,
-        tabletach i telefonach, zawsze pod ręką.</span
-      >
-    </div>
-    <div class="col-12 md:col-4 md:mb-4 mb-0 px-3">
-      <span
-        class="p-3 shadow-2 mb-3 inline-block surface-section"
-        style="border-radius: 10px"
-      >
-        <i class="pi pi-lock text-4xl text-primary"></i>
-      </span>
-      <div class="text-900 text-xl mb-3 font-medium">Bezpieczeństwo Danych</div>
-      <span class="text-700 line-height-3"
-        >Zaawansowane mechanizmy ochrony prywatności i poufności danych
-        edukacyjnych zgodne z wymogami RODO.</span
-      >
+
+  <div class="content-section">
+    <div class="grid">
+      <!-- Mission Section -->
+      <div class="col-12 lg:col-6">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2><i class="pi pi-heart"></i> Nasza Misja</h2>
+            </div>
+          </ng-template>
+
+          <p>
+            GradeFlow to innowacyjna platforma edukacyjna, która ma na celu
+            uproszczenie zarządzania ocenami i śledzenia postępów w nauce.
+            Naszym celem jest stworzenie intuicyjnego narzędzia, które pomoże
+            uczniom, nauczycielom i rodzicom w efektywnej komunikacji i
+            monitorowaniu wyników edukacyjnych.
+          </p>
+
+          <p>
+            Wierzymy, że technologia może znacząco poprawić jakość edukacji,
+            dlatego tworzymy rozwiązania, które są nie tylko funkcjonalne, ale
+            także przyjazne użytkownikowi i dostępne dla wszystkich.
+          </p>
+        </p-card>
+      </div>
+
+      <!-- Features Section -->
+      <div class="col-12 lg:col-6">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2><i class="pi pi-star"></i> Kluczowe Funkcje</h2>
+            </div>
+          </ng-template>
+
+          <div class="features-list">
+            <div class="feature-item">
+              <i class="pi pi-chart-line feature-icon"></i>
+              <div>
+                <h4>Śledzenie Postępów</h4>
+                <p>Szczegółowe analizy i wykresy pokazujące rozwój ucznia</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <i class="pi pi-calendar feature-icon"></i>
+              <div>
+                <h4>Plan Zajęć</h4>
+                <p>Przejrzysty kalendarz z harmonogramem lekcji</p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <i class="pi pi-users feature-icon"></i>
+              <div>
+                <h4>Współpraca</h4>
+                <p>
+                  Łatwa komunikacja między uczniami, nauczycielami i rodzicami
+                </p>
+              </div>
+            </div>
+
+            <div class="feature-item">
+              <i class="pi pi-mobile feature-icon"></i>
+              <div>
+                <h4>Responsywność</h4>
+                <p>Dostęp z każdego urządzenia - komputer, tablet, telefon</p>
+              </div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+
+      <!-- Technology Section -->
+      <div class="col-12">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2><i class="pi pi-cog"></i> Technologie</h2>
+            </div>
+          </ng-template>
+
+          <div class="grid">
+            <div class="col-12 md:col-6">
+              <h3>Frontend</h3>
+              <div class="tech-stack">
+                <p-tag
+                  value="Angular 18"
+                  severity="danger"
+                  [rounded]="true"
+                ></p-tag>
+                <p-tag
+                  value="TypeScript"
+                  severity="info"
+                  [rounded]="true"
+                ></p-tag>
+                <p-tag
+                  value="PrimeNG"
+                  severity="success"
+                  [rounded]="true"
+                ></p-tag>
+                <p-tag value="RxJS" severity="warn" [rounded]="true"></p-tag>
+                <p-tag
+                  value="Chart.js"
+                  severity="secondary"
+                  [rounded]="true"
+                ></p-tag>
+              </div>
+            </div>
+
+            <div class="col-12 md:col-6">
+              <h3>Backend</h3>
+              <div class="tech-stack">
+                <p-tag
+                  value="Spring Boot"
+                  severity="success"
+                  [rounded]="true"
+                ></p-tag>
+                <p-tag
+                  value="Java 17"
+                  severity="danger"
+                  [rounded]="true"
+                ></p-tag>
+                <p-tag
+                  value="JPA/Hibernate"
+                  severity="info"
+                  [rounded]="true"
+                ></p-tag>
+                <p-tag
+                  value="PostgreSQL"
+                  severity="info"
+                  [rounded]="true"
+                ></p-tag>
+                <p-tag value="Maven" severity="warn" [rounded]="true"></p-tag>
+              </div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+
+      <!-- Team Section -->
+      <div class="col-12">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2><i class="pi pi-users"></i> Zespół Projektowy</h2>
+            </div>
+          </ng-template>
+
+          <div class="team-info">
+            <div class="project-details">
+              <h3>Projekt Inżynierii Oprogramowania</h3>
+              <p>
+                GradeFlow został stworzony jako projekt zaliczeniowy z
+                przedmiotu Inżynieria Oprogramowania na Akademii
+                Górniczo-Hutniczej. Projekt realizowany jest w ramach VI
+                semestru studiów informatycznych.
+              </p>
+
+              <div class="project-stats">
+                <div class="stat-item">
+                  <i class="pi pi-calendar"></i>
+                  <span>Semestr VI</span>
+                </div>
+                <div class="stat-item">
+                  <i class="pi pi-building"></i>
+                  <span>Akademia Górniczo-Hutnicza</span>
+                </div>
+                <div class="stat-item">
+                  <i class="pi pi-book"></i>
+                  <span>Inżynieria Oprogramowania</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </p-card>
+      </div>
+
+      <!-- Contact CTA -->
+      <div class="col-12">
+        <p-card styleClass="contact-cta">
+          <div class="cta-content">
+            <h2>Masz pytania?</h2>
+            <p>Skontaktuj się z nami, aby dowiedzieć się więcej o GradeFlow</p>
+            <p-button
+              label="Skontaktuj się"
+              icon="pi pi-envelope"
+              routerLink="/contact"
+              styleClass="p-button-lg"
+            >
+            </p-button>
+          </div>
+        </p-card>
+      </div>
     </div>
   </div>
 </div>

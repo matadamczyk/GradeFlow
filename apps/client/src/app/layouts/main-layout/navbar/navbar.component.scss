@@ -41,3 +41,15 @@
     }
   }
 }
+
+:host ::ng-deep .auth-dialog {
+  .p-dialog-content {
+    padding: 0 !important;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .p-dialog-header {
+    display: none;
+  }
+}

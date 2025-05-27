@@ -1,0 +1,251 @@
+.about-container {
+  min-height: 100vh;
+  background: var(--surface-ground);
+}
+
+// Hero Section
+.hero-section {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-color-text) 100%
+  );
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+
+      i {
+        font-size: 3rem;
+      }
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      margin: 0;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+  }
+}
+
+// Content Section
+.content-section {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// Card Headers
+.card-header {
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    i {
+      color: var(--primary-color);
+      font-size: 1.25rem;
+    }
+  }
+}
+
+// Features List
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+
+    .feature-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 12px;
+      background: linear-gradient(
+        135deg,
+        var(--primary-color) 0%,
+        var(--primary-color-text) 100%
+      );
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    div {
+      h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-color-secondary);
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+// Technology Stack
+.tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+// Team Info
+.team-info {
+  .project-details {
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-color);
+      margin: 0 0 1rem 0;
+    }
+
+    p {
+      color: var(--text-color-secondary);
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .project-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+
+      .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        i {
+          color: var(--primary-color);
+          font-size: 1.125rem;
+        }
+
+        span {
+          font-weight: 500;
+          color: var(--text-color);
+        }
+      }
+    }
+  }
+}
+
+// Contact CTA
+:host ::ng-deep .contact-cta {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-color-text) 100%
+  );
+  color: white;
+
+  .p-card-body {
+    text-align: center;
+
+    .cta-content {
+      h2 {
+        font-size: 2rem;
+        font-weight: 600;
+        margin: 0 0 1rem 0;
+        color: white;
+      }
+
+      p {
+        font-size: 1.125rem;
+        margin: 0 0 2rem 0;
+        opacity: 0.9;
+      }
+    }
+  }
+}
+
+// Global Card Styling
+:host ::ng-deep {
+  .p-card {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--surface-border);
+    height: 100%;
+
+    .p-card-header {
+      padding: 1.5rem 1.5rem 0 1.5rem;
+      border-bottom: 1px solid var(--surface-border);
+      margin-bottom: 1.5rem;
+    }
+
+    .p-card-body {
+      padding: 1.5rem;
+    }
+
+    .p-card-content {
+      padding: 0;
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 2rem 1rem;
+
+    .hero-content .hero-title {
+      font-size: 2rem;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      i {
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .content-section {
+    padding: 2rem 1rem;
+  }
+
+  .features-list .feature-item {
+    flex-direction: column;
+    text-align: center;
+
+    .feature-icon {
+      align-self: center;
+    }
+  }
+
+  .team-info .project-details .project-stats {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  :host ::ng-deep .contact-cta .p-card-body .cta-content h2 {
+    font-size: 1.5rem;
+  }
+}
