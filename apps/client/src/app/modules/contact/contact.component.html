@@ -1,1 +1,295 @@
-<p>contact works!</p>
+<div class="contact-container">
+  <div class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">
+        <i class="pi pi-envelope"></i>
+        Skontaktuj się z nami
+      </h1>
+      <p class="hero-subtitle">Masz pytania? Chętnie pomożemy!</p>
+    </div>
+  </div>
+
+  <div class="content-section">
+    <div class="grid">
+      <!-- Contact Form -->
+      <div class="col-12 lg:col-8">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="card-header">
+              <h2><i class="pi pi-send"></i> Wyślij wiadomość</h2>
+            </div>
+          </ng-template>
+
+          <form
+            [formGroup]="contactForm"
+            (ngSubmit)="onSubmit()"
+            class="contact-form"
+          >
+            <div class="grid">
+              <!-- Name Field -->
+              <div class="col-12 md:col-6">
+                <div class="field">
+                  <label for="name">Imię i nazwisko *</label>
+                  <input
+                    pInputText
+                    id="name"
+                    formControlName="name"
+                    placeholder="Wprowadź swoje imię i nazwisko"
+                    [class.ng-invalid]="
+                      contactForm.get('name')?.invalid &&
+                      contactForm.get('name')?.touched
+                    "
+                  />
+                  <small
+                    class="p-error"
+                    *ngIf="
+                      contactForm.get('name')?.invalid &&
+                      contactForm.get('name')?.touched
+                    "
+                  >
+                    Imię i nazwisko jest wymagane
+                  </small>
+                </div>
+              </div>
+
+              <!-- Email Field -->
+              <div class="col-12 md:col-6">
+                <div class="field">
+                  <label for="email">Adres e-mail *</label>
+                  <input
+                    pInputText
+                    id="email"
+                    formControlName="email"
+                    placeholder="twoj@email.com"
+                    [class.ng-invalid]="
+                      contactForm.get('email')?.invalid &&
+                      contactForm.get('email')?.touched
+                    "
+                  />
+                  <small
+                    class="p-error"
+                    *ngIf="
+                      contactForm.get('email')?.invalid &&
+                      contactForm.get('email')?.touched
+                    "
+                  >
+                    <span
+                      *ngIf="contactForm.get('email')?.errors?.['required']"
+                    >
+                      Adres e-mail jest wymagany
+                    </span>
+                    <span *ngIf="contactForm.get('email')?.errors?.['email']">
+                      Wprowadź poprawny adres e-mail
+                    </span>
+                  </small>
+                </div>
+              </div>
+
+              <!-- Subject Field -->
+              <div class="col-12">
+                <div class="field">
+                  <label for="subject">Temat *</label>
+                  <p-dropdown
+                    id="subject"
+                    formControlName="subject"
+                    [options]="subjectOptions"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Wybierz temat wiadomości"
+                    [showClear]="true"
+                    styleClass="w-full"
+                  >
+                  </p-dropdown>
+                  <small
+                    class="p-error"
+                    *ngIf="
+                      contactForm.get('subject')?.invalid &&
+                      contactForm.get('subject')?.touched
+                    "
+                  >
+                    Wybierz temat wiadomości
+                  </small>
+                </div>
+              </div>
+
+              <!-- Message Field -->
+              <div class="col-12">
+                <div class="field">
+                  <label for="message">Wiadomość *</label>
+                  <textarea
+                    pInputTextarea
+                    id="message"
+                    formControlName="message"
+                    rows="6"
+                    placeholder="Opisz swoje pytanie lub problem..."
+                    [class.ng-invalid]="
+                      contactForm.get('message')?.invalid &&
+                      contactForm.get('message')?.touched
+                    "
+                  >
+                  </textarea>
+                  <small
+                    class="p-error"
+                    *ngIf="
+                      contactForm.get('message')?.invalid &&
+                      contactForm.get('message')?.touched
+                    "
+                  >
+                    Wiadomość jest wymagana
+                  </small>
+                </div>
+              </div>
+
+              <!-- Privacy Checkbox -->
+              <div class="col-12">
+                <div class="field-checkbox">
+                  <p-checkbox
+                    id="privacy"
+                    formControlName="privacy"
+                    [binary]="true"
+                  >
+                  </p-checkbox>
+                  <label for="privacy">
+                    Wyrażam zgodę na przetwarzanie moich danych osobowych *
+                  </label>
+                </div>
+                <small
+                  class="p-error"
+                  *ngIf="
+                    contactForm.get('privacy')?.invalid &&
+                    contactForm.get('privacy')?.touched
+                  "
+                >
+                  Musisz wyrazić zgodę na przetwarzanie danych
+                </small>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="col-12">
+                <div class="form-actions">
+                  <p-button
+                    type="submit"
+                    label="Wyślij wiadomość"
+                    icon="pi pi-send"
+                    [loading]="isSubmitting()"
+                    [disabled]="contactForm.invalid"
+                    styleClass="p-button-lg"
+                  >
+                  </p-button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </p-card>
+      </div>
+
+      <!-- Contact Info -->
+      <div class="col-12 lg:col-4">
+        <!-- Contact Details -->
+        <div class="contact-info-section">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="card-header">
+                <h2><i class="pi pi-info-circle"></i> Informacje kontaktowe</h2>
+              </div>
+            </ng-template>
+
+            <div class="contact-details">
+              <div class="contact-item">
+                <i class="pi pi-building"></i>
+                <div>
+                  <h4>Uczelnia</h4>
+                  <p>
+                    Akademia Górniczo-Hutnicza<br />Wydział Fizyki i Informatyki
+                    Stosowanej
+                  </p>
+                </div>
+              </div>
+
+              <div class="contact-item">
+                <i class="pi pi-map-marker"></i>
+                <div>
+                  <h4>Adres</h4>
+                  <p>ul. Czarnowiejska 18<br />30-348 Kraków</p>
+                </div>
+              </div>
+
+              <div class="contact-item">
+                <i class="pi pi-clock"></i>
+                <div>
+                  <h4>Godziny odpowiedzi</h4>
+                  <p>Poniedziałek - Piątek<br />8:00 - 20:00</p>
+                </div>
+              </div>
+            </div>
+          </p-card>
+        </div>
+
+        <!-- FAQ Section -->
+        <div class="faq-section">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="card-header">
+                <h2>
+                  <i class="pi pi-question-circle"></i> Często zadawane pytania
+                </h2>
+              </div>
+            </ng-template>
+
+            <p-accordion>
+              <p-accordionTab header="Jak mogę zresetować hasło?">
+                <p>
+                  Aby zresetować hasło, skontaktuj się z administratorem systemu
+                  lub użyj funkcji "Zapomniałem hasła" na stronie logowania.
+                </p>
+              </p-accordionTab>
+
+              <p-accordionTab header="Gdzie znajdę swoje oceny?">
+                <p>
+                  Po zalogowaniu przejdź do sekcji "Moje oceny" w menu głównym.
+                  Tam znajdziesz wszystkie swoje oceny z podziałem na
+                  przedmioty.
+                </p>
+              </p-accordionTab>
+
+              <p-accordionTab header="Jak sprawdzić plan zajęć?">
+                <p>
+                  Plan zajęć dostępny jest w sekcji "Plan zajęć". Możesz
+                  przeglądać go w widoku tygodniowym lub dziennym.
+                </p>
+              </p-accordionTab>
+
+              <p-accordionTab header="Czy aplikacja działa na telefonie?">
+                <p>
+                  Tak! GradeFlow jest w pełni responsywny i działa na wszystkich
+                  urządzeniach - komputerach, tabletach i telefonach.
+                </p>
+              </p-accordionTab>
+            </p-accordion>
+          </p-card>
+        </div>
+
+        <!-- Support Hours -->
+        <div class="support-hours-section">
+          <p-card styleClass="support-card">
+            <div class="support-content">
+              <i class="pi pi-headphones"></i>
+              <h3>Potrzebujesz pomocy?</h3>
+              <p>Nasz zespół jest gotowy, aby Ci pomóc</p>
+              <p-button
+                label="Centrum pomocy"
+                icon="pi pi-external-link"
+                [text]="true"
+                styleClass="p-button-sm"
+              >
+              </p-button>
+            </div>
+          </p-card>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Toast -->
+  <p-toast position="top-right"></p-toast>
+</div>

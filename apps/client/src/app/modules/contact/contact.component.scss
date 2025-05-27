@@ -1,0 +1,305 @@
+.contact-container {
+  min-height: 100vh;
+  background: var(--surface-ground);
+}
+
+.hero-section {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-color-text) 100%
+  );
+  color: white;
+  padding: 4rem 2rem;
+  text-align: center;
+
+  .hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+
+    .hero-title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+
+      i {
+        font-size: 3rem;
+      }
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      margin: 0;
+      opacity: 0.9;
+      font-weight: 300;
+    }
+  }
+}
+
+.content-section {
+  padding: 3rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card-header {
+  h2 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    i {
+      color: var(--primary-color);
+      font-size: 1.25rem;
+    }
+  }
+}
+
+.contact-form {
+  .field {
+    margin-bottom: 1.5rem;
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    input,
+    textarea {
+      width: 100%;
+
+      &.ng-invalid.ng-touched {
+        border-color: var(--red-500);
+      }
+    }
+
+    .p-error {
+      display: block;
+      margin-top: 0.25rem;
+      font-size: 0.875rem;
+    }
+  }
+
+  .field-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+
+    label {
+      margin: 0;
+      font-weight: 400;
+      line-height: 1.5;
+      cursor: pointer;
+    }
+  }
+
+  .form-actions {
+    text-align: center;
+    padding-top: 1rem;
+  }
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+
+  .contact-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+
+    i {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(
+        135deg,
+        var(--primary-color) 0%,
+        var(--primary-color-text) 100%
+      );
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.125rem;
+      flex-shrink: 0;
+    }
+
+    div {
+      h4 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-color);
+      }
+
+      p {
+        margin: 0;
+        color: var(--text-color-secondary);
+        line-height: 1.5;
+      }
+    }
+  }
+}
+
+.faq-section {
+  margin-top: 1.5rem;
+}
+
+.support-hours-section {
+  margin-top: 1.5rem;
+}
+
+:host ::ng-deep .support-card {
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-color-text) 100%
+  );
+  color: white;
+
+  .p-card-body {
+    text-align: center;
+
+    .support-content {
+      i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        display: block;
+        color: white;
+      }
+
+      h3 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin: 0 0 0.5rem 0;
+        color: white;
+      }
+
+      p {
+        margin: 0 0 1.5rem 0;
+        opacity: 0.9;
+      }
+    }
+  }
+}
+
+:host ::ng-deep {
+  .p-card {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--surface-border);
+    height: 100%;
+
+    .p-card-header {
+      padding: 1.5rem 1.5rem 0 1.5rem;
+      border-bottom: 1px solid var(--surface-border);
+      margin-bottom: 1.5rem;
+    }
+
+    .p-card-body {
+      padding: 1.5rem;
+    }
+
+    .p-card-content {
+      padding: 0;
+    }
+  }
+
+  .p-inputtext,
+  .p-inputtextarea,
+  .p-dropdown {
+    width: 100%;
+  }
+
+  .p-dropdown {
+    .p-dropdown-label {
+      padding: 0.75rem;
+    }
+  }
+
+  .p-checkbox {
+    .p-checkbox-box {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .p-accordion {
+    .p-accordion-header {
+      .p-accordion-header-link {
+        padding: 1rem;
+        font-weight: 600;
+      }
+    }
+
+    .p-accordion-content {
+      padding: 1rem;
+    }
+  }
+
+  .p-toast {
+    .p-toast-message {
+      margin: 0 0 1rem 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 2rem 1rem;
+
+    .hero-content .hero-title {
+      font-size: 2rem;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      i {
+        font-size: 2rem;
+      }
+    }
+  }
+
+  .content-section {
+    padding: 2rem 1rem;
+  }
+
+  .contact-details .contact-item {
+    flex-direction: column;
+    text-align: center;
+
+    i {
+      align-self: center;
+    }
+  }
+
+  .contact-form .field-checkbox {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    label {
+      text-align: center;
+    }
+  }
+
+  :host ::ng-deep .support-card .p-card-body .support-content {
+    h3 {
+      font-size: 1.25rem;
+    }
+
+    i {
+      font-size: 2.5rem;
+    }
+  }
+}
