@@ -8,32 +8,71 @@
     <span class="text-600 font-medium line-height-3"
       >Nie masz jeszcze konta?</span
     >
-    <a class="font-medium no-underline ml-2 text-blue-500 cursor-pointer"
+    <a
+      class="font-medium no-underline ml-2 text-blue-500 cursor-pointer"
+      routerLink="/auth/register"
       >Stwórz dziś!</a
     >
   </div>
 
-  <div>
-    <p-floatLabel variant="on" class="mb-3 w-full">
-      <label for="email1">Email</label>
-      <input id="email1" type="text" pInputText class="w-full" />
-    </p-floatLabel>
+  <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+    <!-- Komunikat błędu -->
+    <p-message
+      *ngIf="errorMessage"
+      severity="error"
+      [text]="errorMessage"
+      class="mb-3 w-full"
+    >
+    </p-message>
 
+    <!-- Email -->
     <p-floatLabel variant="on" class="mb-3 w-full">
-      <label for="password1">Hasło</label>
-      <input id="password1" type="password" pInputText class="w-full" />
+      <label for="email">Email</label>
+      <input
+        id="email"
+        type="email"
+        pInputText
+        class="w-full"
+        formControlName="email"
+        [class.ng-invalid]="
+          loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+        "
+      />
     </p-floatLabel>
+    <small *ngIf="getFieldError('email')" class="p-error block mb-2">
+      {{ getFieldError('email') }}
+    </small>
+
+    <!-- Hasło -->
+    <p-floatLabel variant="on" class="mb-3 w-full">
+      <label for="password">Hasło</label>
+      <input
+        id="password"
+        type="password"
+        pInputText
+        class="w-full"
+        formControlName="password"
+        [class.ng-invalid]="
+          loginForm.get('password')?.invalid &&
+          loginForm.get('password')?.touched
+        "
+      />
+    </p-floatLabel>
+    <small *ngIf="getFieldError('password')" class="p-error block mb-2">
+      {{ getFieldError('password') }}
+    </small>
 
     <div
       class="flex flex-column sm:flex-row align-items-center justify-content-between mb-6 gap-2"
     >
       <div class="flex align-items-center">
         <p-checkbox
-          id="rememberme1"
+          id="rememberme"
           [binary]="true"
           styleClass="mr-2"
+          formControlName="rememberMe"
         ></p-checkbox>
-        <label for="rememberme1" class="text-900">Zapamiętaj mnie</label>
+        <label for="rememberme" class="text-900">Zapamiętaj mnie</label>
       </div>
       <a
         class="font-medium no-underline text-blue-500 text-right cursor-pointer"
@@ -44,10 +83,35 @@
     <button
       pButton
       pRipple
-      label="Zaloguj się"
-      icon="pi pi-user"
+      type="submit"
       class="w-full p-button-primary"
-      (onClick)="login()"
-    ></button>
-  </div>
+      [disabled]="isLoading"
+    >
+      <p-progressSpinner
+        *ngIf="isLoading"
+        styleClass="w-1rem h-1rem mr-2"
+        strokeWidth="4"
+      >
+      </p-progressSpinner>
+      <span *ngIf="!isLoading">
+        <i class="pi pi-user mr-2"></i>
+        Zaloguj się
+      </span>
+      <span *ngIf="isLoading">Logowanie...</span>
+    </button>
+
+    <!-- Demo credentials info -->
+    <div class="mt-4 p-3 surface-100 border-round">
+      <div class="text-sm text-600 mb-2">
+        <strong>Demo konta:</strong>
+      </div>
+      <div class="text-xs text-500">
+        <div>Student: student&#64;gradeflow.com</div>
+        <div>Nauczyciel: teacher&#64;gradeflow.com</div>
+        <div>Rodzic: parent&#64;gradeflow.com</div>
+        <div>Admin: admin&#64;gradeflow.com</div>
+        <div class="mt-1"><strong>Hasło dla wszystkich:</strong> password</div>
+      </div>
+    </div>
+  </form>
 </div>

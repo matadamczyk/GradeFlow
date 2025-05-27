@@ -1,1 +1,52 @@
-<p>sign-up works!</p>
+<div class="surface-card p-4 shadow-2 border-round w-full">
+  <div class="text-center mb-5">
+    <i
+      class="pi pi-book logo-icon"
+      style="font-size: 3rem; margin-bottom: 1rem"
+    ></i>
+    <div class="text-900 text-3xl font-medium mb-3">GradeFlow</div>
+    <span class="text-600 font-medium line-height-3">Masz już konto?</span>
+    <a
+      class="font-medium no-underline ml-2 text-blue-500 cursor-pointer"
+      routerLink="/auth/login"
+      >Zaloguj się!</a
+    >
+  </div>
+
+  <div class="text-center">
+    <p-message
+      severity="info"
+      text="Rejestracja nowych użytkowników nie jest jeszcze dostępna."
+      class="mb-4 w-full"
+    >
+    </p-message>
+
+    <p class="text-600 mb-4">
+      Funkcja rejestracji zostanie wkrótce udostępniona. W międzyczasie możesz
+      skorzystać z kont demonstracyjnych.
+    </p>
+
+    <button
+      pButton
+      pRipple
+      label="Wróć do logowania"
+      icon="pi pi-arrow-left"
+      class="w-full p-button-primary"
+      routerLink="/auth/login"
+    ></button>
+
+    <!-- Demo credentials info -->
+    <div class="mt-4 p-3 surface-100 border-round">
+      <div class="text-sm text-600 mb-2">
+        <strong>Dostępne konta demo:</strong>
+      </div>
+      <div class="text-xs text-500">
+        <div>Student: student&#64;gradeflow.com</div>
+        <div>Nauczyciel: teacher&#64;gradeflow.com</div>
+        <div>Rodzic: parent&#64;gradeflow.com</div>
+        <div>Admin: admin&#64;gradeflow.com</div>
+        <div class="mt-1"><strong>Hasło dla wszystkich:</strong> password</div>
+      </div>
+    </div>
+  </div>
+</div>
