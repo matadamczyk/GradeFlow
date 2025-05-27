@@ -6,31 +6,36 @@
       Moje Oceny
     </h1>
     <p class="page-subtitle">Przegląd Twoich wyników w nauce</p>
-    <p-button 
-      icon="pi pi-refresh" 
-      label="Odśwież" 
+    <p-button
+      icon="pi pi-refresh"
+      label="Odśwież"
       (onClick)="refreshData()"
       [loading]="isLoading"
       severity="secondary"
-      size="small">
+      size="small"
+    >
     </p-button>
   </div>
 
   <!-- Loading Skeletons -->
   <div *ngIf="isLoading" class="loading-content">
     <div class="grid">
-      <div class="col-12 md:col-4" *ngFor="let item of [1,2,3]">
+      <div class="col-12 md:col-4" *ngFor="let item of [1, 2, 3]">
         <p-card>
           <p-skeleton height="4rem"></p-skeleton>
           <p-skeleton height="2rem" class="mt-2"></p-skeleton>
         </p-card>
       </div>
     </div>
-    
+
     <div class="grid mt-4">
       <div class="col-12 lg:col-8">
         <p-card header="Ostatnie Oceny">
-          <p-skeleton height="3rem" class="mb-2" *ngFor="let item of [1,2,3,4,5]"></p-skeleton>
+          <p-skeleton
+            height="3rem"
+            class="mb-2"
+            *ngFor="let item of [1, 2, 3, 4, 5]"
+          ></p-skeleton>
         </p-card>
       </div>
       <div class="col-12 lg:col-4">
@@ -43,7 +48,6 @@
 
   <!-- Main Content -->
   <div *ngIf="!isLoading" class="grades-content">
-    
     <!-- Statistics Cards -->
     <div class="grid" *ngIf="statistics$ | async as stats">
       <div class="col-12 md:col-4">
@@ -55,12 +59,13 @@
             <div class="stat-details">
               <h3>Średnia Ogólna</h3>
               <div class="stat-value">
-                {{ stats.overallAverage | number:'1.2-2' }}
+                {{ stats.overallAverage | number : '1.2-2' }}
               </div>
-              <p-progressBar 
+              <p-progressBar
                 [value]="getAverageProgress(stats.overallAverage)"
                 [showValue]="false"
-                styleClass="mt-2">
+                styleClass="mt-2"
+              >
               </p-progressBar>
             </div>
           </div>
@@ -100,7 +105,6 @@
 
     <!-- Main Content Grid -->
     <div class="grid mt-4">
-      
       <!-- Recent Grades Section -->
       <div class="col-12">
         <p-card header="Ostatnie Oceny" styleClass="recent-grades-card">
@@ -112,34 +116,40 @@
               </h3>
             </div>
           </ng-template>
-          
+
           <div *ngIf="recentGrades$ | async as recentGrades">
             <div *ngIf="recentGrades.length > 0; else noRecentGrades">
               <div class="recent-grade-item" *ngFor="let grade of recentGrades">
                 <div class="grade-info">
-                  <p-tag 
-                    [value]="grade.grade_value.toString()" 
+                  <p-tag
+                    [value]="grade.grade_value.toString()"
                     [severity]="getGradeSeverity(grade.grade_value)"
                     [icon]="getGradeIcon(grade.grade_value)"
-                    styleClass="grade-tag">
+                    styleClass="grade-tag"
+                  >
                   </p-tag>
-                  
+
                   <div class="grade-details">
                     <h4>{{ grade.subjectName }}</h4>
-                    <p *ngIf="grade.comment" class="grade-comment">{{ grade.comment }}</p>
-                    <small class="grade-date">{{ formatDate(grade.date) }}</small>
+                    <p *ngIf="grade.comment" class="grade-comment">
+                      {{ grade.comment }}
+                    </p>
+                    <small class="grade-date">{{
+                      formatDate(grade.date)
+                    }}</small>
                   </div>
                 </div>
-                
+
                 <div class="grade-weight">
-                  <p-badge 
-                    [value]="'Waga: ' + grade.grade_weight" 
-                    severity="info">
+                  <p-badge
+                    [value]="'Waga: ' + grade.grade_weight"
+                    severity="info"
+                  >
                   </p-badge>
                 </div>
               </div>
             </div>
-            
+
             <ng-template #noRecentGrades>
               <div class="empty-state">
                 <i class="pi pi-inbox"></i>
@@ -166,35 +176,39 @@
 
           <div *ngIf="subjectGrades$ | async as subjectGrades">
             <p-accordion *ngIf="subjectGrades.length > 0; else noSubjects">
-              <p-accordionTab 
-                *ngFor="let subject of subjectGrades" 
-                [header]="subject.subjectName">
-                
+              <p-accordionTab
+                *ngFor="let subject of subjectGrades"
+                [header]="subject.subjectName"
+              >
                 <ng-template pTemplate="header">
                   <div class="subject-header">
                     <span class="subject-name">{{ subject.subjectName }}</span>
                     <div class="subject-stats">
-                      <p-tag 
-                        [value]="(subject.weightedAverage | number:'1.2-2') || '0.00'" 
+                      <p-tag
+                        [value]="
+                          (subject.weightedAverage | number : '1.2-2') || '0.00'
+                        "
                         [severity]="getGradeSeverity(subject.weightedAverage)"
-                        styleClass="average-tag">
+                        styleClass="average-tag"
+                      >
                       </p-tag>
-                      <p-badge 
-                        [value]="subject.grades.length + ' ocen'" 
-                        severity="info">
+                      <p-badge
+                        [value]="subject.grades.length + ' ocen'"
+                        severity="info"
+                      >
                       </p-badge>
                     </div>
                   </div>
                 </ng-template>
 
                 <!-- Subject grades table -->
-                <p-table 
-                  [value]="subject.grades" 
+                <p-table
+                  [value]="subject.grades"
                   styleClass="p-datatable-sm"
                   [paginator]="subject.grades.length > 10"
                   [rows]="10"
-                  [responsive]="true">
-                  
+                  [responsive]="true"
+                >
                   <ng-template pTemplate="header">
                     <tr>
                       <th>Ocena</th>
@@ -203,25 +217,33 @@
                       <th>Komentarz</th>
                     </tr>
                   </ng-template>
-                  
+
                   <ng-template pTemplate="body" let-grade>
                     <tr>
                       <td>
-                        <p-tag 
-                          [value]="grade.grade_value.toString()" 
-                          [severity]="getGradeSeverity(grade.grade_value)">
+                        <p-tag
+                          [value]="grade.grade_value.toString()"
+                          [severity]="getGradeSeverity(grade.grade_value)"
+                        >
                         </p-tag>
                       </td>
                       <td>{{ formatDate(grade.date) }}</td>
                       <td>
-                        <p-badge [value]="grade.grade_weight.toString()"></p-badge>
+                        <p-badge
+                          [value]="grade.grade_weight.toString()"
+                        ></p-badge>
                       </td>
                       <td>
-                        <span 
-                          [pTooltip]="grade.comment" 
+                        <span
+                          [pTooltip]="grade.comment"
                           tooltipPosition="top"
-                          *ngIf="grade.comment; else noComment">
-                          {{ grade.comment.length > 30 ? (grade.comment | slice:0:30) + '...' : grade.comment }}
+                          *ngIf="grade.comment; else noComment"
+                        >
+                          {{
+                            grade.comment.length > 30
+                              ? (grade.comment | slice : 0 : 30) + '...'
+                              : grade.comment
+                          }}
                         </span>
                         <ng-template #noComment>
                           <span class="text-muted">-</span>
@@ -229,7 +251,7 @@
                       </td>
                     </tr>
                   </ng-template>
-                  
+
                   <ng-template pTemplate="emptymessage">
                     <tr>
                       <td colspan="4" class="text-center">
@@ -243,20 +265,26 @@
                 </p-table>
 
                 <p-divider></p-divider>
-                
+
                 <!-- Subject summary -->
                 <div class="subject-summary">
                   <div class="summary-item">
                     <label>Średnia arytmetyczna:</label>
-                    <span class="summary-value">{{ subject.average | number:'1.2-2' }}</span>
+                    <span class="summary-value">{{
+                      subject.average | number : '1.2-2'
+                    }}</span>
                   </div>
                   <div class="summary-item">
                     <label>Średnia ważona:</label>
-                    <span class="summary-value">{{ subject.weightedAverage | number:'1.2-2' }}</span>
+                    <span class="summary-value">{{
+                      subject.weightedAverage | number : '1.2-2'
+                    }}</span>
                   </div>
                   <div class="summary-item">
                     <label>Liczba ocen:</label>
-                    <span class="summary-value">{{ subject.grades.length }}</span>
+                    <span class="summary-value">{{
+                      subject.grades.length
+                    }}</span>
                   </div>
                 </div>
               </p-accordionTab>

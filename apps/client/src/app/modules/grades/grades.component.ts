@@ -31,7 +31,7 @@ import { GradeStatistics, SubjectGrades } from '../../core/models';
     AccordionModule,
     BadgeModule,
     TooltipModule,
-    DividerModule
+    DividerModule,
   ],
   templateUrl: './grades.component.html',
   styleUrl: './grades.component.scss',
@@ -40,17 +40,17 @@ export class GradesComponent implements OnInit {
   statistics$!: Observable<GradeStatistics>;
   recentGrades$!: Observable<any[]>;
   subjectGrades$!: Observable<SubjectGrades[]>;
-  
+
   selectedSubject: string | null = null;
   isLoading = true;
   currentStudentId = 1; // Domyślnie pierwszy uczeń z mock data
-  
+
   // Table columns
   gradeColumns = [
     { field: 'grade_value', header: 'Ocena' },
     { field: 'date', header: 'Data' },
     { field: 'grade_weight', header: 'Waga' },
-    { field: 'comment', header: 'Komentarz' }
+    { field: 'comment', header: 'Komentarz' },
   ];
 
   constructor(
@@ -64,16 +64,23 @@ export class GradesComponent implements OnInit {
 
   private loadGradesData(): void {
     this.isLoading = true;
-    
+
     // Pobierz statystyki ocen
-    this.statistics$ = this.gradesService.getGradeStatistics(this.currentStudentId);
-    
+    this.statistics$ = this.gradesService.getGradeStatistics(
+      this.currentStudentId
+    );
+
     // Pobierz ostatnie oceny
-    this.recentGrades$ = this.gradesService.getRecentGrades(this.currentStudentId, 5);
-    
+    this.recentGrades$ = this.gradesService.getRecentGrades(
+      this.currentStudentId,
+      5
+    );
+
     // Pobierz oceny pogrupowane według przedmiotów
-    this.subjectGrades$ = this.gradesService.getSubjectGrades(this.currentStudentId);
-    
+    this.subjectGrades$ = this.gradesService.getSubjectGrades(
+      this.currentStudentId
+    );
+
     // Symulacja zakończenia ładowania
     setTimeout(() => {
       this.isLoading = false;
@@ -81,10 +88,13 @@ export class GradesComponent implements OnInit {
   }
 
   onSubjectSelect(subjectName: string): void {
-    this.selectedSubject = this.selectedSubject === subjectName ? null : subjectName;
+    this.selectedSubject =
+      this.selectedSubject === subjectName ? null : subjectName;
   }
 
-  getGradeSeverity(grade: number): "success" | "info" | "warn" | "danger" | "secondary" | "contrast" {
+  getGradeSeverity(
+    grade: number
+  ): 'success' | 'info' | 'warn' | 'danger' | 'secondary' | 'contrast' {
     if (grade >= 5) return 'success';
     if (grade >= 4) return 'info';
     if (grade >= 3) return 'warn';
