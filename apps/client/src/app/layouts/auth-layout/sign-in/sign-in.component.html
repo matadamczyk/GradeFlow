@@ -1,4 +1,13 @@
-<div class="surface-card p-4 shadow-2 border-round w-full">
+<div class="surface-card p-4 shadow-2 border-round w-full relative">
+  <!-- Close button -->
+  <button 
+    pButton 
+    icon="pi pi-times" 
+    class="p-button-rounded p-button-text p-button-plain absolute" 
+    style="top: 0.5rem; right: 0.5rem;"
+    (click)="closeDialog()">
+  </button>
+
   <div class="text-center mb-5">
     <i
       class="pi pi-book logo-icon"
