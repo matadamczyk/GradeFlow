@@ -1,9 +1,19 @@
 // Services
-import { AccountService, PasswordChangeRequest, ProfileUpdateRequest, UserProfile } from '../../core/services/account.service';
+import {
+  AccountService,
+  PasswordChangeRequest,
+  ProfileUpdateRequest,
+  UserProfile,
+} from '../../core/services/account.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 // PrimeNG Services
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Subject, finalize, takeUntil } from 'rxjs';
 
 import { AuthService } from '../../core/services/auth.service';
@@ -52,25 +62,25 @@ import { UserRole } from '../../core/models/enums';
     FileUploadModule,
     ProgressBarModule,
     TabViewModule,
-    PanelModule
+    PanelModule,
   ],
   templateUrl: './account.component.html',
   styleUrl: './account.component.scss',
-  providers: [ConfirmationService, MessageService]
+  providers: [ConfirmationService, MessageService],
 })
 export class AccountComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
-  
+
   userProfile: UserProfile | null = null;
   statistics: any = null;
   isLoading = true;
   isUpdatingProfile = false;
   isChangingPassword = false;
   isUploadingAvatar = false;
-  
+
   profileForm: FormGroup;
   passwordForm: FormGroup;
-  
+
   UserRole = UserRole;
 
   constructor(
@@ -85,14 +95,17 @@ export class AccountComponent implements OnInit, OnDestroy {
       lastname: ['', [Validators.required, Validators.minLength(2)]],
       phone: ['', [Validators.pattern(/^\+?[0-9\s\-()]{9,15}$/)]],
       address: [''],
-      bio: ['', [Validators.maxLength(500)]]
+      bio: ['', [Validators.maxLength(500)]],
     });
 
-    this.passwordForm = this.fb.group({
-      currentPassword: ['', [Validators.required]],
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordMatchValidator });
+    this.passwordForm = this.fb.group(
+      {
+        currentPassword: ['', [Validators.required]],
+        newPassword: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', [Validators.required]],
+      },
+      { validators: this.passwordMatchValidator }
+    );
   }
 
   ngOnInit(): void {
@@ -106,12 +119,13 @@ export class AccountComponent implements OnInit, OnDestroy {
 
   private loadData(): void {
     this.isLoading = true;
-    
+
     // Ładuj profil użytkownika
-    this.accountService.getUserProfile()
+    this.accountService
+      .getUserProfile()
       .pipe(
         takeUntil(this.destroy$),
-        finalize(() => this.isLoading = false)
+        finalize(() => (this.isLoading = false))
       )
       .subscribe({
         next: (profile) => {
@@ -122,13 +136,14 @@ export class AccountComponent implements OnInit, OnDestroy {
           this.messageService.add({
             severity: 'error',
             summary: 'Błąd',
-            detail: 'Nie udało się załadować profilu użytkownika'
+            detail: 'Nie udało się załadować profilu użytkownika',
           });
-        }
+        },
       });
 
     // Ładuj statystyki
-    this.accountService.getAccountStatistics()
+    this.accountService
+      .getAccountStatistics()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (stats) => {
@@ -136,7 +151,7 @@ export class AccountComponent implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error('Błąd ładowania statystyk:', error);
-        }
+        },
       });
   }
 
@@ -146,7 +161,7 @@ export class AccountComponent implements OnInit, OnDestroy {
       lastname: profile.lastname || '',
       phone: profile.phone || '',
       address: profile.address || '',
-      bio: profile.bio || ''
+      bio: profile.bio || '',
     });
   }
 
@@ -161,10 +176,11 @@ export class AccountComponent implements OnInit, OnDestroy {
       this.isUpdatingProfile = true;
       const updateData: ProfileUpdateRequest = this.profileForm.value;
 
-      this.accountService.updateProfile(updateData)
+      this.accountService
+        .updateProfile(updateData)
         .pipe(
           takeUntil(this.destroy$),
-          finalize(() => this.isUpdatingProfile = false)
+          finalize(() => (this.isUpdatingProfile = false))
         )
         .subscribe({
           next: (updatedProfile) => {
@@ -172,16 +188,16 @@ export class AccountComponent implements OnInit, OnDestroy {
             this.messageService.add({
               severity: 'success',
               summary: 'Sukces',
-              detail: 'Profil został zaktualizowany'
+              detail: 'Profil został zaktualizowany',
             });
           },
           error: (error) => {
             this.messageService.add({
               severity: 'error',
               summary: 'Błąd',
-              detail: 'Nie udało się zaktualizować profilu'
+              detail: 'Nie udało się zaktualizować profilu',
             });
-          }
+          },
         });
     } else {
       this.markFormGroupTouched(this.profileForm);
@@ -193,10 +209,11 @@ export class AccountComponent implements OnInit, OnDestroy {
       this.isChangingPassword = true;
       const passwordData: PasswordChangeRequest = this.passwordForm.value;
 
-      this.accountService.changePassword(passwordData)
+      this.accountService
+        .changePassword(passwordData)
         .pipe(
           takeUntil(this.destroy$),
-          finalize(() => this.isChangingPassword = false)
+          finalize(() => (this.isChangingPassword = false))
         )
         .subscribe({
           next: () => {
@@ -204,16 +221,16 @@ export class AccountComponent implements OnInit, OnDestroy {
             this.messageService.add({
               severity: 'success',
               summary: 'Sukces',
-              detail: 'Hasło zostało zmienione'
+              detail: 'Hasło zostało zmienione',
             });
           },
           error: (error) => {
             this.messageService.add({
               severity: 'error',
               summary: 'Błąd',
-              detail: error.message || 'Nie udało się zmienić hasła'
+              detail: error.message || 'Nie udało się zmienić hasła',
             });
-          }
+          },
         });
     } else {
       this.markFormGroupTouched(this.passwordForm);
@@ -224,11 +241,12 @@ export class AccountComponent implements OnInit, OnDestroy {
     const file = event.files[0];
     if (file) {
       this.isUploadingAvatar = true;
-      
-      this.accountService.uploadAvatar(file)
+
+      this.accountService
+        .uploadAvatar(file)
         .pipe(
           takeUntil(this.destroy$),
-          finalize(() => this.isUploadingAvatar = false)
+          finalize(() => (this.isUploadingAvatar = false))
         )
         .subscribe({
           next: (avatarUrl) => {
@@ -238,37 +256,39 @@ export class AccountComponent implements OnInit, OnDestroy {
             this.messageService.add({
               severity: 'success',
               summary: 'Sukces',
-              detail: 'Avatar został zaktualizowany'
+              detail: 'Avatar został zaktualizowany',
             });
           },
           error: (error) => {
             this.messageService.add({
               severity: 'error',
               summary: 'Błąd',
-              detail: 'Nie udało się zaktualizować avatara'
+              detail: 'Nie udało się zaktualizować avatara',
             });
-          }
+          },
         });
     }
   }
 
   onDeleteAccount(): void {
     this.confirmationService.confirm({
-      message: 'Czy na pewno chcesz usunąć swoje konto? Ta operacja jest nieodwracalna.',
+      message:
+        'Czy na pewno chcesz usunąć swoje konto? Ta operacja jest nieodwracalna.',
       header: 'Potwierdzenie usunięcia konta',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Usuń konto',
       rejectLabel: 'Anuluj',
       acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
-        this.accountService.deleteAccount()
+        this.accountService
+          .deleteAccount()
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: () => {
               this.messageService.add({
                 severity: 'success',
                 summary: 'Sukces',
-                detail: 'Konto zostało usunięte'
+                detail: 'Konto zostało usunięte',
               });
               this.authService.logout();
             },
@@ -276,11 +296,11 @@ export class AccountComponent implements OnInit, OnDestroy {
               this.messageService.add({
                 severity: 'error',
                 summary: 'Błąd',
-                detail: 'Nie udało się usunąć konta'
+                detail: 'Nie udało się usunąć konta',
               });
-            }
+            },
           });
-      }
+      },
     });
   }
 
@@ -289,7 +309,7 @@ export class AccountComponent implements OnInit, OnDestroy {
   }
 
   private markFormGroupTouched(formGroup: FormGroup): void {
-    Object.keys(formGroup.controls).forEach(key => {
+    Object.keys(formGroup.controls).forEach((key) => {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });
@@ -306,7 +326,8 @@ export class AccountComponent implements OnInit, OnDestroy {
       if (field.errors['required']) return `${fieldName} jest wymagane`;
       if (field.errors['minlength']) return `${fieldName} jest za krótkie`;
       if (field.errors['maxlength']) return `${fieldName} jest za długie`;
-      if (field.errors['pattern']) return `${fieldName} ma nieprawidłowy format`;
+      if (field.errors['pattern'])
+        return `${fieldName} ma nieprawidłowy format`;
       if (field.errors['passwordMismatch']) return 'Hasła nie są identyczne';
     }
     return '';
@@ -314,21 +335,31 @@ export class AccountComponent implements OnInit, OnDestroy {
 
   getRoleBadgeClass(role: UserRole): string {
     switch (role) {
-      case UserRole.STUDENT: return 'p-badge-info';
-      case UserRole.TEACHER: return 'p-badge-success';
-      case UserRole.PARENT: return 'p-badge-warning';
-      case UserRole.ADMIN: return 'p-badge-danger';
-      default: return 'p-badge-secondary';
+      case UserRole.STUDENT:
+        return 'p-badge-info';
+      case UserRole.TEACHER:
+        return 'p-badge-success';
+      case UserRole.PARENT:
+        return 'p-badge-warning';
+      case UserRole.ADMIN:
+        return 'p-badge-danger';
+      default:
+        return 'p-badge-secondary';
     }
   }
 
   getRoleLabel(role: UserRole): string {
     switch (role) {
-      case UserRole.STUDENT: return 'Uczeń';
-      case UserRole.TEACHER: return 'Nauczyciel';
-      case UserRole.PARENT: return 'Rodzic';
-      case UserRole.ADMIN: return 'Administrator';
-      default: return 'Nieznana rola';
+      case UserRole.STUDENT:
+        return 'Uczeń';
+      case UserRole.TEACHER:
+        return 'Nauczyciel';
+      case UserRole.PARENT:
+        return 'Rodzic';
+      case UserRole.ADMIN:
+        return 'Administrator';
+      default:
+        return 'Nieznana rola';
     }
   }
 
@@ -338,7 +369,7 @@ export class AccountComponent implements OnInit, OnDestroy {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   }
 
@@ -346,7 +377,7 @@ export class AccountComponent implements OnInit, OnDestroy {
     return new Date(dateString).toLocaleDateString('pl-PL', {
       year: 'numeric',
       month: 'long',
-      day: 'numeric'
+      day: 'numeric',
     });
   }
 }

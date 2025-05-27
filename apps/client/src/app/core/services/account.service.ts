@@ -35,7 +35,7 @@ export interface ProfileUpdateRequest {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AccountService {
   private userProfileSubject = new BehaviorSubject<UserProfile | null>(null);
@@ -49,14 +49,15 @@ export class AccountService {
       name: 'Adam',
       lastname: 'Nowicki',
       phone: '+48 123 456 789',
-      address: 'ul. Szkolna 15, 00-001 Warszawa',
+      address: 'ul. Aleja 29 Listopada 15, 31-425 Kraków',
       dateOfBirth: '2005-03-15',
       bio: 'Uczeń klasy 3A, interesuje się matematyką i informatyką.',
       studentClass: '3A',
       studentNumber: '15',
       lastLogin: '2024-01-15T10:30:00',
       accountCreated: '2023-09-01T08:00:00',
-      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+      avatar:
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
     },
     {
       id: 2,
@@ -65,13 +66,14 @@ export class AccountService {
       name: 'Anna',
       lastname: 'Kowalska',
       phone: '+48 987 654 321',
-      address: 'ul. Nauczycielska 8, 00-002 Warszawa',
+      address: 'ul. Nauczycielska 8, 31-425 Kraków',
       dateOfBirth: '1985-07-22',
       bio: 'Nauczyciel matematyki i fizyki z 15-letnim doświadczeniem.',
       teacherSubjects: ['Matematyka', 'Fizyka', 'Informatyka'],
       lastLogin: '2024-01-15T09:15:00',
       accountCreated: '2020-08-15T10:00:00',
-      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face'
+      avatar:
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
     },
     {
       id: 3,
@@ -80,13 +82,14 @@ export class AccountService {
       name: 'Jan',
       lastname: 'Nowicki',
       phone: '+48 555 123 456',
-      address: 'ul. Rodzinna 25, 00-003 Warszawa',
+      address: 'ul. Rodzinna 25, 31-425 Kraków',
       dateOfBirth: '1975-11-10',
       bio: 'Rodzic ucznia Adama Nowickiego, aktywnie uczestniczę w życiu szkoły.',
       parentChildren: ['Adam Nowicki (3A)', 'Ewa Nowicka (1B)'],
       lastLogin: '2024-01-15T18:45:00',
       accountCreated: '2023-09-01T12:00:00',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
+      avatar:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
     },
     {
       id: 4,
@@ -95,17 +98,18 @@ export class AccountService {
       name: 'Admin',
       lastname: 'System',
       phone: '+48 800 100 200',
-      address: 'ul. Administracyjna 1, 00-004 Warszawa',
+      address: 'ul. Administracyjna 1, 31-425 Kraków',
       bio: 'Administrator systemu GradeFlow.',
       lastLogin: '2024-01-15T07:00:00',
       accountCreated: '2020-01-01T00:00:00',
-      avatar: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face'
-    }
+      avatar:
+        'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop&crop=face',
+    },
   ];
 
   constructor(private authService: AuthService) {
     // Subskrybuj zmiany aktualnego użytkownika
-    this.authService.currentUser$.subscribe(user => {
+    this.authService.currentUser$.subscribe((user) => {
       if (user) {
         this.loadUserProfile(user.id);
       } else {
@@ -115,7 +119,7 @@ export class AccountService {
   }
 
   private loadUserProfile(userId: number): void {
-    const profile = this.mockProfiles.find(p => p.id === userId);
+    const profile = this.mockProfiles.find((p) => p.id === userId);
     if (profile) {
       this.userProfileSubject.next(profile);
     }
@@ -127,11 +131,13 @@ export class AccountService {
       return throwError(() => new Error('Użytkownik nie jest zalogowany'));
     }
 
-    const profile = this.mockProfiles.find(p => p.id === currentUser.id);
+    const profile = this.mockProfiles.find((p) => p.id === currentUser.id);
     if (profile) {
       return of(profile).pipe(delay(500));
     } else {
-      return throwError(() => new Error('Profil użytkownika nie został znaleziony'));
+      return throwError(
+        () => new Error('Profil użytkownika nie został znaleziony')
+      );
     }
   }
 
@@ -141,22 +147,26 @@ export class AccountService {
       return throwError(() => new Error('Użytkownik nie jest zalogowany'));
     }
 
-    const profileIndex = this.mockProfiles.findIndex(p => p.id === currentUser.id);
+    const profileIndex = this.mockProfiles.findIndex(
+      (p) => p.id === currentUser.id
+    );
     if (profileIndex === -1) {
-      return throwError(() => new Error('Profil użytkownika nie został znaleziony'));
+      return throwError(
+        () => new Error('Profil użytkownika nie został znaleziony')
+      );
     }
 
     // Aktualizuj profil
     this.mockProfiles[profileIndex] = {
       ...this.mockProfiles[profileIndex],
-      ...updateData
+      ...updateData,
     };
 
     // Aktualizuj również dane w AuthService
     const updatedAuthUser: AuthUser = {
       ...currentUser,
       name: updateData.name || currentUser.name,
-      lastname: updateData.lastname || currentUser.lastname
+      lastname: updateData.lastname || currentUser.lastname,
     };
 
     // Zaktualizuj localStorage
@@ -179,7 +189,9 @@ export class AccountService {
     }
 
     if (passwordData.newPassword.length < 6) {
-      return throwError(() => new Error('Nowe hasło musi mieć co najmniej 6 znaków'));
+      return throwError(
+        () => new Error('Nowe hasło musi mieć co najmniej 6 znaków')
+      );
     }
 
     return of(true).pipe(delay(1000));
@@ -187,7 +199,9 @@ export class AccountService {
 
   uploadAvatar(file: File): Observable<string> {
     // Symulacja uploadu avatara
-    return of('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face').pipe(delay(2000));
+    return of(
+      'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
+    ).pipe(delay(2000));
   }
 
   deleteAccount(): Observable<boolean> {
@@ -212,7 +226,7 @@ export class AccountService {
           attendanceRate: 95,
           completedAssignments: 38,
           totalAssignments: 42,
-          favoriteSubject: 'Matematyka'
+          favoriteSubject: 'Matematyka',
         };
         break;
       case UserRole.TEACHER:
@@ -222,7 +236,7 @@ export class AccountService {
           averageClassGrade: 3.8,
           gradedAssignments: 156,
           pendingGrades: 12,
-          teachingExperience: 15
+          teachingExperience: 15,
         };
         break;
       case UserRole.PARENT:
@@ -232,7 +246,7 @@ export class AccountService {
           attendanceRate: 92,
           upcomingEvents: 3,
           unreadMessages: 2,
-          meetingsScheduled: 1
+          meetingsScheduled: 1,
         };
         break;
       case UserRole.ADMIN:
@@ -242,11 +256,11 @@ export class AccountService {
           totalTeachers: 45,
           totalParents: 400,
           systemUptime: 99.8,
-          activeClasses: 32
+          activeClasses: 32,
         };
         break;
     }
 
     return of(stats).pipe(delay(800));
   }
-} 
+}

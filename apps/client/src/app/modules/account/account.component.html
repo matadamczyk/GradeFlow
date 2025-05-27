@@ -50,13 +50,11 @@
                 ></p-avatar>
                 <p-fileUpload
                   mode="basic"
-                  name="avatar"
                   accept="image/*"
                   maxFileSize="1000000"
                   chooseLabel="Zmień avatar"
                   styleClass="avatar-upload"
                   (onUpload)="onAvatarUpload($event)"
-
                 ></p-fileUpload>
               </div>
               <div class="profile-info">
@@ -85,16 +83,22 @@
             </div>
             <div class="detail-item" *ngIf="userProfile.lastLogin">
               <i class="pi pi-clock"></i>
-              <span>Ostatnie logowanie: {{ formatDate(userProfile.lastLogin) }}</span>
+              <span
+                >Ostatnie logowanie:
+                {{ formatDate(userProfile.lastLogin) }}</span
+              >
             </div>
           </div>
 
           <!-- Role-specific Information -->
           <p-divider></p-divider>
-          
+
           <div class="role-specific-info">
             <!-- Student Info -->
-            <div *ngIf="userProfile.role === UserRole.STUDENT" class="student-info">
+            <div
+              *ngIf="userProfile.role === UserRole.STUDENT"
+              class="student-info"
+            >
               <h4><i class="pi pi-graduation-cap"></i> Informacje ucznia</h4>
               <div class="info-grid">
                 <div class="info-item" *ngIf="userProfile.studentClass">
@@ -109,7 +113,10 @@
             </div>
 
             <!-- Teacher Info -->
-            <div *ngIf="userProfile.role === UserRole.TEACHER" class="teacher-info">
+            <div
+              *ngIf="userProfile.role === UserRole.TEACHER"
+              class="teacher-info"
+            >
               <h4><i class="pi pi-book"></i> Informacje nauczyciela</h4>
               <div class="subjects-list" *ngIf="userProfile.teacherSubjects">
                 <label>Przedmioty:</label>
@@ -124,7 +131,10 @@
             </div>
 
             <!-- Parent Info -->
-            <div *ngIf="userProfile.role === UserRole.PARENT" class="parent-info">
+            <div
+              *ngIf="userProfile.role === UserRole.PARENT"
+              class="parent-info"
+            >
               <h4><i class="pi pi-users"></i> Informacje rodzica</h4>
               <div class="children-list" *ngIf="userProfile.parentChildren">
                 <label>Dzieci:</label>
@@ -160,7 +170,10 @@
 
           <div class="statistics-grid">
             <!-- Student Statistics -->
-            <div *ngIf="userProfile.role === UserRole.STUDENT" class="stats-content">
+            <div
+              *ngIf="userProfile.role === UserRole.STUDENT"
+              class="stats-content"
+            >
               <div class="stat-item">
                 <div class="stat-value">{{ statistics.totalGrades }}</div>
                 <div class="stat-label">Oceny</div>
@@ -174,13 +187,20 @@
                 <div class="stat-label">Frekwencja</div>
               </div>
               <div class="stat-item">
-                <div class="stat-value">{{ statistics.completedAssignments }}/{{ statistics.totalAssignments }}</div>
+                <div class="stat-value">
+                  {{ statistics.completedAssignments }}/{{
+                    statistics.totalAssignments
+                  }}
+                </div>
                 <div class="stat-label">Zadania</div>
               </div>
             </div>
 
             <!-- Teacher Statistics -->
-            <div *ngIf="userProfile.role === UserRole.TEACHER" class="stats-content">
+            <div
+              *ngIf="userProfile.role === UserRole.TEACHER"
+              class="stats-content"
+            >
               <div class="stat-item">
                 <div class="stat-value">{{ statistics.totalStudents }}</div>
                 <div class="stat-label">Uczniowie</div>
@@ -200,7 +220,10 @@
             </div>
 
             <!-- Parent Statistics -->
-            <div *ngIf="userProfile.role === UserRole.PARENT" class="stats-content">
+            <div
+              *ngIf="userProfile.role === UserRole.PARENT"
+              class="stats-content"
+            >
               <div class="stat-item">
                 <div class="stat-value">{{ statistics.totalChildren }}</div>
                 <div class="stat-label">Dzieci</div>
@@ -220,7 +243,10 @@
             </div>
 
             <!-- Admin Statistics -->
-            <div *ngIf="userProfile.role === UserRole.ADMIN" class="stats-content">
+            <div
+              *ngIf="userProfile.role === UserRole.ADMIN"
+              class="stats-content"
+            >
               <div class="stat-item">
                 <div class="stat-value">{{ statistics.totalUsers }}</div>
                 <div class="stat-label">Użytkownicy</div>
@@ -273,7 +299,9 @@
                       type="text"
                       pInputText
                       formControlName="lastname"
-                      [class.ng-invalid]="isFieldInvalid(profileForm, 'lastname')"
+                      [class.ng-invalid]="
+                        isFieldInvalid(profileForm, 'lastname')
+                      "
                     />
                     <label for="lastname">Nazwisko *</label>
                   </p-floatLabel>
@@ -359,7 +387,9 @@
                       formControlName="currentPassword"
                       [feedback]="false"
                       [toggleMask]="true"
-                      [class.ng-invalid]="isFieldInvalid(passwordForm, 'currentPassword')"
+                      [class.ng-invalid]="
+                        isFieldInvalid(passwordForm, 'currentPassword')
+                      "
                     ></p-password>
                     <label for="currentPassword">Aktualne hasło *</label>
                   </p-floatLabel>
@@ -378,7 +408,9 @@
                       formControlName="newPassword"
                       [feedback]="true"
                       [toggleMask]="true"
-                      [class.ng-invalid]="isFieldInvalid(passwordForm, 'newPassword')"
+                      [class.ng-invalid]="
+                        isFieldInvalid(passwordForm, 'newPassword')
+                      "
                     ></p-password>
                     <label for="newPassword">Nowe hasło *</label>
                   </p-floatLabel>
@@ -397,15 +429,24 @@
                       formControlName="confirmPassword"
                       [feedback]="false"
                       [toggleMask]="true"
-                      [class.ng-invalid]="isFieldInvalid(passwordForm, 'confirmPassword') || passwordForm.hasError('passwordMismatch')"
+                      [class.ng-invalid]="
+                        isFieldInvalid(passwordForm, 'confirmPassword') ||
+                        passwordForm.hasError('passwordMismatch')
+                      "
                     ></p-password>
                     <label for="confirmPassword">Potwierdź hasło *</label>
                   </p-floatLabel>
                   <small
-                    *ngIf="isFieldInvalid(passwordForm, 'confirmPassword') || passwordForm.hasError('passwordMismatch')"
+                    *ngIf="
+                      isFieldInvalid(passwordForm, 'confirmPassword') ||
+                      passwordForm.hasError('passwordMismatch')
+                    "
                     class="p-error"
                   >
-                    {{ getFieldError(passwordForm, 'confirmPassword') || 'Hasła nie są identyczne' }}
+                    {{
+                      getFieldError(passwordForm, 'confirmPassword') ||
+                        'Hasła nie są identyczne'
+                    }}
                   </small>
                 </div>
               </div>
@@ -446,14 +487,19 @@
                 </div>
               </p-panel>
 
-              <p-panel header="Zarządzanie kontem" [toggleable]="true" styleClass="mt-4">
+              <p-panel
+                header="Zarządzanie kontem"
+                [toggleable]="true"
+                styleClass="mt-4"
+              >
                 <div class="danger-zone">
                   <h4 class="danger-title">
                     <i class="pi pi-exclamation-triangle"></i>
                     Strefa niebezpieczna
                   </h4>
                   <p class="danger-description">
-                    Poniższe akcje są nieodwracalne. Upewnij się, że rozumiesz konsekwencje przed ich wykonaniem.
+                    Poniższe akcje są nieodwracalne. Upewnij się, że rozumiesz
+                    konsekwencje przed ich wykonaniem.
                   </p>
                   <p-button
                     label="Usuń konto"
