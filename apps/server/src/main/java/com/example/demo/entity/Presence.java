@@ -14,7 +14,7 @@ public class Presence {
   private Integer id;
 
   @ManyToOne
-  @JoinColumn(name = "student_id", nullable = false,foreignKey = @ForeignKey(name = "fk_presence_student") )
+  @JoinColumn(name = "student_id", nullable = false, foreignKey = @ForeignKey(name = "fk_presence_student"))
   private Student student;
 
   @ManyToOne
@@ -24,4 +24,37 @@ public class Presence {
   @Column(name = "date", nullable = false)
   private Date date;
 
+  // Gettery i Settery
+
+  public Integer getId() {
+    return id;
+  }
+
+  public void setId(Integer id) {
+    this.id = id;
+  }
+
+  public Student getStudent() {
+    return student;
+  }
+
+  public void setStudent(Student student) {
+    this.student = student;
+  }
+
+  public Timetable getLesson() {
+    return lesson;
+  }
+
+  public void setLesson(Timetable lesson) {
+    this.lesson = lesson;
+  }
+
+  public Date getDate() {
+    return date;
+  }
+
+  public void setDate(Date date) {
+    this.date = date;
+  }
 }
