@@ -2,9 +2,9 @@ import { NavbarItem } from './navbar.interfaces';
 
 const studentNavbarItems: NavbarItem[] = [
   {
-    label: 'Start',
+    label: 'Dashboard',
     icon: 'pi pi-home',
-    routerLink: '/',
+    routerLink: '/dashboard',
   },
   {
     label: 'Plan zajęć',
@@ -25,9 +25,9 @@ const studentNavbarItems: NavbarItem[] = [
 
 const teacherNavbarItems: NavbarItem[] = [
   {
-    label: 'Start',
+    label: 'Dashboard',
     icon: 'pi pi-home',
-    routerLink: '/',
+    routerLink: '/dashboard',
   },
   {
     label: 'Plan zajęć',
@@ -45,19 +45,30 @@ const teacherNavbarItems: NavbarItem[] = [
     routerLink: '/account',
   },
 ];
+
 const adminNavbarItems: NavbarItem[] = [
   {
-    label: 'Start',
+    label: 'Dashboard',
     icon: 'pi pi-home',
-    routerLink: '/',
+    routerLink: '/dashboard',
+  },
+  {
+    label: 'Zarządzanie',
+    icon: 'pi pi-cog',
+    routerLink: '/admin',
+  },
+  {
+    label: 'Profil administratora',
+    icon: 'pi pi-user',
+    routerLink: '/account',
   },
 ];
 
 const parentNavbarItems: NavbarItem[] = [
   {
-    label: 'Start',
+    label: 'Dashboard',
     icon: 'pi pi-home',
-    routerLink: '/',
+    routerLink: '/dashboard',
   },
   {
     label: 'Plan zajęć',
@@ -95,10 +106,10 @@ const notLoggedInNavbarItems: NavbarItem[] = [
 ];
 
 const navbarItems = {
-  student: studentNavbarItems,
-  teacher: teacherNavbarItems,
-  admin: adminNavbarItems,
-  parent: parentNavbarItems,
+  STUDENT: studentNavbarItems,
+  TEACHER: teacherNavbarItems,
+  ADMIN: adminNavbarItems,
+  PARENT: parentNavbarItems,
   notLoggedIn: notLoggedInNavbarItems,
 };
 
