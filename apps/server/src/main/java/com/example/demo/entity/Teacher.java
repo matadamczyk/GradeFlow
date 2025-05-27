@@ -16,6 +16,10 @@ public class Teacher {
   @Column( name = "last_name", nullable = false)
   private String lastname;
 
+  public Teacher() {
+
+  }
+
   public Teacher(Integer id, String name, String lastname) {
     this.id = id;
     this.name = name;
