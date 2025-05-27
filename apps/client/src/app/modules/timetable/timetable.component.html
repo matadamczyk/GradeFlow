@@ -6,13 +6,14 @@
       Plan Zajęć
     </h1>
     <p class="page-subtitle">Twój tygodniowy rozkład lekcji</p>
-    <p-button 
-      icon="pi pi-refresh" 
-      label="Odśwież" 
+    <p-button
+      icon="pi pi-refresh"
+      label="Odśwież"
       (onClick)="refreshData()"
       [loading]="isLoading"
       severity="secondary"
-      size="small">
+      size="small"
+    >
     </p-button>
   </div>
 
@@ -30,7 +31,7 @@
         </p-card>
       </div>
     </div>
-    
+
     <div class="grid mt-4">
       <div class="col-12">
         <p-card header="Plan Tygodniowy">
@@ -42,7 +43,6 @@
 
   <!-- Main Content -->
   <div *ngIf="!isLoading" class="timetable-content">
-    
     <!-- Current and Next Lesson Cards -->
     <div class="grid">
       <!-- Current Lesson -->
@@ -56,22 +56,33 @@
               </h3>
             </div>
           </ng-template>
-          
-          <div *ngIf="currentLesson$ | async as currentLesson; else noCurrentLesson">
+
+          <div
+            *ngIf="
+              currentLesson$ | async as currentLesson;
+              else noCurrentLesson
+            "
+          >
             <div class="lesson-info">
               <div class="lesson-subject">
-                <p-tag 
-                  [value]="currentLesson.teacherSubject.subject.name" 
-                  [style]="{'background-color': getSubjectColor(currentLesson.teacherSubject.subject.name)}"
-                  styleClass="subject-tag">
+                <p-tag
+                  [value]="currentLesson.teacherSubject.subject.name"
+                  [style]="{
+                    'background-color': getSubjectColor(
+                      currentLesson.teacherSubject.subject.name
+                    )
+                  }"
+                  styleClass="subject-tag"
+                >
                 </p-tag>
               </div>
-              
+
               <div class="lesson-details">
                 <h4>{{ currentLesson.teacherSubject.subject.name }}</h4>
                 <p class="teacher-name">
                   <i class="pi pi-user"></i>
-                  {{ currentLesson.teacherSubject.teacher.name }} {{ currentLesson.teacherSubject.teacher.lastname }}
+                  {{ currentLesson.teacherSubject.teacher.name }}
+                  {{ currentLesson.teacherSubject.teacher.lastname }}
                 </p>
                 <p class="lesson-time">
                   <i class="pi pi-clock"></i>
@@ -84,7 +95,7 @@
               </div>
             </div>
           </div>
-          
+
           <ng-template #noCurrentLesson>
             <div class="empty-state">
               <i class="pi pi-pause-circle"></i>
@@ -106,22 +117,28 @@
               </h3>
             </div>
           </ng-template>
-          
+
           <div *ngIf="nextLesson$ | async as nextLesson; else noNextLesson">
             <div class="lesson-info">
               <div class="lesson-subject">
-                <p-tag 
-                  [value]="nextLesson.teacherSubject.subject.name" 
-                  [style]="{'background-color': getSubjectColor(nextLesson.teacherSubject.subject.name)}"
-                  styleClass="subject-tag">
+                <p-tag
+                  [value]="nextLesson.teacherSubject.subject.name"
+                  [style]="{
+                    'background-color': getSubjectColor(
+                      nextLesson.teacherSubject.subject.name
+                    )
+                  }"
+                  styleClass="subject-tag"
+                >
                 </p-tag>
               </div>
-              
+
               <div class="lesson-details">
                 <h4>{{ nextLesson.teacherSubject.subject.name }}</h4>
                 <p class="teacher-name">
                   <i class="pi pi-user"></i>
-                  {{ nextLesson.teacherSubject.teacher.name }} {{ nextLesson.teacherSubject.teacher.lastname }}
+                  {{ nextLesson.teacherSubject.teacher.name }}
+                  {{ nextLesson.teacherSubject.teacher.lastname }}
                 </p>
                 <p class="lesson-time">
                   <i class="pi pi-clock"></i>
@@ -134,7 +151,7 @@
               </div>
             </div>
           </div>
-          
+
           <ng-template #noNextLesson>
             <div class="empty-state">
               <i class="pi pi-check-circle"></i>
@@ -164,10 +181,11 @@
               <!-- Header Row -->
               <div class="timetable-header-row">
                 <div class="time-header">Godzina</div>
-                <div 
-                  *ngFor="let day of weekDays" 
+                <div
+                  *ngFor="let day of weekDays"
                   class="day-header"
-                  [class.today]="isToday(day.key)">
+                  [class.today]="isToday(day.key)"
+                >
                   <span class="day-full">{{ day.label }}</span>
                   <span class="day-short">{{ day.short }}</span>
                 </div>
@@ -175,37 +193,63 @@
 
               <!-- Time Slots -->
               <div class="timetable-body">
-                <div 
-                  *ngFor="let slot of timeSlots; let i = index" 
+                <div
+                  *ngFor="let slot of timeSlots; let i = index"
                   class="time-row"
-                  [class.current-time]="isCurrentTimeSlot(slot.period)">
-                  
+                  [class.current-time]="isCurrentTimeSlot(slot.period)"
+                >
                   <!-- Time Column -->
                   <div class="time-cell">
                     <div class="time-slot">
                       <span class="period-number">{{ slot.period }}</span>
-                      <span class="time-range">{{ slot.start }} - {{ slot.end }}</span>
+                      <span class="time-range"
+                        >{{ slot.start }} - {{ slot.end }}</span
+                      >
                     </div>
                   </div>
 
                   <!-- Day Columns -->
-                  <div 
-                    *ngFor="let day of weekDays" 
+                  <div
+                    *ngFor="let day of weekDays"
                     class="lesson-cell"
                     [class.today]="isToday(day.key)"
-                    [class.current-time]="isCurrentTimeSlot(slot.period) && isToday(day.key)">
-                    
-                    <div 
-                      *ngIf="getLessonForDayAndPeriod(weeklyTimetable, day.key, slot.period) as lesson; else emptySlot"
+                    [class.current-time]="
+                      isCurrentTimeSlot(slot.period) && isToday(day.key)
+                    "
+                  >
+                    <div
+                      *ngIf="
+                        getLessonForDayAndPeriod(
+                          weeklyTimetable,
+                          day.key,
+                          slot.period
+                        ) as lesson;
+                        else emptySlot
+                      "
                       class="lesson-item"
-                      [style]="{'border-left-color': getSubjectColor(lesson.teacherSubject.subject.name)}"
-                      [pTooltip]="lesson.teacherSubject.teacher.name + ' ' + lesson.teacherSubject.teacher.lastname + (lesson.room ? ' - Sala ' + lesson.room : '')"
-                      tooltipPosition="top">
-                      
+                      [style]="{
+                        'border-left-color': getSubjectColor(
+                          lesson.teacherSubject.subject.name
+                        )
+                      }"
+                      [pTooltip]="
+                        lesson.teacherSubject.teacher.name +
+                        ' ' +
+                        lesson.teacherSubject.teacher.lastname +
+                        (lesson.room ? ' - Sala ' + lesson.room : '')
+                      "
+                      tooltipPosition="top"
+                    >
                       <div class="lesson-content">
-                        <div class="subject-name">{{ lesson.teacherSubject.subject.name }}</div>
-                        <div class="teacher-short">{{ lesson.teacherSubject.teacher.lastname }}</div>
-                        <div class="room-info" *ngIf="lesson.room">S. {{ lesson.room }}</div>
+                        <div class="subject-name">
+                          {{ lesson.teacherSubject.subject.name }}
+                        </div>
+                        <div class="teacher-short">
+                          {{ lesson.teacherSubject.teacher.lastname }}
+                        </div>
+                        <div class="room-info" *ngIf="lesson.room">
+                          S. {{ lesson.room }}
+                        </div>
                       </div>
                     </div>
 

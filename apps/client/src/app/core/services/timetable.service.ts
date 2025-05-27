@@ -5,10 +5,9 @@ import { MockDataService } from './mock-data.service';
 import { delay } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class TimetableService {
-
   constructor(private mockDataService: MockDataService) {}
 
   getStudentTimetable(studentId: number): Observable<any[]> {
@@ -17,22 +16,26 @@ export class TimetableService {
     if (!student) {
       return of([]);
     }
-    
-    const timetable = this.mockDataService.getTimetableByClass(student.studentClass.id);
+
+    const timetable = this.mockDataService.getTimetableByClass(
+      student.studentClass.id
+    );
     return of(timetable).pipe(delay(500));
   }
 
-  getWeeklyTimetable(studentId: number): Observable<{[day: string]: any[]}> {
+  getWeeklyTimetable(studentId: number): Observable<{ [day: string]: any[] }> {
     const student = this.mockDataService.getStudentById(studentId);
     if (!student) {
       return of({});
     }
 
-    const timetable = this.mockDataService.getTimetableByClass(student.studentClass.id);
-    const weeklyTimetable: {[day: string]: any[]} = {};
+    const timetable = this.mockDataService.getTimetableByClass(
+      student.studentClass.id
+    );
+    const weeklyTimetable: { [day: string]: any[] } = {};
 
     // Grupuj lekcje według dni
-    timetable.forEach(entry => {
+    timetable.forEach((entry) => {
       if (!weeklyTimetable[entry.day]) {
         weeklyTimetable[entry.day] = [];
       }
@@ -40,7 +43,7 @@ export class TimetableService {
     });
 
     // Sortuj lekcje w każdym dniu według numeru lekcji
-    Object.keys(weeklyTimetable).forEach(day => {
+    Object.keys(weeklyTimetable).forEach((day) => {
       weeklyTimetable[day].sort((a, b) => a.lesson_number - b.lesson_number);
     });
 
@@ -53,9 +56,11 @@ export class TimetableService {
       return of([]);
     }
 
-    const timetable = this.mockDataService.getTimetableByClass(student.studentClass.id);
+    const timetable = this.mockDataService.getTimetableByClass(
+      student.studentClass.id
+    );
     const dayTimetable = timetable
-      .filter(entry => entry.day === day)
+      .filter((entry) => entry.day === day)
       .sort((a, b) => a.lesson_number - b.lesson_number);
 
     return of(dayTimetable).pipe(delay(500));
@@ -71,10 +76,12 @@ export class TimetableService {
       return of(null);
     }
 
-    const timetable = this.mockDataService.getTimetableByClass(student.studentClass.id);
-    const todayLessons = timetable.filter(entry => entry.day === currentDay);
+    const timetable = this.mockDataService.getTimetableByClass(
+      student.studentClass.id
+    );
+    const todayLessons = timetable.filter((entry) => entry.day === currentDay);
 
-    const currentLesson = todayLessons.find(lesson => {
+    const currentLesson = todayLessons.find((lesson) => {
       const startTime = this.timeToMinutes(lesson.startTime);
       const endTime = this.timeToMinutes(lesson.endTime);
       return currentTime >= startTime && currentTime <= endTime;
@@ -93,12 +100,14 @@ export class TimetableService {
       return of(null);
     }
 
-    const timetable = this.mockDataService.getTimetableByClass(student.studentClass.id);
+    const timetable = this.mockDataService.getTimetableByClass(
+      student.studentClass.id
+    );
     const todayLessons = timetable
-      .filter(entry => entry.day === currentDay)
+      .filter((entry) => entry.day === currentDay)
       .sort((a, b) => a.lesson_number - b.lesson_number);
 
-    const nextLesson = todayLessons.find(lesson => {
+    const nextLesson = todayLessons.find((lesson) => {
       const startTime = this.timeToMinutes(lesson.startTime);
       return currentTime < startTime;
     });
@@ -120,11 +129,11 @@ export class TimetableService {
 
   getDayLabel(dayCode: string): string {
     const dayLabels: { [key: string]: string } = {
-      'MON': 'Poniedziałek',
-      'TUE': 'Wtorek',
-      'WED': 'Środa',
-      'THU': 'Czwartek',
-      'FRI': 'Piątek'
+      MON: 'Poniedziałek',
+      TUE: 'Wtorek',
+      WED: 'Środa',
+      THU: 'Czwartek',
+      FRI: 'Piątek',
     };
     return dayLabels[dayCode] || dayCode;
   }
@@ -138,7 +147,7 @@ export class TimetableService {
       '11:40-12:25',
       '12:35-13:20',
       '13:30-14:15',
-      '14:25-15:10'
+      '14:25-15:10',
     ];
   }
-} 
+}
