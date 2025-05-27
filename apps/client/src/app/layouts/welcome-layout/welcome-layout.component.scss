@@ -133,10 +133,23 @@
     &.access-button {
       padding: 0.75rem 1.5rem;
       font-weight: 500;
+      margin-bottom: 0.5rem;
     }
 
     .p-button-icon {
       font-size: 1.1rem;
     }
+  }
+}
+
+:host ::ng-deep .auth-dialog {
+  .p-dialog-content {
+    padding: 0 !important;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .p-dialog-header {
+    display: none;
   }
 }

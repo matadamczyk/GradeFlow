@@ -22,7 +22,11 @@
           tooltipPosition="bottom"
         ></p-button>
 
-        @if (loggedIn()) {
+        @if (isLoggedIn()) { @if (!isMobile() && currentUser()) {
+        <span class="mr-3 text-sm">
+          Witaj, {{ currentUser()?.name || currentUser()?.email }}!
+        </span>
+        }
         <p-button
           [label]="isMobile() ? '' : 'Wyloguj się'"
           icon="pi pi-sign-out"
@@ -42,6 +46,7 @@
   </p-menubar>
 </ng-container>
 
+<!-- Dialog logowania -->
 <p-dialog
   [(visible)]="displayDialog"
   [modal]="true"
@@ -52,6 +57,6 @@
   styleClass="auth-dialog"
 >
   <ng-template pTemplate="content">
-    <app-sign-in></app-sign-in>
+    <app-sign-in (loginSuccess)="onLoginSuccess()"></app-sign-in>
   </ng-template>
 </p-dialog>
