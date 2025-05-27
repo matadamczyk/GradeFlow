@@ -1,9 +1,9 @@
 export enum WorkDay {
   MON = 'MON',
-  TUE = 'TUE', 
+  TUE = 'TUE',
   WED = 'WED',
   THU = 'THU',
-  FRI = 'FRI'
+  FRI = 'FRI',
 }
 
 export const WorkDayLabels: Record<WorkDay, string> = {
@@ -11,12 +11,12 @@ export const WorkDayLabels: Record<WorkDay, string> = {
   [WorkDay.TUE]: 'Wtorek',
   [WorkDay.WED]: 'Środa',
   [WorkDay.THU]: 'Czwartek',
-  [WorkDay.FRI]: 'Piątek'
+  [WorkDay.FRI]: 'Piątek',
 };
 
 export enum UserRole {
   STUDENT = 'STUDENT',
   TEACHER = 'TEACHER',
   PARENT = 'PARENT',
-  ADMIN = 'ADMIN'
-} 
+  ADMIN = 'ADMIN',
+}

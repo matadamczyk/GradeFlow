@@ -7,4 +7,4 @@ export * from './grade.model';
 export * from './timetable.model';
 export * from './presence.model';
 export * from './teacher-subject.model';
-export * from './enums'; 
+export * from './enums';

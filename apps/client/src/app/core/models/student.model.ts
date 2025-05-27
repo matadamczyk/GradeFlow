@@ -10,4 +10,4 @@ export interface Student {
 export interface StudentWithGrades extends Student {
   averageGrade: number;
   gradeCount: number;
-} 
+}

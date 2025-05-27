@@ -5,4 +5,4 @@ export interface TeacherSubject {
   id: number;
   teacher: Teacher;
   subject: Subject;
-} 
+}

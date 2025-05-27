@@ -17,5 +17,5 @@ export interface TimetableEntry extends Timetable {
 }
 
 export interface WeeklyTimetable {
-  [key: string]: TimetableEntry[]; // key is WorkDay
+  [key: string]: TimetableEntry[];
 } 

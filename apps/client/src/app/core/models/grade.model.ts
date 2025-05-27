@@ -29,4 +29,4 @@ export interface GradeStatistics {
   overallAverage: number;
   subjectGrades: SubjectGrades[];
   totalGrades: number;
-} 
+}

@@ -13,4 +13,4 @@ export interface PresenceStatistics {
   totalLessons: number;
   presentLessons: number;
   attendanceRate: number;
-} 
+}

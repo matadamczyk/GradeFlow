@@ -9,4 +9,4 @@ export interface SchoolClass {
 
 export interface SchoolClassWithStudentCount extends SchoolClass {
   studentCount: number;
-} 
+}
