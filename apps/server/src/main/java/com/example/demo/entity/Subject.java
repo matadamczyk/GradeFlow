@@ -13,6 +13,15 @@ public class Subject {
   @Column(name = "subject_name",nullable = false,unique = true)
   private String name;
 
+  public Subject(){
+
+  }
+
+  public Subject(Integer id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
   public Integer getId() {
     return id;
   }

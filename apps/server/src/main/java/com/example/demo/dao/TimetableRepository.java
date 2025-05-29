@@ -7,6 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface TimetableRepository extends JpaRepository<Timetable, Integer> {
-  // Pobierz lekcje dla danej klasy i dnia
-  List<Timetable> findByStudentClassIdAndDay(Integer classId, WorkDay day);
+
 }

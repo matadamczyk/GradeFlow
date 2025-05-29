@@ -9,5 +9,4 @@ import java.sql.Date;
 import java.util.Optional;
 
 public interface PresenceRepository extends JpaRepository<Presence, Integer> {
-  Optional<Presence> findByStudentAndLessonAndDate(Student student, Timetable lesson, Date date);
 }
