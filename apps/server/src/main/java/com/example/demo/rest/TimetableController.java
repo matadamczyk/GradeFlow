@@ -1,8 +1,12 @@
 package com.example.demo.rest;
 
+import com.example.demo.dao.ClassRepository;
+import com.example.demo.dao.TeacherSubjectRepository;
+import com.example.demo.dao.TimetableRepository;
+import com.example.demo.dto.TimetableRequest;
+import com.example.demo.entity.Class;
+import com.example.demo.entity.TeacherSubject;
 import com.example.demo.entity.Timetable;
-import com.example.demo.entity.WorkDay;
-import com.example.demo.service.TimetableService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,48 +14,47 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/timetable")
+@RequestMapping("/timetables")
 public class TimetableController {
 
-  private final TimetableService timetableService;
+  private final TimetableRepository timetableRepository;
+  private final ClassRepository classRepository;
+  private final TeacherSubjectRepository teacherSubjectRepository;
 
-  public TimetableController(TimetableService timetableService) {
-    this.timetableService = timetableService;
+  public TimetableController(TimetableRepository timetableRepository,
+                             ClassRepository classRepository,
+                             TeacherSubjectRepository teacherSubjectRepository) {
+    this.timetableRepository = timetableRepository;
+    this.classRepository = classRepository;
+    this.teacherSubjectRepository = teacherSubjectRepository;
   }
 
-  @GetMapping("/class/{classId}/day/{day}")
-  public ResponseEntity<List<Timetable>> getTimetableForClassAndDay(
-    @PathVariable Integer classId,
-    @PathVariable WorkDay day) {
-    List<Timetable> lessons = timetableService.getTimetableForClassAndDay(classId, day);
-    return ResponseEntity.ok(lessons);
+  @GetMapping
+  public ResponseEntity<List<Timetable>> getAllTimetables() {
+    List<Timetable> timetables = timetableRepository.findAll();
+    return ResponseEntity.ok(timetables);
   }
 
   @PostMapping
-  public ResponseEntity<Timetable> addLesson(@RequestBody Timetable lesson) {
-    Timetable saved = timetableService.addLesson(lesson);
-    return ResponseEntity.ok(saved);
-  }
+  public ResponseEntity<?> createTimetable(@RequestBody TimetableRequest request) {
+    // Find Class entity by ID
+    Class studentClass = classRepository.findById(request.getClassId())
+            .orElseThrow(() -> new IllegalArgumentException("Invalid class ID"));
 
-  @PutMapping("/{id}")
-  public ResponseEntity<Timetable> updateLesson(@PathVariable Integer id, @RequestBody Timetable lesson) {
-    lesson.setLesson_id(id);
-    Timetable updated = timetableService.updateLesson(lesson);
-    return ResponseEntity.ok(updated);
-  }
+    // Find TeacherSubject entity by ID
+    TeacherSubject teacherSubject = teacherSubjectRepository.findById(request.getTeacherSubjectId())
+            .orElseThrow(() -> new IllegalArgumentException("Invalid teacher subject ID"));
 
-  @DeleteMapping("/{id}")
-  public ResponseEntity<Void> deleteLesson(@PathVariable Integer id) {
-    timetableService.deleteLesson(id);
-    return ResponseEntity.noContent().build();
-  }
+    // Create new Timetable entity and set fields
+    Timetable timetable = new Timetable();
+    timetable.setStudentClass(studentClass);
+    timetable.setTeacherSubject(teacherSubject);
+    timetable.setLesson_number(request.getLessonNumber());
+    timetable.setDay(request.getDay());
 
-  @GetMapping("/{id}")
-  public ResponseEntity<Timetable> getLessonById(@PathVariable Integer id) {
-    Timetable lesson = timetableService.getLessonById(id);
-    if (lesson == null) {
-      return ResponseEntity.notFound().build();
-    }
-    return ResponseEntity.ok(lesson);
+    // Save to repository
+    Timetable savedTimetable = timetableRepository.save(timetable);
+
+    return ResponseEntity.ok(savedTimetable);
   }
 }

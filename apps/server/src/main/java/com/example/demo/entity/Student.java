@@ -22,6 +22,10 @@ public class Student {
   @JoinColumn(name = "class_id",nullable = false,foreignKey = @ForeignKey(name = "fk_student_class"))
   private Class studentClass;
 
+  public Student() {
+
+  }
+
   public Student(Integer id, String name, String lastname, Class studentClass) {
     this.id = id;
     this.name = name;

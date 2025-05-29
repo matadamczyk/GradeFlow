@@ -32,4 +32,10 @@ public class StudentController {
 
     return ResponseEntity.ok(saved);
   }
+
+  @GetMapping
+  public ResponseEntity<?> getAllStudents() {
+    return ResponseEntity.ok(studentRepository.findAll());
+  }
+
 }
