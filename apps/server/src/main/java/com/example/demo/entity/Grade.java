@@ -1,8 +1,11 @@
 package com.example.demo.entity;
 
-import java.sql.Date;
 import jakarta.persistence.*;
 
+import java.sql.Date;
+
+@Entity
+@Table(name = "Grade")
 public class Grade {
   @Id
   @SequenceGenerator(name = "grade_sequence", sequenceName = "grade_sequence", allocationSize = 1)
@@ -18,7 +21,7 @@ public class Grade {
   private TeacherSubject teacherSubject;
 
   @ManyToOne
-  @JoinColumn(name = "lesson_id", nullable = false,foreignKey = @ForeignKey(name = "fk_grade_timetable"))
+  @JoinColumn(name = "lesson_id", nullable = false, foreignKey = @ForeignKey(name = "fk_grade_timetable"))
   private Timetable lesson;
 
   @Temporal(TemporalType.DATE)
@@ -26,7 +29,7 @@ public class Grade {
   private Date date;
 
   @Column(name = "grade_value", nullable = false,
-    columnDefinition = "FLOAT CHECK (grade_value >= 1.0 AND grade_value <= 6.0)")
+    columnDefinition = "FLOAT CHECK ((grade_value >= 1.0 AND grade_value <= 6.0) OR grade_value = 0.0)")
   private Float grade_value;
 
   @Column(name = "grade_weight", nullable = false)
@@ -34,6 +37,30 @@ public class Grade {
 
   @Column(name = "comment", columnDefinition = "TEXT")
   private String comment;
+
+  public Grade() {
+  }
+
+  public Grade(Integer id, Student student, TeacherSubject teacherSubject, Timetable lesson, Date date, Float grade_value, Integer grade_weight, String comment) {
+    this.id = id;
+    this.student = student;
+    this.teacherSubject = teacherSubject;
+    this.lesson = lesson;
+    this.date = date;
+    this.grade_value = grade_value;
+    this.grade_weight = grade_weight;
+    this.comment = comment;
+  }
+
+  public Grade(Student student, TeacherSubject teacherSubject, Timetable lesson, Date date, Float grade_value, Integer grade_weight, String comment) {
+    this.student = student;
+    this.teacherSubject = teacherSubject;
+    this.lesson = lesson;
+    this.date = date;
+    this.grade_value = grade_value;
+    this.grade_weight = grade_weight;
+    this.comment = comment;
+  }
 
   public Integer getId() {
     return id;
@@ -43,6 +70,29 @@ public class Grade {
     this.id = id;
   }
 
+  public Student getStudent() {
+    return student;
+  }
+
+  public void setStudent(Student student) {
+    this.student = student;
+  }
+
+  public TeacherSubject getTeacherSubject() {
+    return teacherSubject;
+  }
+
+  public void setTeacherSubject(TeacherSubject teacherSubject) {
+    this.teacherSubject = teacherSubject;
+  }
+
+  public Timetable getLesson() {
+    return lesson;
+  }
+
+  public void setLesson(Timetable lesson) {
+    this.lesson = lesson;
+  }
 
   public Date getDate() {
     return date;
@@ -64,8 +114,8 @@ public class Grade {
     return grade_weight;
   }
 
-  public void setGrade_weihght(Integer grade_weihght) {
-    this.grade_weight = grade_weihght;
+  public void setGrade_weight(Integer grade_weight) {
+    this.grade_weight = grade_weight;
   }
 
   public String getComment() {
