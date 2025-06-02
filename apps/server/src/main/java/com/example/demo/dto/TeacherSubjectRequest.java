@@ -1,7 +1,13 @@
 package com.example.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TeacherRequest {
+
+  @JsonProperty("teacher_id")
   private Integer teacher_id;
+
+  @JsonProperty("teacher_id")
   private Integer subject_id;
 
   // Getters and setters
