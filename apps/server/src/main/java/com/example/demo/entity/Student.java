@@ -20,24 +20,24 @@ public class Student {
 
   @ManyToOne
   @JoinColumn(name = "class_id",nullable = false,foreignKey = @ForeignKey(name = "fk_student_class"))
-  private Class studentClass;
+  private StudentClass studentClass;
 
   public Student() {
 
   }
 
-  public Student(Integer id, String name, String lastname, Class studentClass) {
+  public Student(Integer id, String name, String lastname, StudentClass studentClass) {
     this.id = id;
     this.name = name;
     this.lastname = lastname;
     this.studentClass = studentClass;
   }
 
-  public Class getStudentClass() {
+  public StudentClass getStudentClass() {
     return studentClass;
   }
 
-  public void setStudentClass(Class studentClass) {
+  public void setStudentClass(StudentClass studentClass) {
     this.studentClass = studentClass;
   }
 

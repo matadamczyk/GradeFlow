@@ -1,9 +1,13 @@
 package com.example.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class StudentRequest {
   private String name;
   private String lastname;
-  private Integer classid;
+
+  @JsonProperty("class_id")
+  private Integer classId;
 
   // getters and setters
 
@@ -23,11 +27,11 @@ public class StudentRequest {
     this.lastname = lastname;
   }
 
-  public Integer getClassid() {
-    return classid;
+  public Integer getClassId() {
+    return classId;
   }
 
-  public void setClassid(Integer classid) {
-    this.classid = classid;
+  public void setClassId(Integer classId) {
+    this.classId = classId;
   }
 }
