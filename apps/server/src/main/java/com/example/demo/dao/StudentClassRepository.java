@@ -1,7 +1,7 @@
 package com.example.demo.dao;
 
-import com.example.demo.entity.Class;
+import com.example.demo.entity.StudentClass;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface ClassRepository extends JpaRepository<Class, Integer> {}
+public interface StudentClassRepository extends JpaRepository<StudentClass, Integer> {}

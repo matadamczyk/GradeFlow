@@ -3,10 +3,10 @@ package com.example.demo.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "Class",
+@Table(name = "student_class",
   uniqueConstraints = { @UniqueConstraint(columnNames = {"number", "letter"})
 })
-public class Class {
+public class StudentClass {
   @Id
   @SequenceGenerator(name = "class_sequence", sequenceName = "class_sequence", allocationSize = 1)
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "class_sequence")
