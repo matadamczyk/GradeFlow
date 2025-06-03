@@ -3,7 +3,7 @@ package com.example.demo.rest;
 import com.example.demo.dao.SubjectRepository;
 import com.example.demo.dao.TeacherRepository;
 import com.example.demo.dao.TeacherSubjectRepository;
-import com.example.demo.dto.TeacherRequest;
+import com.example.demo.dto.TeacherSubjectRequest;
 import com.example.demo.entity.Subject;
 import com.example.demo.entity.Teacher;
 import com.example.demo.entity.TeacherSubject;
@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/teacherSubjects")
@@ -31,7 +30,7 @@ public class TeacherSubjectController {
   }
 
   @PostMapping
-  public ResponseEntity<?> assignSubjectToTeacher(@RequestBody TeacherRequest dto) {
+  public ResponseEntity<?> assignSubjectToTeacher(@RequestBody TeacherSubjectRequest dto) {
     Optional<Teacher> teacherOpt = teacherRepository.findById(dto.getTeacher_id());
     Optional<Subject> subjectOpt = subjectRepository.findById(dto.getSubject_id());
 
