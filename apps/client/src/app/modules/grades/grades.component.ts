@@ -1,22 +1,21 @@
-import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
-
-// PrimeNG imports
-import { CardModule } from 'primeng/card';
-import { TableModule } from 'primeng/table';
-import { TagModule } from 'primeng/tag';
-import { ButtonModule } from 'primeng/button';
-import { ProgressBarModule } from 'primeng/progressbar';
-import { SkeletonModule } from 'primeng/skeleton';
-import { AccordionModule } from 'primeng/accordion';
-import { BadgeModule } from 'primeng/badge';
-import { TooltipModule } from 'primeng/tooltip';
-import { DividerModule } from 'primeng/divider';
-
 // Core imports
 import { AuthService, GradesService } from '../../core/services';
+import { Component, OnInit } from '@angular/core';
 import { GradeStatistics, SubjectGrades } from '../../core/models';
+
+import { AccordionModule } from 'primeng/accordion';
+import { BadgeModule } from 'primeng/badge';
+import { ButtonModule } from 'primeng/button';
+// PrimeNG imports
+import { CardModule } from 'primeng/card';
+import { CommonModule } from '@angular/common';
+import { DividerModule } from 'primeng/divider';
+import { Observable } from 'rxjs';
+import { ProgressBarModule } from 'primeng/progressbar';
+import { SkeletonModule } from 'primeng/skeleton';
+import { TableModule } from 'primeng/table';
+import { TagModule } from 'primeng/tag';
+import { TooltipModule } from 'primeng/tooltip';
 
 @Component({
   selector: 'app-grades',
@@ -44,6 +43,9 @@ export class GradesComponent implements OnInit {
   selectedSubject: string | null = null;
   isLoading = true;
   currentStudentId = 1; // Domyślnie pierwszy uczeń z mock data
+
+  // Expose Math to template
+  Math = Math;
 
   // Table columns
   gradeColumns = [
@@ -110,6 +112,18 @@ export class GradesComponent implements OnInit {
     return 'pi pi-times';
   }
 
+  getGradeDescription(grade: number): string {
+    switch (grade) {
+      case 6: return 'Celujący';
+      case 5: return 'Bardzo dobry';
+      case 4: return 'Dobry';
+      case 3: return 'Dostateczny';
+      case 2: return 'Dopuszczający';
+      case 1: return 'Niedostateczny';
+      default: return 'Nieokreślona';
+    }
+  }
+
   getAverageProgress(average: number): number {
     return (average / 6) * 100;
   }
@@ -120,5 +134,14 @@ export class GradesComponent implements OnInit {
 
   refreshData(): void {
     this.loadGradesData();
+  }
+
+  // Track functions for performance optimization
+  trackByGrade(index: number, item: any): any {
+    return item.id || index;
+  }
+
+  trackBySubject(index: number, item: SubjectGrades): any {
+    return item.subjectName || index;
   }
 }

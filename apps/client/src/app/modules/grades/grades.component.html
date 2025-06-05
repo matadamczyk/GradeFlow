@@ -1,46 +1,53 @@
 <div class="grades-container">
-  <!-- Header Section -->
+  <!-- Header Section with Enhanced Hero Design -->
   <div class="grades-header">
-    <h1 class="page-title">
-      <i class="pi pi-chart-line"></i>
-      Moje Oceny
-    </h1>
-    <p class="page-subtitle">Przegląd Twoich wyników w nauce</p>
-    <p-button
-      icon="pi pi-refresh"
-      label="Odśwież"
-      (onClick)="refreshData()"
-      [loading]="isLoading"
-      severity="secondary"
-      size="small"
-    >
-    </p-button>
+    <div class="header-content">
+      <div class="title-section">
+        <h1 class="page-title">
+          <div class="title-icon">
+            <i class="pi pi-chart-line"></i>
+          </div>
+          <span>Moje Oceny</span>
+        </h1>
+        <p class="page-subtitle">Przegląd Twoich wyników w nauce</p>
+      </div>
+      
+      <div class="header-actions">
+        <p-button
+          icon="pi pi-refresh"
+          label="Odśwież"
+          (onClick)="refreshData()"
+          [loading]="isLoading"
+          severity="secondary"
+          size="small"
+          styleClass="refresh-btn"
+        >
+        </p-button>
+      </div>
+    </div>
   </div>
 
   <!-- Loading Skeletons -->
   <div *ngIf="isLoading" class="loading-content">
     <div class="grid">
       <div class="col-12 md:col-4" *ngFor="let item of [1, 2, 3]">
-        <p-card>
-          <p-skeleton height="4rem"></p-skeleton>
-          <p-skeleton height="2rem" class="mt-2"></p-skeleton>
+        <p-card styleClass="loading-card">
+          <p-skeleton height="4rem" class="mb-3"></p-skeleton>
+          <p-skeleton height="2rem" class="mb-2"></p-skeleton>
+          <p-skeleton height="1rem"></p-skeleton>
         </p-card>
       </div>
     </div>
 
     <div class="grid mt-4">
-      <div class="col-12 lg:col-8">
-        <p-card header="Ostatnie Oceny">
+      <div class="col-12">
+        <p-card styleClass="loading-card">
+          <p-skeleton height="3rem" class="mb-3"></p-skeleton>
           <p-skeleton
-            height="3rem"
+            height="4rem"
             class="mb-2"
             *ngFor="let item of [1, 2, 3, 4, 5]"
           ></p-skeleton>
-        </p-card>
-      </div>
-      <div class="col-12 lg:col-4">
-        <p-card header="Wykres Średnich">
-          <p-skeleton height="15rem"></p-skeleton>
         </p-card>
       </div>
     </div>
@@ -48,256 +55,377 @@
 
   <!-- Main Content -->
   <div *ngIf="!isLoading" class="grades-content">
-    <!-- Statistics Cards -->
-    <div class="grid" *ngIf="statistics$ | async as stats">
-      <div class="col-12 md:col-4">
-        <p-card styleClass="stat-card overall-average">
-          <div class="stat-content">
-            <div class="stat-icon">
-              <i class="pi pi-trophy"></i>
+    <!-- Enhanced Statistics Cards -->
+    <div class="stats-section" *ngIf="statistics$ | async as stats">
+      <div class="grid">
+        <div class="col-12 md:col-4">
+          <div class="stat-card overall-average">
+            <div class="stat-header">
+              <div class="stat-icon">
+                <i class="pi pi-trophy"></i>
+              </div>
+              <div class="stat-trend">
+                <i class="pi pi-arrow-up"></i>
+              </div>
             </div>
-            <div class="stat-details">
+            <div class="stat-content">
               <h3>Średnia Ogólna</h3>
               <div class="stat-value">
                 {{ stats.overallAverage | number : '1.2-2' }}
+                <span class="stat-scale">/6.0</span>
               </div>
-              <p-progressBar
-                [value]="getAverageProgress(stats.overallAverage)"
-                [showValue]="false"
-                styleClass="mt-2"
-              >
-              </p-progressBar>
+              <div class="progress-container">
+                <p-progressBar
+                  [value]="getAverageProgress(stats.overallAverage)"
+                  [showValue]="false"
+                  styleClass="stat-progress"
+                >
+                </p-progressBar>
+                <span class="progress-label">{{ getAverageProgress(stats.overallAverage) | number : '1.0-0' }}%</span>
+              </div>
             </div>
           </div>
-        </p-card>
-      </div>
+        </div>
 
-      <div class="col-12 md:col-4">
-        <p-card styleClass="stat-card total-grades">
-          <div class="stat-content">
-            <div class="stat-icon">
-              <i class="pi pi-list"></i>
+        <div class="col-12 md:col-4">
+          <div class="stat-card total-grades">
+            <div class="stat-header">
+              <div class="stat-icon">
+                <i class="pi pi-list"></i>
+              </div>
+              <div class="stat-badge">
+                <span>+{{ stats.totalGrades }}</span>
+              </div>
             </div>
-            <div class="stat-details">
+            <div class="stat-content">
               <h3>Liczba Ocen</h3>
-              <div class="stat-value">{{ stats.totalGrades }}</div>
-              <small class="text-muted">w tym semestrze</small>
+              <div class="stat-value">
+                {{ stats.totalGrades }}
+                <span class="stat-unit">ocen</span>
+              </div>
+              <p class="stat-description">w tym semestrze</p>
             </div>
           </div>
-        </p-card>
-      </div>
+        </div>
 
-      <div class="col-12 md:col-4">
-        <p-card styleClass="stat-card subjects-count">
-          <div class="stat-content">
-            <div class="stat-icon">
-              <i class="pi pi-book"></i>
+        <div class="col-12 md:col-4">
+          <div class="stat-card subjects-count">
+            <div class="stat-header">
+              <div class="stat-icon">
+                <i class="pi pi-book"></i>
+              </div>
+              <div class="stat-indicator">
+                <div class="pulse"></div>
+              </div>
             </div>
-            <div class="stat-details">
+            <div class="stat-content">
               <h3>Przedmioty</h3>
-              <div class="stat-value">{{ stats.subjectGrades.length }}</div>
-              <small class="text-muted">aktywnych</small>
+              <div class="stat-value">
+                {{ stats.subjectGrades.length }}
+                <span class="stat-unit">aktywnych</span>
+              </div>
+              <p class="stat-description">w trakcie semestru</p>
             </div>
           </div>
-        </p-card>
+        </div>
       </div>
     </div>
 
-    <!-- Main Content Grid -->
-    <div class="grid mt-4">
-      <!-- Recent Grades Section -->
-      <div class="col-12">
-        <p-card header="Ostatnie Oceny" styleClass="recent-grades-card">
-          <ng-template pTemplate="header">
-            <div class="card-header">
-              <h3>
-                <i class="pi pi-clock"></i>
-                Ostatnie Oceny
-              </h3>
-            </div>
-          </ng-template>
-
-          <div *ngIf="recentGrades$ | async as recentGrades">
-            <div *ngIf="recentGrades.length > 0; else noRecentGrades">
-              <div class="recent-grade-item" *ngFor="let grade of recentGrades">
-                <div class="grade-info">
-                  <p-tag
-                    [value]="grade.grade_value.toString()"
-                    [severity]="getGradeSeverity(grade.grade_value)"
-                    [icon]="getGradeIcon(grade.grade_value)"
-                    styleClass="grade-tag"
-                  >
-                  </p-tag>
-
-                  <div class="grade-details">
-                    <h4>{{ grade.subjectName }}</h4>
-                    <p *ngIf="grade.comment" class="grade-comment">
-                      {{ grade.comment }}
-                    </p>
-                    <small class="grade-date">{{
-                      formatDate(grade.date)
-                    }}</small>
-                  </div>
+    <!-- Enhanced Recent Grades Section -->
+    <div class="recent-grades-section">
+      <div class="grid">
+        <div class="col-12">
+          <div class="section-card recent-grades-card">
+            <div class="section-header">
+              <div class="header-content">
+                <div class="header-icon">
+                  <i class="pi pi-clock"></i>
                 </div>
-
-                <div class="grade-weight">
-                  <p-badge
-                    [value]="'Waga: ' + grade.grade_weight"
-                    severity="info"
-                  >
-                  </p-badge>
+                <div class="header-text">
+                  <h3>Ostatnie Oceny</h3>
+                  <p>Najnowsze wyniki z ostatnich dni</p>
                 </div>
+              </div>
+              <div class="header-actions">
+                <p-button 
+                  icon="pi pi-external-link" 
+                  severity="secondary"
+                  text="true"
+                  size="small"
+                  pTooltip="Zobacz wszystkie"
+                ></p-button>
               </div>
             </div>
 
-            <ng-template #noRecentGrades>
-              <div class="empty-state">
-                <i class="pi pi-inbox"></i>
-                <p>Brak ostatnich ocen</p>
-              </div>
-            </ng-template>
-          </div>
-        </p-card>
-      </div>
-    </div>
-
-    <!-- Subject Grades Section -->
-    <div class="grid mt-4">
-      <div class="col-12">
-        <p-card header="Oceny według Przedmiotów" styleClass="subjects-card">
-          <ng-template pTemplate="header">
-            <div class="card-header">
-              <h3>
-                <i class="pi pi-graduation-cap"></i>
-                Oceny według Przedmiotów
-              </h3>
-            </div>
-          </ng-template>
-
-          <div *ngIf="subjectGrades$ | async as subjectGrades">
-            <p-accordion *ngIf="subjectGrades.length > 0; else noSubjects">
-              <p-accordionTab
-                *ngFor="let subject of subjectGrades"
-                [header]="subject.subjectName"
-              >
-                <ng-template pTemplate="header">
-                  <div class="subject-header">
-                    <span class="subject-name">{{ subject.subjectName }}</span>
-                    <div class="subject-stats">
-                      <p-tag
-                        [value]="
-                          (subject.weightedAverage | number : '1.2-2') || '0.00'
-                        "
-                        [severity]="getGradeSeverity(subject.weightedAverage)"
-                        styleClass="average-tag"
-                      >
-                      </p-tag>
-                      <p-badge
-                        [value]="subject.grades.length + ' ocen'"
-                        severity="info"
-                      >
-                      </p-badge>
+            <div class="section-content" *ngIf="recentGrades$ | async as recentGrades">
+              <div *ngIf="recentGrades.length > 0; else noRecentGrades" class="grades-timeline">
+                <div class="grade-item" *ngFor="let grade of recentGrades; trackBy: trackByGrade">
+                  <div class="grade-indicator">
+                    <div class="grade-badge" [ngClass]="'grade-' + grade.grade_value">
+                      {{ grade.grade_value }}
                     </div>
                   </div>
-                </ng-template>
-
-                <!-- Subject grades table -->
-                <p-table
-                  [value]="subject.grades"
-                  styleClass="p-datatable-sm"
-                  [paginator]="subject.grades.length > 10"
-                  [rows]="10"
-                  [responsive]="true"
-                >
-                  <ng-template pTemplate="header">
-                    <tr>
-                      <th>Ocena</th>
-                      <th>Data</th>
-                      <th>Waga</th>
-                      <th>Komentarz</th>
-                    </tr>
-                  </ng-template>
-
-                  <ng-template pTemplate="body" let-grade>
-                    <tr>
-                      <td>
+                  
+                  <div class="grade-content">
+                    <div class="grade-header">
+                      <h4 class="subject-name">{{ grade.subjectName }}</h4>
+                      <div class="grade-meta">
+                        <span class="grade-date">{{ formatDate(grade.date) }}</span>
                         <p-tag
-                          [value]="grade.grade_value.toString()"
-                          [severity]="getGradeSeverity(grade.grade_value)"
-                        >
-                        </p-tag>
-                      </td>
-                      <td>{{ formatDate(grade.date) }}</td>
-                      <td>
-                        <p-badge
-                          [value]="grade.grade_weight.toString()"
-                        ></p-badge>
-                      </td>
-                      <td>
-                        <span
-                          [pTooltip]="grade.comment"
-                          tooltipPosition="top"
-                          *ngIf="grade.comment; else noComment"
-                        >
-                          {{
-                            grade.comment.length > 30
-                              ? (grade.comment | slice : 0 : 30) + '...'
-                              : grade.comment
-                          }}
-                        </span>
-                        <ng-template #noComment>
-                          <span class="text-muted">-</span>
-                        </ng-template>
-                      </td>
-                    </tr>
-                  </ng-template>
-
-                  <ng-template pTemplate="emptymessage">
-                    <tr>
-                      <td colspan="4" class="text-center">
-                        <div class="empty-state">
-                          <i class="pi pi-info-circle"></i>
-                          <p>Brak ocen z tego przedmiotu</p>
-                        </div>
-                      </td>
-                    </tr>
-                  </ng-template>
-                </p-table>
-
-                <p-divider></p-divider>
-
-                <!-- Subject summary -->
-                <div class="subject-summary">
-                  <div class="summary-item">
-                    <label>Średnia arytmetyczna:</label>
-                    <span class="summary-value">{{
-                      subject.average | number : '1.2-2'
-                    }}</span>
+                          [value]="'Waga: ' + grade.grade_weight"
+                          severity="info" 
+                          size="small"
+                          styleClass="weight-tag"
+                        ></p-tag>
+                      </div>
+                    </div>
+                    
+                    <p *ngIf="grade.comment" class="grade-comment">
+                      <i class="pi pi-comment"></i>
+                      {{ grade.comment }}
+                    </p>
                   </div>
-                  <div class="summary-item">
-                    <label>Średnia ważona:</label>
-                    <span class="summary-value">{{
-                      subject.weightedAverage | number : '1.2-2'
-                    }}</span>
-                  </div>
-                  <div class="summary-item">
-                    <label>Liczba ocen:</label>
-                    <span class="summary-value">{{
-                      subject.grades.length
-                    }}</span>
+
+                  <div class="grade-actions">
+                    <p-button 
+                      icon="pi pi-info-circle" 
+                      severity="secondary"
+                      text="true"
+                      size="small"
+                      pTooltip="Szczegóły"
+                    ></p-button>
                   </div>
                 </div>
-              </p-accordionTab>
-            </p-accordion>
-
-            <ng-template #noSubjects>
-              <div class="empty-state">
-                <i class="pi pi-graduation-cap"></i>
-                <p>Brak ocen z przedmiotów</p>
               </div>
-            </ng-template>
+
+              <ng-template #noRecentGrades>
+                <div class="enhanced-empty-state">
+                  <div class="empty-icon">
+                    <i class="pi pi-inbox"></i>
+                  </div>
+                  <h4>Brak ostatnich ocen</h4>
+                  <p>Gdy otrzymasz nowe oceny, pojawią się tutaj</p>
+                </div>
+              </ng-template>
+            </div>
           </div>
-        </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Enhanced Subject Grades Section -->
+    <div class="subjects-section">
+      <div class="grid">
+        <div class="col-12">
+          <div class="section-card subjects-card">
+            <div class="section-header">
+              <div class="header-content">
+                <div class="header-icon">
+                  <i class="pi pi-graduation-cap"></i>
+                </div>
+                <div class="header-text">
+                  <h3>Oceny według Przedmiotów</h3>
+                  <p>Szczegółowy przegląd wyników z każdego przedmiotu</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-content" *ngIf="subjectGrades$ | async as subjectGrades">
+              <div *ngIf="subjectGrades.length > 0; else noSubjects" class="subjects-accordion">
+                <p-accordion styleClass="custom-accordion">
+                  <p-accordionTab
+                    *ngFor="let subject of subjectGrades; trackBy: trackBySubject"
+                    [header]="subject.subjectName"
+                  >
+                    <ng-template pTemplate="header">
+                      <div class="accordion-header">
+                        <div class="subject-info">
+                          <div class="subject-icon">
+                            <i class="pi pi-book"></i>
+                          </div>
+                          <div class="subject-details">
+                            <span class="subject-name">{{ subject.subjectName }}</span>
+                            <small class="subject-meta">{{ subject.grades.length }} ocen</small>
+                          </div>
+                        </div>
+                        <div class="subject-stats">
+                          <div class="average-display">
+                            <span class="average-value">{{ (subject.weightedAverage | number : '1.2-2') || '0.00' }}</span>
+                            <span class="average-label">średnia</span>
+                          </div>
+                          <div class="progress-ring" [ngClass]="'grade-' + Math.floor(subject.weightedAverage || 0)">
+                            <svg width="40" height="40">
+                              <circle cx="20" cy="20" r="18" fill="none" stroke="var(--surface-border)" stroke-width="2"/>
+                              <circle 
+                                cx="20" cy="20" r="18" 
+                                fill="none" 
+                                stroke="currentColor" 
+                                stroke-width="2"
+                                stroke-dasharray="113.1"
+                                [style.stroke-dashoffset]="113.1 - ((subject.weightedAverage || 0) / 6) * 113.1"
+                                transform="rotate(-90 20 20)"
+                              />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </ng-template>
+
+                    <!-- Enhanced Subject Content -->
+                    <div class="subject-content">
+                      <!-- Quick Stats -->
+                      <div class="subject-quick-stats">
+                        <div class="quick-stat-item">
+                          <div class="stat-icon average">
+                            <i class="pi pi-chart-bar"></i>
+                          </div>
+                          <div class="stat-info">
+                            <span class="stat-value">{{ subject.average | number : '1.2-2' }}</span>
+                            <span class="stat-label">Średnia arytmetyczna</span>
+                          </div>
+                        </div>
+                        
+                        <div class="quick-stat-item">
+                          <div class="stat-icon weighted">
+                            <i class="pi pi-percentage"></i>
+                          </div>
+                          <div class="stat-info">
+                            <span class="stat-value">{{ subject.weightedAverage | number : '1.2-2' }}</span>
+                            <span class="stat-label">Średnia ważona</span>
+                          </div>
+                        </div>
+                        
+                        <div class="quick-stat-item">
+                          <div class="stat-icon count">
+                            <i class="pi pi-hashtag"></i>
+                          </div>
+                          <div class="stat-info">
+                            <span class="stat-value">{{ subject.grades.length }}</span>
+                            <span class="stat-label">Liczba ocen</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <p-divider styleClass="custom-divider"></p-divider>
+
+                      <!-- Enhanced Grades Table -->
+                      <div class="grades-table-container">
+                        <p-table
+                          [value]="subject.grades"
+                          styleClass="enhanced-table"
+                          [paginator]="subject.grades.length > 5"
+                          [rows]="5"
+                          [responsive]="true"
+                          [showCurrentPageReport]="true"
+                          currentPageReportTemplate="Pokazano {first} - {last} z {totalRecords} ocen"
+                        >
+                          <ng-template pTemplate="header">
+                            <tr>
+                              <th pSortableColumn="grade_value">
+                                Ocena <p-sortIcon field="grade_value"></p-sortIcon>
+                              </th>
+                              <th pSortableColumn="date">
+                                Data <p-sortIcon field="date"></p-sortIcon>
+                              </th>
+                              <th pSortableColumn="grade_weight">
+                                Waga <p-sortIcon field="grade_weight"></p-sortIcon>
+                              </th>
+                              <th>Komentarz</th>
+                              <th>Akcje</th>
+                            </tr>
+                          </ng-template>
+
+                          <ng-template pTemplate="body" let-grade let-rowIndex="rowIndex">
+                            <tr [ngClass]="{'recent-grade': rowIndex < 3}">
+                              <td>
+                                <div class="grade-cell">
+                                  <div class="grade-badge-large" [ngClass]="'grade-' + grade.grade_value">
+                                    {{ grade.grade_value }}
+                                  </div>
+                                  <p-tag
+                                    [value]="getGradeDescription(grade.grade_value)"
+                                    [severity]="getGradeSeverity(grade.grade_value)"
+                                    size="small"
+                                  ></p-tag>
+                                </div>
+                              </td>
+                              <td>
+                                <div class="date-cell">
+                                  <i class="pi pi-calendar"></i>
+                                  <span>{{ formatDate(grade.date) }}</span>
+                                </div>
+                              </td>
+                              <td>
+                                <div class="weight-cell">
+                                  <div class="weight-indicator" [style.width.%]="(grade.grade_weight / 5) * 100"></div>
+                                  <span class="weight-value">{{ grade.grade_weight }}</span>
+                                </div>
+                              </td>
+                              <td>
+                                <div class="comment-cell" *ngIf="grade.comment; else noComment">
+                                  <span
+                                    [pTooltip]="grade.comment"
+                                    tooltipPosition="top"
+                                    class="comment-text"
+                                  >
+                                    <i class="pi pi-comment"></i>
+                                    {{
+                                      grade.comment.length > 25
+                                        ? (grade.comment | slice : 0 : 25) + '...'
+                                        : grade.comment
+                                    }}
+                                  </span>
+                                </div>
+                                <ng-template #noComment>
+                                  <span class="no-comment">
+                                    <i class="pi pi-minus"></i>
+                                    Brak komentarza
+                                  </span>
+                                </ng-template>
+                              </td>
+                              <td>
+                                <div class="action-buttons">
+                                  <p-button 
+                                    icon="pi pi-eye" 
+                                    severity="secondary"
+                                    text="true"
+                                    size="small"
+                                    pTooltip="Zobacz szczegóły"
+                                  ></p-button>
+                                </div>
+                              </td>
+                            </tr>
+                          </ng-template>
+
+                          <ng-template pTemplate="emptymessage">
+                            <tr>
+                              <td colspan="5">
+                                <div class="table-empty-state">
+                                  <i class="pi pi-info-circle"></i>
+                                  <p>Brak ocen z tego przedmiotu</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </ng-template>
+                        </p-table>
+                      </div>
+                    </div>
+                  </p-accordionTab>
+                </p-accordion>
+              </div>
+
+              <ng-template #noSubjects>
+                <div class="enhanced-empty-state">
+                  <div class="empty-icon">
+                    <i class="pi pi-graduation-cap"></i>
+                  </div>
+                  <h4>Brak ocen z przedmiotów</h4>
+                  <p>Gdy otrzymasz oceny z przedmiotów, pojawią się tutaj</p>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
