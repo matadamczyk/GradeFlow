@@ -268,7 +268,7 @@ export class MockDataService {
       endTime: '13:20',
       room: 'Sala gimnastyczna',
     },
-    
+
     // TUESDAY
     {
       lesson_id: 7,
@@ -336,7 +336,7 @@ export class MockDataService {
       endTime: '13:20',
       room: '102',
     },
-    
+
     // WEDNESDAY
     {
       lesson_id: 13,
@@ -415,7 +415,7 @@ export class MockDataService {
       endTime: '14:15',
       room: 'Sala gimnastyczna',
     },
-    
+
     // THURSDAY
     {
       lesson_id: 20,
@@ -483,7 +483,7 @@ export class MockDataService {
       endTime: '13:20',
       room: '104',
     },
-    
+
     // FRIDAY
     {
       lesson_id: 26,

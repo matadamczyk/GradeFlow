@@ -112,9 +112,10 @@
     &.today {
       background: var(--primary-color);
       color: white;
-      
+
       .day-info {
-        .day-name, .day-date {
+        .day-name,
+        .day-date {
           color: white;
         }
       }
@@ -159,7 +160,8 @@
         color: white;
 
         .time-info {
-          .period-number, .time-range {
+          .period-number,
+          .time-range {
             color: white;
           }
         }
@@ -429,10 +431,10 @@
         &.subject-color {
           background: linear-gradient(
             45deg,
-            #FF6B6B,
-            #4ECDC4,
-            #45B7D1,
-            #96CEB4
+            #ff6b6b,
+            #4ecdc4,
+            #45b7d1,
+            #96ceb4
           );
         }
       }
@@ -519,7 +521,8 @@
           font-size: 0.7rem;
         }
 
-        .teacher-info, .room-info {
+        .teacher-info,
+        .room-info {
           font-size: 0.65rem;
         }
       }

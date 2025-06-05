@@ -46,8 +46,8 @@
           <div class="time-column-header">
             <span>Godzina</span>
           </div>
-          <div 
-            *ngFor="let day of weekDays" 
+          <div
+            *ngFor="let day of weekDays"
             class="day-column-header"
             [class.today]="isToday(day.key)"
           >
@@ -59,9 +59,12 @@
         </div>
 
         <!-- Time Slots and Lessons -->
-        <div class="calendar-body" *ngIf="weeklyTimetable$ | async as weeklyTimetable">
-          <div 
-            *ngFor="let slot of timeSlots; let i = index" 
+        <div
+          class="calendar-body"
+          *ngIf="weeklyTimetable$ | async as weeklyTimetable"
+        >
+          <div
+            *ngFor="let slot of timeSlots; let i = index"
             class="time-row"
             [class.current-time]="isCurrentTimeSlot(slot.period)"
           >
@@ -75,17 +78,28 @@
             </div>
 
             <!-- Day Columns -->
-            <div 
-              *ngFor="let day of weekDays" 
+            <div
+              *ngFor="let day of weekDays"
               class="lesson-cell"
               [class.today]="isToday(day.key)"
-              [class.current-time]="isCurrentTimeSlot(slot.period) && isToday(day.key)"
+              [class.current-time]="
+                isCurrentTimeSlot(slot.period) && isToday(day.key)
+              "
             >
               <!-- Lesson Block -->
-              <div 
-                *ngIf="getLessonForDayAndPeriod(weeklyTimetable, day.key, slot.period) as lesson; else emptySlot"
+              <div
+                *ngIf="
+                  getLessonForDayAndPeriod(
+                    weeklyTimetable,
+                    day.key,
+                    slot.period
+                  ) as lesson;
+                  else emptySlot
+                "
                 class="lesson-block"
-                [style.background-color]="getSubjectColor(lesson.teacherSubject.subject.name)"
+                [style.background-color]="
+                  getSubjectColor(lesson.teacherSubject.subject.name)
+                "
                 [pTooltip]="getTooltipText(lesson)"
                 tooltipPosition="top"
                 (click)="onLessonClick(lesson)"
@@ -124,7 +138,10 @@
     <div class="lesson-summary">
       <div class="grid">
         <!-- Current Lesson -->
-        <div class="col-12 md:col-6" *ngIf="currentLesson$ | async as currentLesson">
+        <div
+          class="col-12 md:col-6"
+          *ngIf="currentLesson$ | async as currentLesson"
+        >
           <p-card styleClass="current-lesson-summary">
             <ng-template pTemplate="header">
               <div class="summary-header current">
@@ -132,7 +149,7 @@
                 <span>Trwa teraz</span>
               </div>
             </ng-template>
-            
+
             <div class="lesson-summary-content">
               <h3>{{ currentLesson.teacherSubject.subject.name }}</h3>
               <p class="time-info">
@@ -156,7 +173,7 @@
                 <span>Następna lekcja</span>
               </div>
             </ng-template>
-            
+
             <div class="lesson-summary-content">
               <h3>{{ nextLesson.teacherSubject.subject.name }}</h3>
               <p class="time-info">
@@ -182,7 +199,7 @@
             Legenda
           </h4>
         </ng-template>
-        
+
         <div class="legend-content">
           <div class="legend-item">
             <div class="legend-indicator current-time"></div>

@@ -20,8 +20,10 @@ export class TimetableService {
     const timetable = this.mockDataService.getTimetableByClass(
       student.studentClass.id
     );
-    
-    const mappedTimetable = timetable.map(entry => this.mapToTimetableEntry(entry));
+
+    const mappedTimetable = timetable.map((entry) =>
+      this.mapToTimetableEntry(entry)
+    );
     return of(mappedTimetable).pipe(delay(500));
   }
 
@@ -53,7 +55,10 @@ export class TimetableService {
     return of(weeklyTimetable).pipe(delay(500));
   }
 
-  getDayTimetable(studentId: number, day: string): Observable<TimetableEntry[]> {
+  getDayTimetable(
+    studentId: number,
+    day: string
+  ): Observable<TimetableEntry[]> {
     const student = this.mockDataService.getStudentById(studentId);
     if (!student) {
       return of([]);
@@ -64,7 +69,7 @@ export class TimetableService {
     );
     const dayTimetable = timetable
       .filter((entry) => entry.day === day)
-      .map(entry => this.mapToTimetableEntry(entry))
+      .map((entry) => this.mapToTimetableEntry(entry))
       .sort((a, b) => a.lesson_number - b.lesson_number);
 
     return of(dayTimetable).pipe(delay(500));
@@ -91,7 +96,9 @@ export class TimetableService {
       return currentTime >= startTime && currentTime <= endTime;
     });
 
-    const mappedLesson = currentLesson ? this.mapToTimetableEntry(currentLesson) : null;
+    const mappedLesson = currentLesson
+      ? this.mapToTimetableEntry(currentLesson)
+      : null;
     return of(mappedLesson).pipe(delay(500));
   }
 
@@ -117,7 +124,9 @@ export class TimetableService {
       return currentTime < startTime;
     });
 
-    const mappedLesson = nextLesson ? this.mapToTimetableEntry(nextLesson) : null;
+    const mappedLesson = nextLesson
+      ? this.mapToTimetableEntry(nextLesson)
+      : null;
     return of(mappedLesson).pipe(delay(500));
   }
 
@@ -130,19 +139,19 @@ export class TimetableService {
         id: mockEntry.lesson_id, // używamy lesson_id jako id teacher-subject
         subject: {
           id: mockEntry.lesson_id,
-          name: mockEntry.subjectName
+          name: mockEntry.subjectName,
         },
         teacher: {
           id: mockEntry.lesson_id,
           name: mockEntry.teacherName.split(' ')[0],
-          lastname: mockEntry.teacherName.split(' ')[1] || ''
-        }
+          lastname: mockEntry.teacherName.split(' ')[1] || '',
+        },
       },
       lesson_number: mockEntry.lesson_number,
       day: mockEntry.day as any, // cast to WorkDay enum
       startTime: mockEntry.startTime,
       endTime: mockEntry.endTime,
-      room: mockEntry.room
+      room: mockEntry.room,
     };
   }
 

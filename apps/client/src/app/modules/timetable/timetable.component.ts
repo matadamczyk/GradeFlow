@@ -175,9 +175,9 @@ export class TimetableComponent implements OnInit {
     endOfWeek.setDate(startOfWeek.getDate() + 4); // Friday
 
     const formatDate = (date: Date) => {
-      return date.toLocaleDateString('pl-PL', { 
-        day: '2-digit', 
-        month: '2-digit' 
+      return date.toLocaleDateString('pl-PL', {
+        day: '2-digit',
+        month: '2-digit',
       });
     };
 
@@ -188,25 +188,31 @@ export class TimetableComponent implements OnInit {
     const now = new Date();
     const currentDay = now.getDay();
     const dayNumber = this.getDayNumber(day);
-    
+
     const targetDate = new Date(now);
     const diff = dayNumber - currentDay;
     targetDate.setDate(now.getDate() + diff);
 
-    return targetDate.toLocaleDateString('pl-PL', { 
+    return targetDate.toLocaleDateString('pl-PL', {
       day: '2-digit',
-      month: '2-digit'
+      month: '2-digit',
     });
   }
 
   private getDayNumber(day: WorkDay): number {
     switch (day) {
-      case WorkDay.MON: return 1;
-      case WorkDay.TUE: return 2;
-      case WorkDay.WED: return 3;
-      case WorkDay.THU: return 4;
-      case WorkDay.FRI: return 5;
-      default: return 1;
+      case WorkDay.MON:
+        return 1;
+      case WorkDay.TUE:
+        return 2;
+      case WorkDay.WED:
+        return 3;
+      case WorkDay.THU:
+        return 4;
+      case WorkDay.FRI:
+        return 5;
+      default:
+        return 1;
     }
   }
 
@@ -214,7 +220,7 @@ export class TimetableComponent implements OnInit {
     const teacher = `${lesson.teacherSubject.teacher.name} ${lesson.teacherSubject.teacher.lastname}`;
     const room = lesson.room ? ` - Sala ${lesson.room}` : '';
     const time = `${lesson.startTime} - ${lesson.endTime}`;
-    
+
     return `${lesson.teacherSubject.subject.name}\n${teacher}\n${time}${room}`;
   }
 

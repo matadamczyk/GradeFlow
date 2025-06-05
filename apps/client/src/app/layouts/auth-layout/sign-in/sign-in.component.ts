@@ -1,5 +1,10 @@
 import { Component, OnDestroy, output } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -45,7 +50,7 @@ export class SignInComponent implements OnDestroy {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      rememberMe: [false]
+      rememberMe: [false],
     });
   }
 
@@ -66,7 +71,8 @@ export class SignInComponent implements OnDestroy {
       const { email, password } = this.loginForm.value;
       console.log('SignIn - próba logowania:', email);
 
-      this.authService.login({ email, password })
+      this.authService
+        .login({ email, password })
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (user) => {
@@ -78,8 +84,9 @@ export class SignInComponent implements OnDestroy {
           error: (error) => {
             console.log('SignIn - błąd logowania:', error);
             this.isLoading = false;
-            this.errorMessage = error.message || 'Wystąpił błąd podczas logowania';
-          }
+            this.errorMessage =
+              error.message || 'Wystąpił błąd podczas logowania';
+          },
         });
     } else {
       console.log('SignIn - formularz nieprawidłowy');
@@ -88,7 +95,7 @@ export class SignInComponent implements OnDestroy {
   }
 
   private markFormGroupTouched(): void {
-    Object.keys(this.loginForm.controls).forEach(key => {
+    Object.keys(this.loginForm.controls).forEach((key) => {
       const control = this.loginForm.get(key);
       control?.markAsTouched();
     });
