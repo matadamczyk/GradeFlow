@@ -11,7 +11,7 @@
         </h1>
         <p class="page-subtitle">Zarządzaj swoim kontem i ustawieniami</p>
       </div>
-      
+
       <div class="header-actions">
         <p-button
           icon="pi pi-refresh"
@@ -40,7 +40,7 @@
         <div class="loading-card stats-loading">
           <p-skeleton height="60px" class="mb-3"></p-skeleton>
           <div class="grid">
-            <div class="col-6 md:col-3" *ngFor="let item of [1,2,3,4]">
+            <div class="col-6 md:col-3" *ngFor="let item of [1, 2, 3, 4]">
               <p-skeleton height="80px"></p-skeleton>
             </div>
           </div>
@@ -58,18 +58,20 @@
         <div class="profile-card">
           <!-- Profile Header -->
           <div class="profile-header">
-                         <div class="avatar-section">
-               <div class="avatar-container">
-                 <p-avatar
-                   icon="pi pi-user"
-                   size="xlarge"
-                   shape="circle"
-                   styleClass="profile-avatar"
-                 ></p-avatar>
-               </div>
-              
+            <div class="avatar-section">
+              <div class="avatar-container">
+                <p-avatar
+                  icon="pi pi-user"
+                  size="xlarge"
+                  shape="circle"
+                  styleClass="profile-avatar"
+                ></p-avatar>
+              </div>
+
               <div class="profile-info">
-                <h2 class="profile-name">{{ userProfile.name }} {{ userProfile.lastname }}</h2>
+                <h2 class="profile-name">
+                  {{ userProfile.name }} {{ userProfile.lastname }}
+                </h2>
                 <p class="profile-email">{{ userProfile.email }}</p>
                 <div class="role-badge">
                   <p-tag
@@ -93,7 +95,7 @@
                 <span class="detail-value">{{ userProfile.phone }}</span>
               </div>
             </div>
-            
+
             <div class="detail-item" *ngIf="userProfile.address">
               <div class="detail-icon">
                 <i class="pi pi-map-marker"></i>
@@ -103,34 +105,48 @@
                 <span class="detail-value">{{ userProfile.address }}</span>
               </div>
             </div>
-            
+
             <div class="detail-item" *ngIf="userProfile.dateOfBirth">
               <div class="detail-icon">
                 <i class="pi pi-calendar"></i>
               </div>
               <div class="detail-content">
                 <span class="detail-label">Data urodzenia</span>
-                <span class="detail-value">{{ formatDateOnly(userProfile.dateOfBirth) }}</span>
+                <span class="detail-value">{{
+                  formatDateOnly(userProfile.dateOfBirth)
+                }}</span>
               </div>
             </div>
-            
+
             <div class="detail-item" *ngIf="userProfile.lastLogin">
               <div class="detail-icon">
                 <i class="pi pi-clock"></i>
               </div>
               <div class="detail-content">
                 <span class="detail-label">Ostatnie logowanie</span>
-                <span class="detail-value">{{ formatDate(userProfile.lastLogin) }}</span>
+                <span class="detail-value">{{
+                  formatDate(userProfile.lastLogin)
+                }}</span>
               </div>
             </div>
           </div>
 
           <!-- Role-specific Information -->
-          <div class="role-section" *ngIf="userProfile.studentClass || userProfile.teacherSubjects || userProfile.parentChildren">
+          <div
+            class="role-section"
+            *ngIf="
+              userProfile.studentClass ||
+              userProfile.teacherSubjects ||
+              userProfile.parentChildren
+            "
+          >
             <p-divider styleClass="custom-divider"></p-divider>
 
             <!-- Student Info -->
-            <div *ngIf="userProfile.role === UserRole.STUDENT" class="role-info student-info">
+            <div
+              *ngIf="userProfile.role === UserRole.STUDENT"
+              class="role-info student-info"
+            >
               <div class="role-header">
                 <div class="role-icon">
                   <i class="pi pi-graduation-cap"></i>
@@ -140,17 +156,25 @@
               <div class="role-content">
                 <div class="info-item" *ngIf="userProfile.studentClass">
                   <span class="info-label">Klasa:</span>
-                  <p-tag [value]="userProfile.studentClass" severity="info"></p-tag>
+                  <p-tag
+                    [value]="userProfile.studentClass"
+                    severity="info"
+                  ></p-tag>
                 </div>
                 <div class="info-item" *ngIf="userProfile.studentNumber">
                   <span class="info-label">Numer w dzienniku:</span>
-                  <p-badge [value]="userProfile.studentNumber.toString()"></p-badge>
+                  <p-badge
+                    [value]="userProfile.studentNumber.toString()"
+                  ></p-badge>
                 </div>
               </div>
             </div>
 
             <!-- Teacher Info -->
-            <div *ngIf="userProfile.role === UserRole.TEACHER" class="role-info teacher-info">
+            <div
+              *ngIf="userProfile.role === UserRole.TEACHER"
+              class="role-info teacher-info"
+            >
               <div class="role-header">
                 <div class="role-icon">
                   <i class="pi pi-book"></i>
@@ -158,11 +182,17 @@
                 <h4>Informacje nauczyciela</h4>
               </div>
               <div class="role-content">
-                <div class="subjects-section" *ngIf="userProfile.teacherSubjects">
+                <div
+                  class="subjects-section"
+                  *ngIf="userProfile.teacherSubjects"
+                >
                   <span class="info-label">Przedmioty:</span>
                   <div class="subjects-tags">
                     <p-tag
-                      *ngFor="let subject of userProfile.teacherSubjects; trackBy: trackBySubject"
+                      *ngFor="
+                        let subject of userProfile.teacherSubjects;
+                        trackBy: trackBySubject
+                      "
                       [value]="subject"
                       severity="info"
                       styleClass="subject-tag"
@@ -173,7 +203,10 @@
             </div>
 
             <!-- Parent Info -->
-            <div *ngIf="userProfile.role === UserRole.PARENT" class="role-info parent-info">
+            <div
+              *ngIf="userProfile.role === UserRole.PARENT"
+              class="role-info parent-info"
+            >
               <div class="role-header">
                 <div class="role-icon">
                   <i class="pi pi-users"></i>
@@ -181,11 +214,17 @@
                 <h4>Informacje rodzica</h4>
               </div>
               <div class="role-content">
-                <div class="children-section" *ngIf="userProfile.parentChildren">
+                <div
+                  class="children-section"
+                  *ngIf="userProfile.parentChildren"
+                >
                   <span class="info-label">Dzieci:</span>
                   <div class="children-tags">
                     <p-tag
-                      *ngFor="let child of userProfile.parentChildren; trackBy: trackByChild"
+                      *ngFor="
+                        let child of userProfile.parentChildren;
+                        trackBy: trackByChild
+                      "
                       [value]="child"
                       severity="success"
                       styleClass="child-tag"
@@ -228,7 +267,10 @@
 
           <div class="statistics-content">
             <!-- Student Statistics -->
-            <div *ngIf="userProfile.role === UserRole.STUDENT" class="stats-grid">
+            <div
+              *ngIf="userProfile.role === UserRole.STUDENT"
+              class="stats-grid"
+            >
               <div class="stat-card">
                 <div class="stat-icon student-grades">
                   <i class="pi pi-star"></i>
@@ -238,7 +280,7 @@
                   <div class="stat-label">Oceny</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon student-average">
                   <i class="pi pi-chart-line"></i>
@@ -248,7 +290,7 @@
                   <div class="stat-label">Średnia</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon student-attendance">
                   <i class="pi pi-calendar-plus"></i>
@@ -258,20 +300,27 @@
                   <div class="stat-label">Frekwencja</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon student-assignments">
                   <i class="pi pi-file-check"></i>
                 </div>
                 <div class="stat-info">
-                  <div class="stat-value">{{ statistics.completedAssignments }}/{{ statistics.totalAssignments }}</div>
+                  <div class="stat-value">
+                    {{ statistics.completedAssignments }}/{{
+                      statistics.totalAssignments
+                    }}
+                  </div>
                   <div class="stat-label">Zadania</div>
                 </div>
               </div>
             </div>
 
             <!-- Teacher Statistics -->
-            <div *ngIf="userProfile.role === UserRole.TEACHER" class="stats-grid">
+            <div
+              *ngIf="userProfile.role === UserRole.TEACHER"
+              class="stats-grid"
+            >
               <div class="stat-card">
                 <div class="stat-icon teacher-students">
                   <i class="pi pi-users"></i>
@@ -281,7 +330,7 @@
                   <div class="stat-label">Uczniowie</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon teacher-classes">
                   <i class="pi pi-home"></i>
@@ -291,17 +340,19 @@
                   <div class="stat-label">Klasy</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon teacher-graded">
                   <i class="pi pi-check"></i>
                 </div>
                 <div class="stat-info">
-                  <div class="stat-value">{{ statistics.gradedAssignments }}</div>
+                  <div class="stat-value">
+                    {{ statistics.gradedAssignments }}
+                  </div>
                   <div class="stat-label">Ocenione prace</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon teacher-pending">
                   <i class="pi pi-clock"></i>
@@ -314,7 +365,10 @@
             </div>
 
             <!-- Parent Statistics -->
-            <div *ngIf="userProfile.role === UserRole.PARENT" class="stats-grid">
+            <div
+              *ngIf="userProfile.role === UserRole.PARENT"
+              class="stats-grid"
+            >
               <div class="stat-card">
                 <div class="stat-icon parent-children">
                   <i class="pi pi-heart"></i>
@@ -324,7 +378,7 @@
                   <div class="stat-label">Dzieci</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon parent-average">
                   <i class="pi pi-chart-line"></i>
@@ -334,7 +388,7 @@
                   <div class="stat-label">Średnia ocen</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon parent-events">
                   <i class="pi pi-calendar"></i>
@@ -344,7 +398,7 @@
                   <div class="stat-label">Nadchodzące wydarzenia</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon parent-messages">
                   <i class="pi pi-envelope"></i>
@@ -367,7 +421,7 @@
                   <div class="stat-label">Użytkownicy</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon admin-students">
                   <i class="pi pi-graduation-cap"></i>
@@ -377,7 +431,7 @@
                   <div class="stat-label">Uczniowie</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon admin-teachers">
                   <i class="pi pi-book"></i>
@@ -387,7 +441,7 @@
                   <div class="stat-label">Nauczyciele</div>
                 </div>
               </div>
-              
+
               <div class="stat-card">
                 <div class="stat-icon admin-uptime">
                   <i class="pi pi-server"></i>
@@ -407,7 +461,11 @@
             <!-- Profile Settings Tab -->
             <p-tabPanel header="Edytuj profil" leftIcon="pi pi-user">
               <div class="tab-content">
-                <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()" class="profile-form">
+                <form
+                  [formGroup]="profileForm"
+                  (ngSubmit)="onUpdateProfile()"
+                  class="profile-form"
+                >
                   <div class="form-header">
                     <h4><i class="pi pi-user-edit"></i> Edycja profilu</h4>
                     <p>Zaktualizuj swoje dane osobowe</p>
@@ -422,11 +480,16 @@
                             type="text"
                             pInputText
                             formControlName="name"
-                            [class.ng-invalid]="isFieldInvalid(profileForm, 'name')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(profileForm, 'name')
+                            "
                           />
                           <label for="name">Imię *</label>
                         </p-floatLabel>
-                        <small *ngIf="isFieldInvalid(profileForm, 'name')" class="p-error">
+                        <small
+                          *ngIf="isFieldInvalid(profileForm, 'name')"
+                          class="p-error"
+                        >
                           {{ getFieldError(profileForm, 'name') }}
                         </small>
                       </div>
@@ -438,11 +501,16 @@
                             type="text"
                             pInputText
                             formControlName="lastname"
-                            [class.ng-invalid]="isFieldInvalid(profileForm, 'lastname')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(profileForm, 'lastname')
+                            "
                           />
                           <label for="lastname">Nazwisko *</label>
                         </p-floatLabel>
-                        <small *ngIf="isFieldInvalid(profileForm, 'lastname')" class="p-error">
+                        <small
+                          *ngIf="isFieldInvalid(profileForm, 'lastname')"
+                          class="p-error"
+                        >
                           {{ getFieldError(profileForm, 'lastname') }}
                         </small>
                       </div>
@@ -456,11 +524,16 @@
                             type="tel"
                             pInputText
                             formControlName="phone"
-                            [class.ng-invalid]="isFieldInvalid(profileForm, 'phone')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(profileForm, 'phone')
+                            "
                           />
                           <label for="phone">Telefon</label>
                         </p-floatLabel>
-                        <small *ngIf="isFieldInvalid(profileForm, 'phone')" class="p-error">
+                        <small
+                          *ngIf="isFieldInvalid(profileForm, 'phone')"
+                          class="p-error"
+                        >
                           {{ getFieldError(profileForm, 'phone') }}
                         </small>
                       </div>
@@ -486,11 +559,16 @@
                             pInputTextarea
                             formControlName="bio"
                             rows="4"
-                            [class.ng-invalid]="isFieldInvalid(profileForm, 'bio')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(profileForm, 'bio')
+                            "
                           ></textarea>
                           <label for="bio">O mnie</label>
                         </p-floatLabel>
-                        <small *ngIf="isFieldInvalid(profileForm, 'bio')" class="p-error">
+                        <small
+                          *ngIf="isFieldInvalid(profileForm, 'bio')"
+                          class="p-error"
+                        >
                           {{ getFieldError(profileForm, 'bio') }}
                         </small>
                       </div>
@@ -514,7 +592,11 @@
             <!-- Password Change Tab -->
             <p-tabPanel header="Zmień hasło" leftIcon="pi pi-lock">
               <div class="tab-content">
-                <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="password-form">
+                <form
+                  [formGroup]="passwordForm"
+                  (ngSubmit)="onChangePassword()"
+                  class="password-form"
+                >
                   <div class="form-header">
                     <h4><i class="pi pi-lock"></i> Zmiana hasła</h4>
                     <p>Zaktualizuj swoje hasło dostępu</p>
@@ -529,11 +611,18 @@
                             formControlName="currentPassword"
                             [feedback]="false"
                             [toggleMask]="true"
-                            [class.ng-invalid]="isFieldInvalid(passwordForm, 'currentPassword')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(passwordForm, 'currentPassword')
+                            "
                           ></p-password>
                           <label for="currentPassword">Aktualne hasło *</label>
                         </p-floatLabel>
-                        <small *ngIf="isFieldInvalid(passwordForm, 'currentPassword')" class="p-error">
+                        <small
+                          *ngIf="
+                            isFieldInvalid(passwordForm, 'currentPassword')
+                          "
+                          class="p-error"
+                        >
                           {{ getFieldError(passwordForm, 'currentPassword') }}
                         </small>
                       </div>
@@ -547,11 +636,16 @@
                             formControlName="newPassword"
                             [feedback]="true"
                             [toggleMask]="true"
-                            [class.ng-invalid]="isFieldInvalid(passwordForm, 'newPassword')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(passwordForm, 'newPassword')
+                            "
                           ></p-password>
                           <label for="newPassword">Nowe hasło *</label>
                         </p-floatLabel>
-                        <small *ngIf="isFieldInvalid(passwordForm, 'newPassword')" class="p-error">
+                        <small
+                          *ngIf="isFieldInvalid(passwordForm, 'newPassword')"
+                          class="p-error"
+                        >
                           {{ getFieldError(passwordForm, 'newPassword') }}
                         </small>
                       </div>
@@ -565,12 +659,24 @@
                             formControlName="confirmPassword"
                             [feedback]="false"
                             [toggleMask]="true"
-                            [class.ng-invalid]="isFieldInvalid(passwordForm, 'confirmPassword') || passwordForm.hasError('passwordMismatch')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(passwordForm, 'confirmPassword') ||
+                              passwordForm.hasError('passwordMismatch')
+                            "
                           ></p-password>
                           <label for="confirmPassword">Potwierdź hasło *</label>
                         </p-floatLabel>
-                        <small *ngIf="isFieldInvalid(passwordForm, 'confirmPassword') || passwordForm.hasError('passwordMismatch')" class="p-error">
-                          {{ getFieldError(passwordForm, 'confirmPassword') || 'Hasła nie są identyczne' }}
+                        <small
+                          *ngIf="
+                            isFieldInvalid(passwordForm, 'confirmPassword') ||
+                            passwordForm.hasError('passwordMismatch')
+                          "
+                          class="p-error"
+                        >
+                          {{
+                            getFieldError(passwordForm, 'confirmPassword') ||
+                              'Hasła nie są identyczne'
+                          }}
                         </small>
                       </div>
                     </div>
@@ -605,7 +711,7 @@
                         <p>Podstawowe dane Twojego konta</p>
                       </div>
                     </div>
-                    
+
                     <div class="panel-content">
                       <div class="account-info-grid">
                         <div class="info-item">
@@ -613,38 +719,46 @@
                             <i class="pi pi-calendar-plus"></i>
                           </div>
                           <div class="info-details">
-                            <span class="info-label">Data utworzenia konta</span>
-                            <span class="info-value">{{ formatDate(userProfile.accountCreated!) }}</span>
+                            <span class="info-label"
+                              >Data utworzenia konta</span
+                            >
+                            <span class="info-value">{{
+                              formatDate(userProfile.accountCreated!)
+                            }}</span>
                           </div>
                         </div>
-                        
+
                         <div class="info-item">
                           <div class="info-icon">
                             <i class="pi pi-sign-in"></i>
                           </div>
                           <div class="info-details">
                             <span class="info-label">Ostatnie logowanie</span>
-                            <span class="info-value">{{ formatDate(userProfile.lastLogin!) }}</span>
+                            <span class="info-value">{{
+                              formatDate(userProfile.lastLogin!)
+                            }}</span>
                           </div>
                         </div>
-                        
+
                         <div class="info-item">
                           <div class="info-icon">
                             <i class="pi pi-envelope"></i>
                           </div>
                           <div class="info-details">
                             <span class="info-label">Adres email</span>
-                            <span class="info-value">{{ userProfile.email }}</span>
+                            <span class="info-value">{{
+                              userProfile.email
+                            }}</span>
                           </div>
                         </div>
-                        
+
                         <div class="info-item">
                           <div class="info-icon">
                             <i class="pi pi-shield"></i>
                           </div>
                           <div class="info-details">
                             <span class="info-label">Rola w systemie</span>
-                            <p-tag 
+                            <p-tag
                               [value]="getRoleLabel(userProfile.role)"
                               [styleClass]="getRoleBadgeClass(userProfile.role)"
                             ></p-tag>
@@ -665,17 +779,17 @@
                         <p>Nieodwracalne akcje związane z kontem</p>
                       </div>
                     </div>
-                    
+
                     <div class="panel-content">
                       <div class="danger-content">
                         <div class="danger-warning">
                           <i class="pi pi-exclamation-triangle"></i>
                           <p>
-                            Poniższe akcje są nieodwracalne. Upewnij się, że rozumiesz
-                            konsekwencje przed ich wykonaniem.
+                            Poniższe akcje są nieodwracalne. Upewnij się, że
+                            rozumiesz konsekwencje przed ich wykonaniem.
                           </p>
                         </div>
-                        
+
                         <div class="danger-actions">
                           <p-button
                             label="Usuń konto"

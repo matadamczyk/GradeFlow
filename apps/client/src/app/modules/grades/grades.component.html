@@ -12,12 +12,20 @@
           <span *ngIf="isParent()">Oceny Dzieci</span>
           <span *ngIf="isAdmin()">Przegląd Ocen</span>
         </h1>
-        <p class="page-subtitle" *ngIf="isStudent()">Przegląd Twoich wyników w nauce</p>
-        <p class="page-subtitle" *ngIf="isTeacher()">Zarządzaj ocenami swoich uczniów</p>
-        <p class="page-subtitle" *ngIf="isParent()">Śledź postępy swoich dzieci</p>
-        <p class="page-subtitle" *ngIf="isAdmin()">Analiza wyników w systemie</p>
+        <p class="page-subtitle" *ngIf="isStudent()">
+          Przegląd Twoich wyników w nauce
+        </p>
+        <p class="page-subtitle" *ngIf="isTeacher()">
+          Zarządzaj ocenami swoich uczniów
+        </p>
+        <p class="page-subtitle" *ngIf="isParent()">
+          Śledź postępy swoich dzieci
+        </p>
+        <p class="page-subtitle" *ngIf="isAdmin()">
+          Analiza wyników w systemie
+        </p>
       </div>
-      
+
       <div class="header-actions">
         <p-button
           icon="pi pi-refresh"
@@ -87,7 +95,11 @@
                   styleClass="stat-progress"
                 >
                 </p-progressBar>
-                <span class="progress-label">{{ getAverageProgress(stats.overallAverage) | number : '1.0-0' }}%</span>
+                <span class="progress-label"
+                  >{{
+                    getAverageProgress(stats.overallAverage) | number : '1.0-0'
+                  }}%</span
+                >
               </div>
             </div>
           </div>
@@ -153,8 +165,8 @@
                 </div>
               </div>
               <div class="header-actions">
-                <p-button 
-                  icon="pi pi-external-link" 
+                <p-button
+                  icon="pi pi-external-link"
                   severity="secondary"
                   text="true"
                   size="small"
@@ -163,29 +175,43 @@
               </div>
             </div>
 
-            <div class="section-content" *ngIf="recentGrades$ | async as recentGrades">
-              <div *ngIf="recentGrades.length > 0; else noRecentGrades" class="grades-timeline">
-                <div class="grade-item" *ngFor="let grade of recentGrades; trackBy: trackByGrade">
+            <div
+              class="section-content"
+              *ngIf="recentGrades$ | async as recentGrades"
+            >
+              <div
+                *ngIf="recentGrades.length > 0; else noRecentGrades"
+                class="grades-timeline"
+              >
+                <div
+                  class="grade-item"
+                  *ngFor="let grade of recentGrades; trackBy: trackByGrade"
+                >
                   <div class="grade-indicator">
-                    <div class="grade-badge" [ngClass]="'grade-' + grade.grade_value">
+                    <div
+                      class="grade-badge"
+                      [ngClass]="'grade-' + grade.grade_value"
+                    >
                       {{ grade.grade_value }}
                     </div>
                   </div>
-                  
+
                   <div class="grade-content">
                     <div class="grade-header">
                       <h4 class="subject-name">{{ grade.subjectName }}</h4>
                       <div class="grade-meta">
-                        <span class="grade-date">{{ formatDate(grade.date) }}</span>
+                        <span class="grade-date">{{
+                          formatDate(grade.date)
+                        }}</span>
                         <p-tag
                           [value]="'Waga: ' + grade.grade_weight"
-                          severity="info" 
+                          severity="info"
                           size="small"
                           styleClass="weight-tag"
                         ></p-tag>
                       </div>
                     </div>
-                    
+
                     <p *ngIf="grade.comment" class="grade-comment">
                       <i class="pi pi-comment"></i>
                       {{ grade.comment }}
@@ -193,8 +219,8 @@
                   </div>
 
                   <div class="grade-actions">
-                    <p-button 
-                      icon="pi pi-info-circle" 
+                    <p-button
+                      icon="pi pi-info-circle"
                       severity="secondary"
                       text="true"
                       size="small"
@@ -236,11 +262,20 @@
               </div>
             </div>
 
-            <div class="section-content" *ngIf="subjectGrades$ | async as subjectGrades">
-              <div *ngIf="subjectGrades.length > 0; else noSubjects" class="subjects-accordion">
+            <div
+              class="section-content"
+              *ngIf="subjectGrades$ | async as subjectGrades"
+            >
+              <div
+                *ngIf="subjectGrades.length > 0; else noSubjects"
+                class="subjects-accordion"
+              >
                 <p-accordion styleClass="custom-accordion">
                   <p-accordionTab
-                    *ngFor="let subject of subjectGrades; trackBy: trackBySubject"
+                    *ngFor="
+                      let subject of subjectGrades;
+                      trackBy: trackBySubject
+                    "
                     [header]="subject.subjectName"
                   >
                     <ng-template pTemplate="header">
@@ -250,25 +285,50 @@
                             <i class="pi pi-book"></i>
                           </div>
                           <div class="subject-details">
-                            <span class="subject-name">{{ subject.subjectName }}</span>
-                            <small class="subject-meta">{{ subject.grades.length }} ocen</small>
+                            <span class="subject-name">{{
+                              subject.subjectName
+                            }}</span>
+                            <small class="subject-meta"
+                              >{{ subject.grades.length }} ocen</small
+                            >
                           </div>
                         </div>
                         <div class="subject-stats">
                           <div class="average-display">
-                            <span class="average-value">{{ (subject.weightedAverage | number : '1.2-2') || '0.00' }}</span>
+                            <span class="average-value">{{
+                              (subject.weightedAverage | number : '1.2-2') ||
+                                '0.00'
+                            }}</span>
                             <span class="average-label">średnia</span>
                           </div>
-                          <div class="progress-ring" [ngClass]="'grade-' + Math.floor(subject.weightedAverage || 0)">
+                          <div
+                            class="progress-ring"
+                            [ngClass]="
+                              'grade-' +
+                              Math.floor(subject.weightedAverage || 0)
+                            "
+                          >
                             <svg width="40" height="40">
-                              <circle cx="20" cy="20" r="18" fill="none" stroke="var(--surface-border)" stroke-width="2"/>
-                              <circle 
-                                cx="20" cy="20" r="18" 
-                                fill="none" 
-                                stroke="currentColor" 
+                              <circle
+                                cx="20"
+                                cy="20"
+                                r="18"
+                                fill="none"
+                                stroke="var(--surface-border)"
+                                stroke-width="2"
+                              />
+                              <circle
+                                cx="20"
+                                cy="20"
+                                r="18"
+                                fill="none"
+                                stroke="currentColor"
                                 stroke-width="2"
                                 stroke-dasharray="113.1"
-                                [style.stroke-dashoffset]="113.1 - ((subject.weightedAverage || 0) / 6) * 113.1"
+                                [style.stroke-dashoffset]="
+                                  113.1 -
+                                  ((subject.weightedAverage || 0) / 6) * 113.1
+                                "
                                 transform="rotate(-90 20 20)"
                               />
                             </svg>
@@ -286,27 +346,33 @@
                             <i class="pi pi-chart-bar"></i>
                           </div>
                           <div class="stat-info">
-                            <span class="stat-value">{{ subject.average | number : '1.2-2' }}</span>
+                            <span class="stat-value">{{
+                              subject.average | number : '1.2-2'
+                            }}</span>
                             <span class="stat-label">Średnia arytmetyczna</span>
                           </div>
                         </div>
-                        
+
                         <div class="quick-stat-item">
                           <div class="stat-icon weighted">
                             <i class="pi pi-percentage"></i>
                           </div>
                           <div class="stat-info">
-                            <span class="stat-value">{{ subject.weightedAverage | number : '1.2-2' }}</span>
+                            <span class="stat-value">{{
+                              subject.weightedAverage | number : '1.2-2'
+                            }}</span>
                             <span class="stat-label">Średnia ważona</span>
                           </div>
                         </div>
-                        
+
                         <div class="quick-stat-item">
                           <div class="stat-icon count">
                             <i class="pi pi-hashtag"></i>
                           </div>
                           <div class="stat-info">
-                            <span class="stat-value">{{ subject.grades.length }}</span>
+                            <span class="stat-value">{{
+                              subject.grades.length
+                            }}</span>
                             <span class="stat-label">Liczba ocen</span>
                           </div>
                         </div>
@@ -328,29 +394,42 @@
                           <ng-template pTemplate="header">
                             <tr>
                               <th pSortableColumn="grade_value">
-                                Ocena <p-sortIcon field="grade_value"></p-sortIcon>
+                                Ocena
+                                <p-sortIcon field="grade_value"></p-sortIcon>
                               </th>
                               <th pSortableColumn="date">
                                 Data <p-sortIcon field="date"></p-sortIcon>
                               </th>
                               <th pSortableColumn="grade_weight">
-                                Waga <p-sortIcon field="grade_weight"></p-sortIcon>
+                                Waga
+                                <p-sortIcon field="grade_weight"></p-sortIcon>
                               </th>
                               <th>Komentarz</th>
                               <th>Akcje</th>
                             </tr>
                           </ng-template>
 
-                          <ng-template pTemplate="body" let-grade let-rowIndex="rowIndex">
-                            <tr [ngClass]="{'recent-grade': rowIndex < 3}">
+                          <ng-template
+                            pTemplate="body"
+                            let-grade
+                            let-rowIndex="rowIndex"
+                          >
+                            <tr [ngClass]="{ 'recent-grade': rowIndex < 3 }">
                               <td>
                                 <div class="grade-cell">
-                                  <div class="grade-badge-large" [ngClass]="'grade-' + grade.grade_value">
+                                  <div
+                                    class="grade-badge-large"
+                                    [ngClass]="'grade-' + grade.grade_value"
+                                  >
                                     {{ grade.grade_value }}
                                   </div>
                                   <p-tag
-                                    [value]="getGradeDescription(grade.grade_value)"
-                                    [severity]="getGradeSeverity(grade.grade_value)"
+                                    [value]="
+                                      getGradeDescription(grade.grade_value)
+                                    "
+                                    [severity]="
+                                      getGradeSeverity(grade.grade_value)
+                                    "
                                     size="small"
                                   ></p-tag>
                                 </div>
@@ -363,12 +442,22 @@
                               </td>
                               <td>
                                 <div class="weight-cell">
-                                  <div class="weight-indicator" [style.width.%]="(grade.grade_weight / 5) * 100"></div>
-                                  <span class="weight-value">{{ grade.grade_weight }}</span>
+                                  <div
+                                    class="weight-indicator"
+                                    [style.width.%]="
+                                      (grade.grade_weight / 5) * 100
+                                    "
+                                  ></div>
+                                  <span class="weight-value">{{
+                                    grade.grade_weight
+                                  }}</span>
                                 </div>
                               </td>
                               <td>
-                                <div class="comment-cell" *ngIf="grade.comment; else noComment">
+                                <div
+                                  class="comment-cell"
+                                  *ngIf="grade.comment; else noComment"
+                                >
                                   <span
                                     [pTooltip]="grade.comment"
                                     tooltipPosition="top"
@@ -377,7 +466,8 @@
                                     <i class="pi pi-comment"></i>
                                     {{
                                       grade.comment.length > 25
-                                        ? (grade.comment | slice : 0 : 25) + '...'
+                                        ? (grade.comment | slice : 0 : 25) +
+                                          '...'
                                         : grade.comment
                                     }}
                                   </span>
@@ -391,8 +481,8 @@
                               </td>
                               <td>
                                 <div class="action-buttons">
-                                  <p-button 
-                                    icon="pi pi-eye" 
+                                  <p-button
+                                    icon="pi pi-eye"
                                     severity="secondary"
                                     text="true"
                                     size="small"

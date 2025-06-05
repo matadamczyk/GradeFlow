@@ -82,7 +82,7 @@
 
     &.current {
       border-color: rgba(var(--green-500-rgb, 34, 197, 94), 0.2);
-      
+
       &::before {
         background: var(--green-500);
       }
@@ -95,7 +95,7 @@
 
     &.next {
       border-color: rgba(var(--blue-500-rgb, 59, 130, 246), 0.2);
-      
+
       &::before {
         background: var(--blue-500);
       }
@@ -108,13 +108,17 @@
 
     &.empty {
       opacity: 0.7;
-      
+
       &::before {
         background: var(--surface-400);
       }
 
       .widget-icon {
-        background: linear-gradient(135deg, var(--surface-400), var(--surface-300));
+        background: linear-gradient(
+          135deg,
+          var(--surface-400),
+          var(--surface-300)
+        );
         color: var(--text-color-secondary);
       }
     }
@@ -163,7 +167,8 @@
         gap: 0.5rem;
         margin-bottom: 0.75rem;
 
-        .time, .room {
+        .time,
+        .room {
           display: flex;
           align-items: center;
           gap: 0.5rem;
@@ -691,7 +696,8 @@
         }
 
         .lesson-details {
-          .time, .room {
+          .time,
+          .room {
             font-size: 0.85rem;
           }
         }
@@ -759,7 +765,8 @@
           gap: 0.25rem;
           margin-bottom: 0.5rem;
 
-          .time, .room {
+          .time,
+          .room {
             font-size: 0.8rem;
           }
         }
@@ -839,7 +846,8 @@
         }
 
         .lesson-details {
-          .time, .room {
+          .time,
+          .room {
             font-size: 0.75rem;
           }
         }

@@ -81,7 +81,7 @@ export class GradesComponent implements OnInit {
   private loadGradesData(): void {
     this.isLoading = true;
     const user = this.currentUser();
-    
+
     if (!user) {
       this.isLoading = false;
       return;
@@ -129,13 +129,20 @@ export class GradesComponent implements OnInit {
 
   getGradeDescription(grade: number): string {
     switch (grade) {
-      case 6: return 'Celujący';
-      case 5: return 'Bardzo dobry';
-      case 4: return 'Dobry';
-      case 3: return 'Dostateczny';
-      case 2: return 'Dopuszczający';
-      case 1: return 'Niedostateczny';
-      default: return 'Nieokreślona';
+      case 6:
+        return 'Celujący';
+      case 5:
+        return 'Bardzo dobry';
+      case 4:
+        return 'Dobry';
+      case 3:
+        return 'Dostateczny';
+      case 2:
+        return 'Dopuszczający';
+      case 1:
+        return 'Niedostateczny';
+      default:
+        return 'Nieokreślona';
     }
   }
 

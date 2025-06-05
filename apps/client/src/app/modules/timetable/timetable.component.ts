@@ -88,7 +88,7 @@ export class TimetableComponent implements OnInit {
   private loadTimetableData(): void {
     this.isLoading = true;
     const user = this.currentUser();
-    
+
     if (!user) {
       this.isLoading = false;
       return;

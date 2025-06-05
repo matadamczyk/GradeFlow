@@ -6,14 +6,18 @@
 
 // Enhanced Header Section
 .account-header {
-  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-600) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--primary-color) 0%,
+    var(--primary-600) 100%
+  );
   border-radius: 16px;
   padding: 2rem;
   margin-bottom: 2rem;
   color: white;
   position: relative;
   overflow: hidden;
-  
+
   &::before {
     content: '';
     position: absolute;
@@ -21,7 +25,11 @@
     right: -50%;
     width: 100%;
     height: 100%;
-    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.1) 0%,
+      transparent 70%
+    );
     z-index: 1;
   }
 
@@ -56,7 +64,7 @@
         align-items: center;
         justify-content: center;
         backdrop-filter: blur(10px);
-        
+
         i {
           font-size: 1.75rem;
           color: white;
@@ -64,7 +72,7 @@
       }
 
       span {
-        background: linear-gradient(45deg, #fff, rgba(255,255,255,0.8));
+        background: linear-gradient(45deg, #fff, rgba(255, 255, 255, 0.8));
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -135,20 +143,24 @@
     text-align: center;
 
     .avatar-section {
-              .avatar-container {
-          display: inline-block;
-          margin-bottom: 1.5rem;
+      .avatar-container {
+        display: inline-block;
+        margin-bottom: 1.5rem;
 
-          .profile-avatar {
-            width: 120px !important;
-            height: 120px !important;
-            border: 4px solid white;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-600)) !important;
-            color: white !important;
-            font-size: 3rem !important;
-          }
+        .profile-avatar {
+          width: 120px !important;
+          height: 120px !important;
+          border: 4px solid white;
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+          background: linear-gradient(
+            135deg,
+            var(--primary-color),
+            var(--primary-600)
+          ) !important;
+          color: white !important;
+          font-size: 3rem !important;
         }
+      }
 
       .profile-info {
         .profile-name {
@@ -198,7 +210,11 @@
         width: 40px;
         height: 40px;
         border-radius: 8px;
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-600)
+        );
         display: flex;
         align-items: center;
         justify-content: center;
@@ -334,7 +350,11 @@
         width: 40px;
         height: 40px;
         border-radius: 8px;
-        background: linear-gradient(135deg, var(--purple-500), var(--purple-600));
+        background: linear-gradient(
+          135deg,
+          var(--purple-500),
+          var(--purple-600)
+        );
         display: flex;
         align-items: center;
         justify-content: center;
@@ -381,7 +401,11 @@
         width: 48px;
         height: 48px;
         border-radius: 12px;
-        background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
+        background: linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--primary-600)
+        );
         display: flex;
         align-items: center;
         justify-content: center;
@@ -434,7 +458,12 @@
           left: 0;
           right: 0;
           height: 3px;
-          background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
+          background: linear-gradient(
+            90deg,
+            transparent,
+            var(--primary-color),
+            transparent
+          );
           opacity: 0;
           transition: opacity 0.3s ease;
         }
@@ -460,28 +489,60 @@
           margin-bottom: 1rem;
 
           // Student icons
-          &.student-grades { background: linear-gradient(135deg, #f59e0b, #d97706); }
-          &.student-average { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-          &.student-attendance { background: linear-gradient(135deg, #10b981, #059669); }
-          &.student-assignments { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+          &.student-grades {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+          }
+          &.student-average {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+          }
+          &.student-attendance {
+            background: linear-gradient(135deg, #10b981, #059669);
+          }
+          &.student-assignments {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+          }
 
           // Teacher icons
-          &.teacher-students { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-          &.teacher-classes { background: linear-gradient(135deg, #10b981, #059669); }
-          &.teacher-graded { background: linear-gradient(135deg, #22c55e, #16a34a); }
-          &.teacher-pending { background: linear-gradient(135deg, #f59e0b, #d97706); }
+          &.teacher-students {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+          }
+          &.teacher-classes {
+            background: linear-gradient(135deg, #10b981, #059669);
+          }
+          &.teacher-graded {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+          }
+          &.teacher-pending {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+          }
 
           // Parent icons
-          &.parent-children { background: linear-gradient(135deg, #ec4899, #db2777); }
-          &.parent-average { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-          &.parent-events { background: linear-gradient(135deg, #10b981, #059669); }
-          &.parent-messages { background: linear-gradient(135deg, #f59e0b, #d97706); }
+          &.parent-children {
+            background: linear-gradient(135deg, #ec4899, #db2777);
+          }
+          &.parent-average {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+          }
+          &.parent-events {
+            background: linear-gradient(135deg, #10b981, #059669);
+          }
+          &.parent-messages {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+          }
 
           // Admin icons
-          &.admin-users { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
-          &.admin-students { background: linear-gradient(135deg, #10b981, #059669); }
-          &.admin-teachers { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
-          &.admin-uptime { background: linear-gradient(135deg, #22c55e, #16a34a); }
+          &.admin-users {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+          }
+          &.admin-students {
+            background: linear-gradient(135deg, #10b981, #059669);
+          }
+          &.admin-teachers {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+          }
+          &.admin-uptime {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+          }
         }
 
         .stat-info {
@@ -713,11 +774,19 @@
             color: white;
 
             &:not(.danger) {
-              background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
+              background: linear-gradient(
+                135deg,
+                var(--primary-color),
+                var(--primary-600)
+              );
             }
 
             &.danger {
-              background: linear-gradient(135deg, var(--red-500), var(--red-600));
+              background: linear-gradient(
+                135deg,
+                var(--red-500),
+                var(--red-600)
+              );
             }
           }
 
@@ -760,7 +829,11 @@
                 width: 36px;
                 height: 36px;
                 border-radius: 6px;
-                background: linear-gradient(135deg, var(--primary-color), var(--primary-600));
+                background: linear-gradient(
+                  135deg,
+                  var(--primary-color),
+                  var(--primary-600)
+                );
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -903,11 +976,11 @@
 
     .title-section .page-title {
       font-size: 1.75rem;
-      
+
       .title-icon {
         width: 50px;
         height: 50px;
-        
+
         i {
           font-size: 1.5rem;
         }
@@ -971,7 +1044,12 @@
     border-radius: 8px !important;
 
     &::after {
-      background: linear-gradient(90deg, transparent, var(--surface-100), transparent) !important;
+      background: linear-gradient(
+        90deg,
+        transparent,
+        var(--surface-100),
+        transparent
+      ) !important;
     }
   }
 

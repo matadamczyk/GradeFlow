@@ -234,8 +234,6 @@ export class AccountComponent implements OnInit, OnDestroy {
     }
   }
 
-
-
   onDeleteAccount(): void {
     this.confirmationService.confirm({
       message:

@@ -9,10 +9,18 @@
         <span *ngIf="isParent()">Plan Zajęć Dzieci</span>
         <span *ngIf="isAdmin()">Przegląd Planów</span>
       </h1>
-      <p class="page-subtitle" *ngIf="isStudent()">Rozkład lekcji na obecny tydzień</p>
-      <p class="page-subtitle" *ngIf="isTeacher()">Twój harmonogram nauczania</p>
-      <p class="page-subtitle" *ngIf="isParent()">Harmonogram zajęć Twoich dzieci</p>
-      <p class="page-subtitle" *ngIf="isAdmin()">Przegląd wszystkich planów zajęć</p>
+      <p class="page-subtitle" *ngIf="isStudent()">
+        Rozkład lekcji na obecny tydzień
+      </p>
+      <p class="page-subtitle" *ngIf="isTeacher()">
+        Twój harmonogram nauczania
+      </p>
+      <p class="page-subtitle" *ngIf="isParent()">
+        Harmonogram zajęć Twoich dzieci
+      </p>
+      <p class="page-subtitle" *ngIf="isAdmin()">
+        Przegląd wszystkich planów zajęć
+      </p>
     </div>
     <div class="header-actions">
       <p-button
@@ -31,13 +39,18 @@
   <div *ngIf="!isLoading" class="lesson-widget-header">
     <div class="lesson-widget-container">
       <!-- Current Lesson -->
-      <div class="lesson-widget current" *ngIf="currentLesson$ | async as currentLesson; else noCurrentLesson">
+      <div
+        class="lesson-widget current"
+        *ngIf="currentLesson$ | async as currentLesson; else noCurrentLesson"
+      >
         <div class="widget-icon">
           <i class="pi pi-play-circle"></i>
         </div>
         <div class="widget-content">
           <div class="widget-title">Aktualna lekcja</div>
-          <div class="lesson-name">{{ currentLesson.teacherSubject.subject.name }}</div>
+          <div class="lesson-name">
+            {{ currentLesson.teacherSubject.subject.name }}
+          </div>
           <div class="lesson-details">
             <span class="time">
               <i class="pi pi-clock"></i>
@@ -50,7 +63,8 @@
           </div>
           <div class="teacher">
             <i class="pi pi-user"></i>
-            {{ currentLesson.teacherSubject.teacher.name }} {{ currentLesson.teacherSubject.teacher.lastname }}
+            {{ currentLesson.teacherSubject.teacher.name }}
+            {{ currentLesson.teacherSubject.teacher.lastname }}
           </div>
         </div>
       </div>
@@ -71,13 +85,18 @@
       </ng-template>
 
       <!-- Next Lesson -->
-      <div class="lesson-widget next" *ngIf="nextLesson$ | async as nextLesson; else noNextLesson">
+      <div
+        class="lesson-widget next"
+        *ngIf="nextLesson$ | async as nextLesson; else noNextLesson"
+      >
         <div class="widget-icon">
           <i class="pi pi-step-forward"></i>
         </div>
         <div class="widget-content">
           <div class="widget-title">Następna lekcja</div>
-          <div class="lesson-name">{{ nextLesson.teacherSubject.subject.name }}</div>
+          <div class="lesson-name">
+            {{ nextLesson.teacherSubject.subject.name }}
+          </div>
           <div class="lesson-details">
             <span class="time">
               <i class="pi pi-clock"></i>
@@ -90,7 +109,8 @@
           </div>
           <div class="teacher">
             <i class="pi pi-user"></i>
-            {{ nextLesson.teacherSubject.teacher.name }} {{ nextLesson.teacherSubject.teacher.lastname }}
+            {{ nextLesson.teacherSubject.teacher.name }}
+            {{ nextLesson.teacherSubject.teacher.lastname }}
           </div>
         </div>
       </div>
@@ -262,13 +282,17 @@
         <span>{{ getCurrentWeekDisplay() }}</span>
       </div>
     </div>
-    
+
     <!-- Mobile Message -->
     <p-card styleClass="mobile-info-card">
       <div class="mobile-info">
         <i class="pi pi-mobile"></i>
         <h3>Widok mobilny</h3>
-        <p>Na urządzeniach mobilnych wyświetlamy tylko aktualną i następną lekcję. Aby zobaczyć pełny plan zajęć, użyj komputera lub przełącz na widok poziomy.</p>
+        <p>
+          Na urządzeniach mobilnych wyświetlamy tylko aktualną i następną
+          lekcję. Aby zobaczyć pełny plan zajęć, użyj komputera lub przełącz na
+          widok poziomy.
+        </p>
       </div>
     </p-card>
   </div>
