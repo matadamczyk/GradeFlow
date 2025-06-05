@@ -7,9 +7,15 @@
           <div class="title-icon">
             <i class="pi pi-chart-line"></i>
           </div>
-          <span>Moje Oceny</span>
+          <span *ngIf="isStudent()">Moje Oceny</span>
+          <span *ngIf="isTeacher()">Oceny Uczniów</span>
+          <span *ngIf="isParent()">Oceny Dzieci</span>
+          <span *ngIf="isAdmin()">Przegląd Ocen</span>
         </h1>
-        <p class="page-subtitle">Przegląd Twoich wyników w nauce</p>
+        <p class="page-subtitle" *ngIf="isStudent()">Przegląd Twoich wyników w nauce</p>
+        <p class="page-subtitle" *ngIf="isTeacher()">Zarządzaj ocenami swoich uczniów</p>
+        <p class="page-subtitle" *ngIf="isParent()">Śledź postępy swoich dzieci</p>
+        <p class="page-subtitle" *ngIf="isAdmin()">Analiza wyników w systemie</p>
       </div>
       
       <div class="header-actions">

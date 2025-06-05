@@ -1,7 +1,8 @@
 // Core imports
 import { AuthService, GradesService } from '../../core/services';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { GradeStatistics, SubjectGrades } from '../../core/models';
+import { UserRole } from '../../core/models/enums';
 
 import { AccordionModule } from 'primeng/accordion';
 import { BadgeModule } from 'primeng/badge';
@@ -42,8 +43,16 @@ export class GradesComponent implements OnInit {
 
   selectedSubject: string | null = null;
   isLoading = true;
-  currentStudentId = 1; // Domyślnie pierwszy uczeń z mock data
+  currentUser = signal<any>(null);
 
+  // Role-specific computed properties
+  userRole = computed(() => this.currentUser()?.role);
+  isStudent = computed(() => this.userRole() === UserRole.STUDENT);
+  isTeacher = computed(() => this.userRole() === UserRole.TEACHER);
+  isParent = computed(() => this.userRole() === UserRole.PARENT);
+  isAdmin = computed(() => this.userRole() === UserRole.ADMIN);
+
+  UserRole = UserRole;
   // Expose Math to template
   Math = Math;
 
@@ -61,27 +70,33 @@ export class GradesComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.loadGradesData();
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser.set(user);
+      if (user) {
+        this.loadGradesData();
+      }
+    });
   }
 
   private loadGradesData(): void {
     this.isLoading = true;
+    const user = this.currentUser();
+    
+    if (!user) {
+      this.isLoading = false;
+      return;
+    }
+
+    const userId = user.id;
 
     // Pobierz statystyki ocen
-    this.statistics$ = this.gradesService.getGradeStatistics(
-      this.currentStudentId
-    );
+    this.statistics$ = this.gradesService.getGradeStatistics(userId);
 
     // Pobierz ostatnie oceny
-    this.recentGrades$ = this.gradesService.getRecentGrades(
-      this.currentStudentId,
-      5
-    );
+    this.recentGrades$ = this.gradesService.getRecentGrades(userId, 5);
 
     // Pobierz oceny pogrupowane według przedmiotów
-    this.subjectGrades$ = this.gradesService.getSubjectGrades(
-      this.currentStudentId
-    );
+    this.subjectGrades$ = this.gradesService.getSubjectGrades(userId);
 
     // Symulacja zakończenia ładowania
     setTimeout(() => {
