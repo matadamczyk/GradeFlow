@@ -17,6 +17,15 @@ public class TeacherSubject {
   @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "teacher_subject_sequence")
   private Integer id;
 
+  public TeacherSubject() {
+  }
+
+  public TeacherSubject(Integer id, Teacher teacher, Subject subject) {
+    this.id = id;
+    this.teacher = teacher;
+    this.subject = subject;
+  }
+
   @ManyToOne
   @JoinColumn(name = "teacher_id", nullable = false, foreignKey = @ForeignKey(name = "fk_teacherSubject_teacher"))
   private Teacher teacher;

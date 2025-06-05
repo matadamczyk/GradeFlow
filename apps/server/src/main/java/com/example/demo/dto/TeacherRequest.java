@@ -1,24 +1,27 @@
 package com.example.demo.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class TeacherRequest {
-  private Integer teacher_id;
-  private Integer subject_id;
+  private String name;
+  private String lastname;
 
-  // Getters and setters
+  // getters and setters
 
-  public Integer getTeacher_id() {
-    return teacher_id;
+  public String getName() {
+    return name;
   }
 
-  public void setTeacher_id(Integer teacher_id) {
-    this.teacher_id = teacher_id;
+  public void setName(String name) {
+    this.name = name;
   }
 
-  public Integer getSubject_id() {
-    return subject_id;
+  public String getLastname() {
+    return lastname;
   }
 
-  public void setSubject_id(Integer subject_id) {
-    this.subject_id = subject_id;
+  public void setLastname(String lastname) {
+    this.lastname = lastname;
   }
+
 }
