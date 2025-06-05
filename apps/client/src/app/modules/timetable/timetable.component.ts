@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { TimetableEntry, WeeklyTimetable, WorkDay } from '../../core/models';
 
+import { AuthService } from '../../core/services/auth.service';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -13,6 +14,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TimetableService } from '../../core/services';
 import { TooltipModule } from 'primeng/tooltip';
+import { UserRole } from '../../core/models/enums';
 
 @Component({
   selector: 'app-timetable',
@@ -39,6 +41,16 @@ export class TimetableComponent implements OnInit {
 
   isLoading = true;
   currentDay = new Date().getDay();
+  currentUser = signal<any>(null);
+
+  // Role-specific computed properties
+  userRole = computed(() => this.currentUser()?.role);
+  isStudent = computed(() => this.userRole() === UserRole.STUDENT);
+  isTeacher = computed(() => this.userRole() === UserRole.TEACHER);
+  isParent = computed(() => this.userRole() === UserRole.PARENT);
+  isAdmin = computed(() => this.userRole() === UserRole.ADMIN);
+
+  UserRole = UserRole;
 
   weekDays = [
     { key: WorkDay.MON, label: 'Poniedziałek', short: 'Pon' },
@@ -59,22 +71,34 @@ export class TimetableComponent implements OnInit {
     { period: 8, start: '14:25', end: '15:10' },
   ];
 
-  constructor(private timetableService: TimetableService) {}
+  constructor(
+    private timetableService: TimetableService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.loadTimetableData();
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser.set(user);
+      if (user) {
+        this.loadTimetableData();
+      }
+    });
   }
 
   private loadTimetableData(): void {
     this.isLoading = true;
+    const user = this.currentUser();
 
-    const studentId = 1;
+    if (!user) {
+      this.isLoading = false;
+      return;
+    }
 
-    this.weeklyTimetable$ = this.timetableService.getWeeklyTimetable(studentId);
+    const userId = user.id;
 
-    this.currentLesson$ = this.timetableService.getCurrentLesson(studentId);
-
-    this.nextLesson$ = this.timetableService.getNextLesson(studentId);
+    this.weeklyTimetable$ = this.timetableService.getWeeklyTimetable(userId);
+    this.currentLesson$ = this.timetableService.getCurrentLesson(userId);
+    this.nextLesson$ = this.timetableService.getNextLesson(userId);
 
     setTimeout(() => {
       this.isLoading = false;
@@ -94,16 +118,16 @@ export class TimetableComponent implements OnInit {
 
   getSubjectColor(subjectName: string): string {
     const colors = [
-      '#FF6B6B',
-      '#4ECDC4',
-      '#45B7D1',
-      '#96CEB4',
-      '#FFEAA7',
-      '#DDA0DD',
-      '#98D8C8',
-      '#F7DC6F',
-      '#BB8FCE',
-      '#85C1E9',
+      '#FF6B6B', // czerwony
+      '#4ECDC4', // turkusowy
+      '#45B7D1', // niebieski
+      '#96CEB4', // zielony
+      '#FFEAA7', // żółty
+      '#DDA0DD', // lawenda
+      '#F7DC6F', // złoty
+      '#BB8FCE', // fioletowy
+      '#85C1E9', // jasny niebieski
+      '#98D8C8', // miętowy
     ];
 
     const hash = subjectName.split('').reduce((a, b) => {
@@ -162,5 +186,69 @@ export class TimetableComponent implements OnInit {
 
   getLessonDuration(): string {
     return '45 min';
+  }
+
+  getCurrentWeekDisplay(): string {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    startOfWeek.setDate(diff);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 4); // Friday
+
+    const formatDate = (date: Date) => {
+      return date.toLocaleDateString('pl-PL', {
+        day: '2-digit',
+        month: '2-digit',
+      });
+    };
+
+    return `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+  }
+
+  getDayDate(day: WorkDay): string {
+    const now = new Date();
+    const currentDay = now.getDay();
+    const dayNumber = this.getDayNumber(day);
+
+    const targetDate = new Date(now);
+    const diff = dayNumber - currentDay;
+    targetDate.setDate(now.getDate() + diff);
+
+    return targetDate.toLocaleDateString('pl-PL', {
+      day: '2-digit',
+      month: '2-digit',
+    });
+  }
+
+  private getDayNumber(day: WorkDay): number {
+    switch (day) {
+      case WorkDay.MON:
+        return 1;
+      case WorkDay.TUE:
+        return 2;
+      case WorkDay.WED:
+        return 3;
+      case WorkDay.THU:
+        return 4;
+      case WorkDay.FRI:
+        return 5;
+      default:
+        return 1;
+    }
+  }
+
+  getTooltipText(lesson: TimetableEntry): string {
+    const teacher = `${lesson.teacherSubject.teacher.name} ${lesson.teacherSubject.teacher.lastname}`;
+    const room = lesson.room ? ` - Sala ${lesson.room}` : '';
+    const time = `${lesson.startTime} - ${lesson.endTime}`;
+
+    return `${lesson.teacherSubject.subject.name}\n${teacher}\n${time}${room}`;
+  }
+
+  onLessonClick(lesson: TimetableEntry): void {
+    console.log('Clicked lesson:', lesson);
   }
 }

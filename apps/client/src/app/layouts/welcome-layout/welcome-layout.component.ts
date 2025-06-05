@@ -9,12 +9,7 @@ import { SignInComponent } from '../auth-layout/sign-in/sign-in.component';
 @Component({
   selector: 'app-welcome-layout',
   standalone: true,
-  imports: [
-    CommonModule, 
-    ButtonModule, 
-    DialogModule,
-    SignInComponent
-  ],
+  imports: [CommonModule, ButtonModule, DialogModule, SignInComponent],
   templateUrl: './welcome-layout.component.html',
   styleUrl: './welcome-layout.component.scss',
 })
@@ -67,7 +62,7 @@ export class WelcomeLayoutComponent implements OnInit, OnDestroy {
   onLoginSuccess() {
     console.log('Welcome - onLoginSuccess wywołane');
     this.displayDialog.set(false);
-    
+
     setTimeout(() => {
       console.log('Welcome - przekierowanie na dashboard');
       this.router.navigate(['/dashboard']);

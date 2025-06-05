@@ -4,9 +4,20 @@
     <div class="welcome-section">
       <h1 class="page-title">
         <i class="pi pi-home"></i>
-        {{ greeting() }}, {{ userName() }}!
+        {{ roleGreeting() }}!
       </h1>
-      <p class="page-subtitle">Witaj w swoim panelu GradeFlow</p>
+      <p class="page-subtitle" *ngIf="isStudent()">
+        Witaj w swoim panelu GradeFlow
+      </p>
+      <p class="page-subtitle" *ngIf="isTeacher()">
+        Panel nauczyciela - zarządzaj swoimi klasami
+      </p>
+      <p class="page-subtitle" *ngIf="isParent()">
+        Panel rodzica - śledź postępy swoich dzieci
+      </p>
+      <p class="page-subtitle" *ngIf="isAdmin()">
+        Panel administratora - zarządzaj systemem
+      </p>
     </div>
 
     <div class="header-actions">
@@ -60,8 +71,8 @@
     <div class="grid">
       <!-- Left Column - Main Content -->
       <div class="col-12 md:col-8">
-        <!-- Quick Stats -->
-        <div class="grid quick-stats">
+        <!-- STUDENT Quick Stats -->
+        <div class="grid quick-stats" *ngIf="isStudent()">
           <!-- Overall Average -->
           <div class="col-12 md:col-6 lg:col-3">
             <p-card class="stat-card average-card">
@@ -168,8 +179,236 @@
           </div>
         </div>
 
-        <!-- Charts Section -->
-        <div class="grid charts-section">
+        <!-- TEACHER Quick Stats -->
+        <div class="grid quick-stats" *ngIf="isTeacher()">
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card teacher-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-users"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{ dashboardData()?.teacherData?.classes?.length || 0 }}
+                  </h3>
+                  <p>Klasy</p>
+                  <small>pod opieką</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card pending-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-clock"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{
+                      dashboardData()?.teacherData?.pendingGrades?.length || 0
+                    }}
+                  </h3>
+                  <p>Do oceny</p>
+                  <small>prace uczniów</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card schedule-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-calendar"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{
+                      dashboardData()?.teacherData?.todaySchedule?.length || 0
+                    }}
+                  </h3>
+                  <p>Lekcje dziś</p>
+                  <small>w planie</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card progress-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-chart-line"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{
+                      dashboardData()?.teacherData?.studentProgress?.length || 0
+                    }}
+                  </h3>
+                  <p>Postępy</p>
+                  <small>klas</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </div>
+
+        <!-- PARENT Quick Stats -->
+        <div class="grid quick-stats" *ngIf="isParent()">
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card children-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-heart"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{ dashboardData()?.parentData?.children?.length || 0 }}
+                  </h3>
+                  <p>Dzieci</p>
+                  <small>w szkole</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card events-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-calendar"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{
+                      dashboardData()?.parentData?.upcomingEvents?.length || 0
+                    }}
+                  </h3>
+                  <p>Wydarzenia</p>
+                  <small>nadchodzące</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card messages-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-envelope"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>{{ unreadMessagesCount() }}</h3>
+                  <p>Wiadomości</p>
+                  <small>nieprzeczytane</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card average-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-star"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{ (dashboardData()?.parentData?.children?.[0]?.average || 0) | number : '1.1-1' }}
+                  </h3>
+                  <p>Średnia</p>
+                  <small>pierwszego dziecka</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </div>
+
+        <!-- ADMIN Quick Stats -->
+        <div class="grid quick-stats" *ngIf="isAdmin()">
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card users-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-users"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{
+                      dashboardData()?.adminData?.systemStats?.totalUsers || 0
+                    }}
+                  </h3>
+                  <p>Użytkownicy</p>
+                  <small>w systemie</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card active-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-check-circle"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{
+                      dashboardData()?.adminData?.systemStats?.activeUsers || 0
+                    }}
+                  </h3>
+                  <p>Aktywni</p>
+                  <small>użytkownicy</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card new-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-plus"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{
+                      dashboardData()?.adminData?.systemStats
+                        ?.newRegistrations || 0
+                    }}
+                  </h3>
+                  <p>Nowi</p>
+                  <small>użytkownicy</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-card class="stat-card load-card">
+              <div class="stat-content">
+                <div class="stat-icon">
+                  <i class="pi pi-server"></i>
+                </div>
+                <div class="stat-details">
+                  <h3>
+                    {{
+                      dashboardData()?.adminData?.systemStats?.systemLoad || 0
+                    }}%
+                  </h3>
+                  <p>Obciążenie</p>
+                  <small>systemu</small>
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </div>
+
+        <!-- Charts Section - Student & Parent -->
+        <div class="grid charts-section" *ngIf="isStudent() || isParent()">
           <!-- Grades Trend Chart -->
           <div class="col-12 md:col-6">
             <p-card>
@@ -213,8 +452,145 @@
           </div>
         </div>
 
-        <!-- Recent Grades -->
-        <div class="recent-grades-section">
+        <!-- Teacher Charts Section -->
+        <div class="grid charts-section" *ngIf="isTeacher()">
+          <!-- Class Progress Chart -->
+          <div class="col-12 md:col-6">
+            <p-card>
+              <ng-template pTemplate="header">
+                <div class="card-header">
+                  <h3><i class="pi pi-chart-bar"></i> Postępy klas</h3>
+                </div>
+              </ng-template>
+              <div class="teacher-chart-content">
+                <div class="class-progress-list">
+                  <div
+                    class="progress-item"
+                    *ngFor="
+                      let progress of dashboardData()?.teacherData
+                        ?.studentProgress
+                    "
+                  >
+                    <div class="progress-info">
+                      <span class="class-name">{{ progress.class }}</span>
+                      <span
+                        class="progress-trend"
+                        [class.positive]="progress.improvement.startsWith('+')"
+                        [class.negative]="progress.improvement.startsWith('-')"
+                      >
+                        {{ progress.improvement }}
+                      </span>
+                    </div>
+                    <div class="progress-details">
+                      <p-progressBar
+                        [value]="(progress.average / 6) * 100"
+                        [showValue]="false"
+                      ></p-progressBar>
+                      <span class="average-value">{{ progress.average }}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <!-- Today's Schedule -->
+          <div class="col-12 md:col-6">
+            <p-card>
+              <ng-template pTemplate="header">
+                <div class="card-header">
+                  <h3><i class="pi pi-calendar"></i> Plan na dziś</h3>
+                </div>
+              </ng-template>
+              <div class="schedule-content">
+                <div
+                  class="schedule-item"
+                  *ngFor="
+                    let lesson of dashboardData()?.teacherData?.todaySchedule
+                  "
+                >
+                  <div class="lesson-time">{{ lesson.time }}</div>
+                  <div class="lesson-details">
+                    <div class="lesson-subject">{{ lesson.subject }}</div>
+                    <div class="lesson-class">
+                      Klasa {{ lesson.class }} • Sala {{ lesson.room }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </div>
+
+        <!-- Admin Charts Section -->
+        <div class="grid charts-section" *ngIf="isAdmin()">
+          <!-- System Activity -->
+          <div class="col-12 md:col-6">
+            <p-card>
+              <ng-template pTemplate="header">
+                <div class="card-header">
+                  <h3><i class="pi pi-chart-line"></i> Ostatnia aktywność</h3>
+                </div>
+              </ng-template>
+              <div class="activity-content">
+                <div
+                  class="activity-item"
+                  *ngFor="
+                    let activity of dashboardData()?.adminData?.recentActivity
+                  "
+                >
+                  <div class="activity-time">{{ activity.time }}</div>
+                  <div class="activity-details">
+                    <div class="activity-action">{{ activity.action }}</div>
+                    <div class="activity-description">
+                      {{ activity.user || activity.details }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </p-card>
+          </div>
+
+          <!-- System Alerts -->
+          <div class="col-12 md:col-6">
+            <p-card>
+              <ng-template pTemplate="header">
+                <div class="card-header">
+                  <h3>
+                    <i class="pi pi-exclamation-triangle"></i> Alerty systemu
+                  </h3>
+                </div>
+              </ng-template>
+              <div class="alerts-content">
+                <div
+                  class="alert-item"
+                  *ngFor="let alert of dashboardData()?.adminData?.alerts"
+                  [class]="'alert-' + alert.type"
+                >
+                  <div class="alert-icon">
+                    <i
+                      class="pi"
+                      [class]="
+                        alert.type === 'warning'
+                          ? 'pi-exclamation-triangle'
+                          : 'pi-info-circle'
+                      "
+                    ></i>
+                  </div>
+                  <div class="alert-details">
+                    <div class="alert-message">{{ alert.message }}</div>
+                    <div class="alert-priority">
+                      Priorytet: {{ alert.priority }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </p-card>
+          </div>
+        </div>
+
+        <!-- Recent Grades - Student & Parent -->
+        <div class="recent-grades-section" *ngIf="isStudent() || isParent()">
           <p-card>
             <ng-template pTemplate="header">
               <div class="card-header">
@@ -267,6 +643,110 @@
                 <small>Oceny pojawią się tutaj po ich dodaniu</small>
               </div>
             </ng-template>
+          </p-card>
+        </div>
+
+        <!-- Teacher Section - Pending Grades -->
+        <div class="pending-grades-section" *ngIf="isTeacher()">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="card-header">
+                <h3><i class="pi pi-clock"></i> Do oceny</h3>
+                <p-button
+                  label="Zobacz wszystko"
+                  [text]="true"
+                  size="small"
+                  (onClick)="navigateToGrades()"
+                >
+                </p-button>
+              </div>
+            </ng-template>
+
+            <div
+              class="pending-list"
+              *ngIf="
+                dashboardData()?.teacherData?.pendingGrades?.length;
+                else noPendingGrades
+              "
+            >
+              <div
+                class="pending-item"
+                *ngFor="
+                  let pending of dashboardData()?.teacherData?.pendingGrades
+                "
+              >
+                <div class="pending-info">
+                  <div class="student-name">
+                    <strong>{{ pending.studentName }}</strong>
+                    <small>{{ formatDate(pending.date) }}</small>
+                  </div>
+                  <div class="assignment-details">
+                    <p-tag
+                      value="{{ pending.assignment }}"
+                      severity="warn"
+                    ></p-tag>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #noPendingGrades>
+              <div class="empty-state">
+                <i class="pi pi-check-circle"></i>
+                <p>Wszystko ocenione!</p>
+                <small>Brak prac do sprawdzenia</small>
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+
+        <!-- Admin Section - System Overview -->
+        <div class="system-overview-section" *ngIf="isAdmin()">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="card-header">
+                <h3><i class="pi pi-cog"></i> Przegląd systemu</h3>
+              </div>
+            </ng-template>
+
+            <div class="system-metrics">
+              <div class="metric-row">
+                <span class="metric-label">Obciążenie systemu:</span>
+                <div class="metric-value">
+                  <p-progressBar
+                    [value]="
+                      dashboardData()?.adminData?.systemStats?.systemLoad || 0
+                    "
+                    [showValue]="true"
+                    [style.color]="
+                      (dashboardData()?.adminData?.systemStats?.systemLoad ||
+                        0) > 80
+                        ? 'red'
+                        : 'green'
+                    "
+                  >
+                  </p-progressBar>
+                </div>
+              </div>
+
+              <div class="metric-row">
+                <span class="metric-label">Aktywni użytkownicy:</span>
+                <span class="metric-number">
+                  {{
+                    dashboardData()?.adminData?.systemStats?.activeUsers || 0
+                  }}
+                  /
+                  {{ dashboardData()?.adminData?.systemStats?.totalUsers || 0 }}
+                </span>
+              </div>
+
+              <div class="metric-row">
+                <span class="metric-label">Nowe rejestracje:</span>
+                <span class="metric-number">{{
+                  dashboardData()?.adminData?.systemStats?.newRegistrations || 0
+                }}</span>
+              </div>
+            </div>
           </p-card>
         </div>
       </div>
@@ -378,8 +858,8 @@
           </p-card>
         </div>
 
-        <!-- Quick Actions -->
-        <div class="quick-actions-section">
+        <!-- Quick Actions - Student -->
+        <div class="quick-actions-section" *ngIf="isStudent()">
           <p-card>
             <ng-template pTemplate="header">
               <div class="card-header">
@@ -403,6 +883,124 @@
                 [outlined]="true"
                 styleClass="w-full mb-2"
                 (onClick)="navigateToTimetable()"
+              >
+              </p-button>
+
+              <p-button
+                label="Mój profil"
+                icon="pi pi-user"
+                [outlined]="true"
+                styleClass="w-full"
+                (onClick)="navigateToAccount()"
+              >
+              </p-button>
+            </div>
+          </p-card>
+        </div>
+
+        <!-- Quick Actions - Teacher -->
+        <div class="quick-actions-section" *ngIf="isTeacher()">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="card-header">
+                <h3><i class="pi pi-bolt"></i> Szybkie akcje</h3>
+              </div>
+            </ng-template>
+
+            <div class="quick-actions">
+              <p-button
+                label="Oceny uczniów"
+                icon="pi pi-star"
+                [outlined]="true"
+                styleClass="w-full mb-2"
+                (onClick)="navigateToGrades()"
+              >
+              </p-button>
+
+              <p-button
+                label="Plan zajęć"
+                icon="pi pi-calendar"
+                [outlined]="true"
+                styleClass="w-full mb-2"
+                (onClick)="navigateToTimetable()"
+              >
+              </p-button>
+
+              <p-button
+                label="Mój profil"
+                icon="pi pi-user"
+                [outlined]="true"
+                styleClass="w-full"
+                (onClick)="navigateToAccount()"
+              >
+              </p-button>
+            </div>
+          </p-card>
+        </div>
+
+        <!-- Quick Actions - Parent -->
+        <div class="quick-actions-section" *ngIf="isParent()">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="card-header">
+                <h3><i class="pi pi-bolt"></i> Szybkie akcje</h3>
+              </div>
+            </ng-template>
+
+            <div class="quick-actions">
+              <p-button
+                label="Oceny dzieci"
+                icon="pi pi-star"
+                [outlined]="true"
+                styleClass="w-full mb-2"
+                (onClick)="navigateToGrades()"
+              >
+              </p-button>
+
+              <p-button
+                label="Plan zajęć"
+                icon="pi pi-calendar"
+                [outlined]="true"
+                styleClass="w-full mb-2"
+                (onClick)="navigateToTimetable()"
+              >
+              </p-button>
+
+              <p-button
+                label="Mój profil"
+                icon="pi pi-user"
+                [outlined]="true"
+                styleClass="w-full"
+                (onClick)="navigateToAccount()"
+              >
+              </p-button>
+            </div>
+          </p-card>
+        </div>
+
+        <!-- Quick Actions - Admin -->
+        <div class="quick-actions-section" *ngIf="isAdmin()">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="card-header">
+                <h3><i class="pi pi-bolt"></i> Szybkie akcje</h3>
+              </div>
+            </ng-template>
+
+            <div class="quick-actions">
+              <p-button
+                label="Zarządzanie"
+                icon="pi pi-cog"
+                [outlined]="true"
+                styleClass="w-full mb-2"
+              >
+              </p-button>
+
+              <p-button
+                label="Użytkownicy"
+                icon="pi pi-users"
+                [outlined]="true"
+                styleClass="w-full mb-2"
               >
               </p-button>
 

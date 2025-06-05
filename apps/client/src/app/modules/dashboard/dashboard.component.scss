@@ -458,6 +458,296 @@
   }
 }
 
+// Role-specific styles
+.teacher-chart-content {
+  .class-progress-list {
+    .progress-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--surface-border);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .progress-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+
+        .class-name {
+          font-weight: 600;
+          color: var(--text-color);
+        }
+
+        .progress-trend {
+          font-size: 0.875rem;
+          font-weight: 500;
+          padding: 0.25rem 0.5rem;
+          border-radius: 4px;
+
+          &.positive {
+            color: var(--green-600);
+            background: var(--green-50);
+          }
+
+          &.negative {
+            color: var(--red-600);
+            background: var(--red-50);
+          }
+        }
+      }
+
+      .progress-details {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        min-width: 120px;
+
+        .average-value {
+          font-weight: 600;
+          color: var(--text-color);
+          min-width: 30px;
+          text-align: right;
+        }
+      }
+    }
+  }
+}
+
+.schedule-content {
+  .schedule-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--surface-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .lesson-time {
+      font-weight: 600;
+      color: var(--primary-color);
+      min-width: 60px;
+    }
+
+    .lesson-details {
+      flex: 1;
+
+      .lesson-subject {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.25rem;
+      }
+
+      .lesson-class {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+      }
+    }
+  }
+}
+
+.activity-content {
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--surface-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .activity-time {
+      font-weight: 600;
+      color: var(--primary-color);
+      min-width: 60px;
+      font-size: 0.875rem;
+    }
+
+    .activity-details {
+      flex: 1;
+
+      .activity-action {
+        font-weight: 600;
+        color: var(--text-color);
+        margin-bottom: 0.25rem;
+      }
+
+      .activity-description {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+      }
+    }
+  }
+}
+
+.alerts-content {
+  .alert-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &.alert-warning {
+      background: var(--orange-50);
+      border: 1px solid var(--orange-200);
+
+      .alert-icon i {
+        color: var(--orange-600);
+      }
+    }
+
+    &.alert-info {
+      background: var(--blue-50);
+      border: 1px solid var(--blue-200);
+
+      .alert-icon i {
+        color: var(--blue-600);
+      }
+    }
+
+    .alert-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .alert-details {
+      flex: 1;
+
+      .alert-message {
+        font-weight: 500;
+        color: var(--text-color);
+        margin-bottom: 0.25rem;
+      }
+
+      .alert-priority {
+        font-size: 0.875rem;
+        color: var(--text-color-secondary);
+      }
+    }
+  }
+}
+
+.pending-list {
+  .pending-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--surface-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .pending-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .student-name {
+        strong {
+          color: var(--text-color);
+          display: block;
+        }
+
+        small {
+          color: var(--text-color-secondary);
+          font-size: 0.875rem;
+        }
+      }
+    }
+  }
+}
+
+.system-metrics {
+  .metric-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--surface-border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .metric-label {
+      font-weight: 500;
+      color: var(--text-color);
+    }
+
+    .metric-number {
+      font-weight: 600;
+      color: var(--primary-color);
+    }
+
+    .metric-value {
+      min-width: 120px;
+    }
+  }
+}
+
+// Additional stat card styles for different roles
+.stat-card {
+  &.teacher-card .stat-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  &.pending-card .stat-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  &.schedule-card .stat-icon {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  }
+
+  &.progress-card .stat-icon {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  }
+
+  &.children-card .stat-icon {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+  }
+
+  &.events-card .stat-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  &.messages-card .stat-icon {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+
+  &.users-card .stat-icon {
+    background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  }
+
+  &.active-card .stat-icon {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+
+  &.new-card .stat-icon {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  }
+
+  &.load-card .stat-icon {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+  }
+}
+
 // Responsive Design
 @media (max-width: 768px) {
   .dashboard-container {

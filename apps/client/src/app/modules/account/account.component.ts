@@ -25,7 +25,6 @@ import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
-import { FileUploadModule } from 'primeng/fileupload';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextarea } from 'primeng/inputtextarea';
@@ -59,7 +58,6 @@ import { UserRole } from '../../core/models/enums';
     TooltipModule,
     ConfirmDialogModule,
     ToastModule,
-    FileUploadModule,
     ProgressBarModule,
     TabViewModule,
     PanelModule,
@@ -76,7 +74,6 @@ export class AccountComponent implements OnInit, OnDestroy {
   isLoading = true;
   isUpdatingProfile = false;
   isChangingPassword = false;
-  isUploadingAvatar = false;
 
   profileForm: FormGroup;
   passwordForm: FormGroup;
@@ -228,45 +225,12 @@ export class AccountComponent implements OnInit, OnDestroy {
             this.messageService.add({
               severity: 'error',
               summary: 'Błąd',
-              detail: error.message || 'Nie udało się zmienić hasła',
+              detail: 'Nie udało się zmienić hasła',
             });
           },
         });
     } else {
       this.markFormGroupTouched(this.passwordForm);
-    }
-  }
-
-  onAvatarUpload(event: any): void {
-    const file = event.files[0];
-    if (file) {
-      this.isUploadingAvatar = true;
-
-      this.accountService
-        .uploadAvatar(file)
-        .pipe(
-          takeUntil(this.destroy$),
-          finalize(() => (this.isUploadingAvatar = false))
-        )
-        .subscribe({
-          next: (avatarUrl) => {
-            if (this.userProfile) {
-              this.userProfile.avatar = avatarUrl;
-            }
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Sukces',
-              detail: 'Avatar został zaktualizowany',
-            });
-          },
-          error: (error) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Błąd',
-              detail: 'Nie udało się zaktualizować avatara',
-            });
-          },
-        });
     }
   }
 
@@ -276,9 +240,8 @@ export class AccountComponent implements OnInit, OnDestroy {
         'Czy na pewno chcesz usunąć swoje konto? Ta operacja jest nieodwracalna.',
       header: 'Potwierdzenie usunięcia konta',
       icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Usuń konto',
+      acceptLabel: 'Usuń',
       rejectLabel: 'Anuluj',
-      acceptButtonStyleClass: 'p-button-danger',
       accept: () => {
         this.accountService
           .deleteAccount()
@@ -322,62 +285,88 @@ export class AccountComponent implements OnInit, OnDestroy {
 
   getFieldError(formGroup: FormGroup, fieldName: string): string {
     const field = formGroup.get(fieldName);
-    if (field?.errors) {
-      if (field.errors['required']) return `${fieldName} jest wymagane`;
-      if (field.errors['minlength']) return `${fieldName} jest za krótkie`;
-      if (field.errors['maxlength']) return `${fieldName} jest za długie`;
-      if (field.errors['pattern'])
-        return `${fieldName} ma nieprawidłowy format`;
-      if (field.errors['passwordMismatch']) return 'Hasła nie są identyczne';
+    if (field && field.errors) {
+      if (field.errors['required']) return 'To pole jest wymagane';
+      if (field.errors['minlength'])
+        return `Minimum ${field.errors['minlength'].requiredLength} znaków`;
+      if (field.errors['maxlength'])
+        return `Maksimum ${field.errors['maxlength'].requiredLength} znaków`;
+      if (field.errors['pattern']) return 'Nieprawidłowy format';
     }
     return '';
   }
 
   getRoleBadgeClass(role: UserRole): string {
     switch (role) {
-      case UserRole.STUDENT:
-        return 'p-badge-info';
-      case UserRole.TEACHER:
-        return 'p-badge-success';
-      case UserRole.PARENT:
-        return 'p-badge-warning';
       case UserRole.ADMIN:
-        return 'p-badge-danger';
+        return 'role-admin';
+      case UserRole.TEACHER:
+        return 'role-teacher';
+      case UserRole.STUDENT:
+        return 'role-student';
+      case UserRole.PARENT:
+        return 'role-parent';
       default:
-        return 'p-badge-secondary';
+        return 'role-default';
     }
   }
 
   getRoleLabel(role: UserRole): string {
     switch (role) {
-      case UserRole.STUDENT:
-        return 'Uczeń';
-      case UserRole.TEACHER:
-        return 'Nauczyciel';
-      case UserRole.PARENT:
-        return 'Rodzic';
       case UserRole.ADMIN:
         return 'Administrator';
+      case UserRole.TEACHER:
+        return 'Nauczyciel';
+      case UserRole.STUDENT:
+        return 'Uczeń';
+      case UserRole.PARENT:
+        return 'Rodzic';
       default:
-        return 'Nieznana rola';
+        return 'Nieznany';
+    }
+  }
+
+  getRoleIcon(role: UserRole): string {
+    switch (role) {
+      case UserRole.ADMIN:
+        return 'pi pi-cog';
+      case UserRole.TEACHER:
+        return 'pi pi-book';
+      case UserRole.STUDENT:
+        return 'pi pi-graduation-cap';
+      case UserRole.PARENT:
+        return 'pi pi-users';
+      default:
+        return 'pi pi-user';
     }
   }
 
   formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('pl-PL', {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('pl-PL', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    });
+    }).format(date);
   }
 
   formatDateOnly(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('pl-PL', {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('pl-PL', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    });
+    }).format(date);
+  }
+
+  // Track functions for performance optimization
+  trackBySubject(index: number, item: string): string {
+    return item;
+  }
+
+  trackByChild(index: number, item: string): string {
+    return item;
   }
 }

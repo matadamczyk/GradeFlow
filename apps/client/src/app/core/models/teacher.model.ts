@@ -6,4 +6,4 @@ export interface Teacher {
 
 export interface TeacherWithSubjects extends Teacher {
   subjects: string[];
-} 
+}
