@@ -4,9 +4,15 @@
     <div class="header-content">
       <h1 class="page-title">
         <i class="pi pi-calendar"></i>
-        Plan Zajęć
+        <span *ngIf="isStudent()">Plan Zajęć</span>
+        <span *ngIf="isTeacher()">Mój Plan Zajęć</span>
+        <span *ngIf="isParent()">Plan Zajęć Dzieci</span>
+        <span *ngIf="isAdmin()">Przegląd Planów</span>
       </h1>
-      <p class="page-subtitle">Rozkład lekcji na obecny tydzień</p>
+      <p class="page-subtitle" *ngIf="isStudent()">Rozkład lekcji na obecny tydzień</p>
+      <p class="page-subtitle" *ngIf="isTeacher()">Twój harmonogram nauczania</p>
+      <p class="page-subtitle" *ngIf="isParent()">Harmonogram zajęć Twoich dzieci</p>
+      <p class="page-subtitle" *ngIf="isAdmin()">Przegląd wszystkich planów zajęć</p>
     </div>
     <div class="header-actions">
       <p-button

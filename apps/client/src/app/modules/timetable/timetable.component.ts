@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { TimetableEntry, WeeklyTimetable, WorkDay } from '../../core/models';
 
+import { AuthService } from '../../core/services/auth.service';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -13,6 +14,7 @@ import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TimetableService } from '../../core/services';
 import { TooltipModule } from 'primeng/tooltip';
+import { UserRole } from '../../core/models/enums';
 
 @Component({
   selector: 'app-timetable',
@@ -39,6 +41,16 @@ export class TimetableComponent implements OnInit {
 
   isLoading = true;
   currentDay = new Date().getDay();
+  currentUser = signal<any>(null);
+
+  // Role-specific computed properties
+  userRole = computed(() => this.currentUser()?.role);
+  isStudent = computed(() => this.userRole() === UserRole.STUDENT);
+  isTeacher = computed(() => this.userRole() === UserRole.TEACHER);
+  isParent = computed(() => this.userRole() === UserRole.PARENT);
+  isAdmin = computed(() => this.userRole() === UserRole.ADMIN);
+
+  UserRole = UserRole;
 
   weekDays = [
     { key: WorkDay.MON, label: 'Poniedziałek', short: 'Pon' },
@@ -59,22 +71,34 @@ export class TimetableComponent implements OnInit {
     { period: 8, start: '14:25', end: '15:10' },
   ];
 
-  constructor(private timetableService: TimetableService) {}
+  constructor(
+    private timetableService: TimetableService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
-    this.loadTimetableData();
+    this.authService.currentUser$.subscribe((user) => {
+      this.currentUser.set(user);
+      if (user) {
+        this.loadTimetableData();
+      }
+    });
   }
 
   private loadTimetableData(): void {
     this.isLoading = true;
+    const user = this.currentUser();
+    
+    if (!user) {
+      this.isLoading = false;
+      return;
+    }
 
-    const studentId = 1;
+    const userId = user.id;
 
-    this.weeklyTimetable$ = this.timetableService.getWeeklyTimetable(studentId);
-
-    this.currentLesson$ = this.timetableService.getCurrentLesson(studentId);
-
-    this.nextLesson$ = this.timetableService.getNextLesson(studentId);
+    this.weeklyTimetable$ = this.timetableService.getWeeklyTimetable(userId);
+    this.currentLesson$ = this.timetableService.getCurrentLesson(userId);
+    this.nextLesson$ = this.timetableService.getNextLesson(userId);
 
     setTimeout(() => {
       this.isLoading = false;
