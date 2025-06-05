@@ -94,16 +94,16 @@ export class TimetableComponent implements OnInit {
 
   getSubjectColor(subjectName: string): string {
     const colors = [
-      '#FF6B6B',
-      '#4ECDC4',
-      '#45B7D1',
-      '#96CEB4',
-      '#FFEAA7',
-      '#DDA0DD',
-      '#98D8C8',
-      '#F7DC6F',
-      '#BB8FCE',
-      '#85C1E9',
+      '#FF6B6B', // czerwony
+      '#4ECDC4', // turkusowy
+      '#45B7D1', // niebieski
+      '#96CEB4', // zielony
+      '#FFEAA7', // żółty
+      '#DDA0DD', // lawenda
+      '#F7DC6F', // złoty
+      '#BB8FCE', // fioletowy
+      '#85C1E9', // jasny niebieski
+      '#98D8C8', // miętowy
     ];
 
     const hash = subjectName.split('').reduce((a, b) => {
@@ -162,5 +162,63 @@ export class TimetableComponent implements OnInit {
 
   getLessonDuration(): string {
     return '45 min';
+  }
+
+  getCurrentWeekDisplay(): string {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    const day = now.getDay();
+    const diff = now.getDate() - day + (day === 0 ? -6 : 1); // adjust when day is sunday
+    startOfWeek.setDate(diff);
+
+    const endOfWeek = new Date(startOfWeek);
+    endOfWeek.setDate(startOfWeek.getDate() + 4); // Friday
+
+    const formatDate = (date: Date) => {
+      return date.toLocaleDateString('pl-PL', { 
+        day: '2-digit', 
+        month: '2-digit' 
+      });
+    };
+
+    return `${formatDate(startOfWeek)} - ${formatDate(endOfWeek)}`;
+  }
+
+  getDayDate(day: WorkDay): string {
+    const now = new Date();
+    const currentDay = now.getDay();
+    const dayNumber = this.getDayNumber(day);
+    
+    const targetDate = new Date(now);
+    const diff = dayNumber - currentDay;
+    targetDate.setDate(now.getDate() + diff);
+
+    return targetDate.toLocaleDateString('pl-PL', { 
+      day: '2-digit',
+      month: '2-digit'
+    });
+  }
+
+  private getDayNumber(day: WorkDay): number {
+    switch (day) {
+      case WorkDay.MON: return 1;
+      case WorkDay.TUE: return 2;
+      case WorkDay.WED: return 3;
+      case WorkDay.THU: return 4;
+      case WorkDay.FRI: return 5;
+      default: return 1;
+    }
+  }
+
+  getTooltipText(lesson: TimetableEntry): string {
+    const teacher = `${lesson.teacherSubject.teacher.name} ${lesson.teacherSubject.teacher.lastname}`;
+    const room = lesson.room ? ` - Sala ${lesson.room}` : '';
+    const time = `${lesson.startTime} - ${lesson.endTime}`;
+    
+    return `${lesson.teacherSubject.subject.name}\n${teacher}\n${time}${room}`;
+  }
+
+  onLessonClick(lesson: TimetableEntry): void {
+    console.log('Clicked lesson:', lesson);
   }
 }
