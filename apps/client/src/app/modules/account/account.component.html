@@ -1,34 +1,51 @@
 <div class="account-container">
-  <!-- Header -->
+  <!-- Enhanced Hero Header -->
   <div class="account-header">
     <div class="header-content">
-      <h1 class="page-title">
-        <i class="pi pi-user"></i>
-        Profil użytkownika
-      </h1>
-      <p class="page-subtitle">Zarządzaj swoim kontem i ustawieniami</p>
+      <div class="title-section">
+        <h1 class="page-title">
+          <div class="title-icon">
+            <i class="pi pi-user"></i>
+          </div>
+          <span>Profil użytkownika</span>
+        </h1>
+        <p class="page-subtitle">Zarządzaj swoim kontem i ustawieniami</p>
+      </div>
+      
+      <div class="header-actions">
+        <p-button
+          icon="pi pi-refresh"
+          label="Odśwież"
+          (onClick)="onRefreshData()"
+          [loading]="isLoading"
+          severity="secondary"
+          size="small"
+          styleClass="refresh-btn"
+        ></p-button>
+      </div>
     </div>
-    <p-button
-      icon="pi pi-refresh"
-      label="Odśwież"
-      styleClass="p-button-outlined"
-      (onClick)="onRefreshData()"
-      [loading]="isLoading"
-    ></p-button>
   </div>
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-content">
     <div class="grid">
       <div class="col-12 lg:col-4">
-        <p-card>
-          <p-skeleton height="200px"></p-skeleton>
-        </p-card>
+        <div class="loading-card profile-loading">
+          <p-skeleton height="120px" class="mb-3"></p-skeleton>
+          <p-skeleton height="80px" class="mb-2"></p-skeleton>
+          <p-skeleton height="60px"></p-skeleton>
+        </div>
       </div>
       <div class="col-12 lg:col-8">
-        <p-card>
-          <p-skeleton height="200px"></p-skeleton>
-        </p-card>
+        <div class="loading-card stats-loading">
+          <p-skeleton height="60px" class="mb-3"></p-skeleton>
+          <div class="grid">
+            <div class="col-6 md:col-3" *ngFor="let item of [1,2,3,4]">
+              <p-skeleton height="80px"></p-skeleton>
+            </div>
+          </div>
+          <p-skeleton height="300px" class="mt-3"></p-skeleton>
+        </div>
       </div>
     </div>
   </div>
@@ -36,114 +53,144 @@
   <!-- Main Content -->
   <div *ngIf="!isLoading && userProfile" class="account-content">
     <div class="grid">
-      <!-- Profile Summary Card -->
+      <!-- Enhanced Profile Card -->
       <div class="col-12 lg:col-4">
-        <p-card styleClass="profile-summary-card">
-          <ng-template pTemplate="header">
-            <div class="profile-header">
-              <div class="avatar-section">
-                <p-avatar
-                  [image]="userProfile.avatar"
-                  size="xlarge"
-                  shape="circle"
-                  styleClass="profile-avatar"
-                ></p-avatar>
-                <p-fileUpload
-                  mode="basic"
-                  accept="image/*"
-                  maxFileSize="1000000"
-                  chooseLabel="Zmień avatar"
-                  styleClass="avatar-upload"
-                  (onUpload)="onAvatarUpload($event)"
-                ></p-fileUpload>
-              </div>
+        <div class="profile-card">
+          <!-- Profile Header -->
+          <div class="profile-header">
+                         <div class="avatar-section">
+               <div class="avatar-container">
+                 <p-avatar
+                   icon="pi pi-user"
+                   size="xlarge"
+                   shape="circle"
+                   styleClass="profile-avatar"
+                 ></p-avatar>
+               </div>
+              
               <div class="profile-info">
-                <h2>{{ userProfile.name }} {{ userProfile.lastname }}</h2>
-                <p class="email">{{ userProfile.email }}</p>
-                <p-badge
-                  [value]="getRoleLabel(userProfile.role)"
-                  [styleClass]="getRoleBadgeClass(userProfile.role)"
-                ></p-badge>
+                <h2 class="profile-name">{{ userProfile.name }} {{ userProfile.lastname }}</h2>
+                <p class="profile-email">{{ userProfile.email }}</p>
+                <div class="role-badge">
+                  <p-tag
+                    [value]="getRoleLabel(userProfile.role)"
+                    [styleClass]="getRoleBadgeClass(userProfile.role)"
+                    [icon]="getRoleIcon(userProfile.role)"
+                  ></p-tag>
+                </div>
               </div>
             </div>
-          </ng-template>
+          </div>
 
+          <!-- Profile Details -->
           <div class="profile-details">
             <div class="detail-item" *ngIf="userProfile.phone">
-              <i class="pi pi-phone"></i>
-              <span>{{ userProfile.phone }}</span>
+              <div class="detail-icon">
+                <i class="pi pi-phone"></i>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Telefon</span>
+                <span class="detail-value">{{ userProfile.phone }}</span>
+              </div>
             </div>
+            
             <div class="detail-item" *ngIf="userProfile.address">
-              <i class="pi pi-map-marker"></i>
-              <span>{{ userProfile.address }}</span>
+              <div class="detail-icon">
+                <i class="pi pi-map-marker"></i>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Adres</span>
+                <span class="detail-value">{{ userProfile.address }}</span>
+              </div>
             </div>
+            
             <div class="detail-item" *ngIf="userProfile.dateOfBirth">
-              <i class="pi pi-calendar"></i>
-              <span>{{ formatDateOnly(userProfile.dateOfBirth) }}</span>
+              <div class="detail-icon">
+                <i class="pi pi-calendar"></i>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Data urodzenia</span>
+                <span class="detail-value">{{ formatDateOnly(userProfile.dateOfBirth) }}</span>
+              </div>
             </div>
+            
             <div class="detail-item" *ngIf="userProfile.lastLogin">
-              <i class="pi pi-clock"></i>
-              <span
-                >Ostatnie logowanie:
-                {{ formatDate(userProfile.lastLogin) }}</span
-              >
+              <div class="detail-icon">
+                <i class="pi pi-clock"></i>
+              </div>
+              <div class="detail-content">
+                <span class="detail-label">Ostatnie logowanie</span>
+                <span class="detail-value">{{ formatDate(userProfile.lastLogin) }}</span>
+              </div>
             </div>
           </div>
 
           <!-- Role-specific Information -->
-          <p-divider></p-divider>
+          <div class="role-section" *ngIf="userProfile.studentClass || userProfile.teacherSubjects || userProfile.parentChildren">
+            <p-divider styleClass="custom-divider"></p-divider>
 
-          <div class="role-specific-info">
             <!-- Student Info -->
-            <div
-              *ngIf="userProfile.role === UserRole.STUDENT"
-              class="student-info"
-            >
-              <h4><i class="pi pi-graduation-cap"></i> Informacje ucznia</h4>
-              <div class="info-grid">
+            <div *ngIf="userProfile.role === UserRole.STUDENT" class="role-info student-info">
+              <div class="role-header">
+                <div class="role-icon">
+                  <i class="pi pi-graduation-cap"></i>
+                </div>
+                <h4>Informacje ucznia</h4>
+              </div>
+              <div class="role-content">
                 <div class="info-item" *ngIf="userProfile.studentClass">
-                  <label>Klasa:</label>
-                  <span>{{ userProfile.studentClass }}</span>
+                  <span class="info-label">Klasa:</span>
+                  <p-tag [value]="userProfile.studentClass" severity="info"></p-tag>
                 </div>
                 <div class="info-item" *ngIf="userProfile.studentNumber">
-                  <label>Numer w dzienniku:</label>
-                  <span>{{ userProfile.studentNumber }}</span>
+                  <span class="info-label">Numer w dzienniku:</span>
+                  <p-badge [value]="userProfile.studentNumber.toString()"></p-badge>
                 </div>
               </div>
             </div>
 
             <!-- Teacher Info -->
-            <div
-              *ngIf="userProfile.role === UserRole.TEACHER"
-              class="teacher-info"
-            >
-              <h4><i class="pi pi-book"></i> Informacje nauczyciela</h4>
-              <div class="subjects-list" *ngIf="userProfile.teacherSubjects">
-                <label>Przedmioty:</label>
-                <div class="subjects">
-                  <p-tag
-                    *ngFor="let subject of userProfile.teacherSubjects"
-                    [value]="subject"
-                    severity="info"
-                  ></p-tag>
+            <div *ngIf="userProfile.role === UserRole.TEACHER" class="role-info teacher-info">
+              <div class="role-header">
+                <div class="role-icon">
+                  <i class="pi pi-book"></i>
+                </div>
+                <h4>Informacje nauczyciela</h4>
+              </div>
+              <div class="role-content">
+                <div class="subjects-section" *ngIf="userProfile.teacherSubjects">
+                  <span class="info-label">Przedmioty:</span>
+                  <div class="subjects-tags">
+                    <p-tag
+                      *ngFor="let subject of userProfile.teacherSubjects; trackBy: trackBySubject"
+                      [value]="subject"
+                      severity="info"
+                      styleClass="subject-tag"
+                    ></p-tag>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Parent Info -->
-            <div
-              *ngIf="userProfile.role === UserRole.PARENT"
-              class="parent-info"
-            >
-              <h4><i class="pi pi-users"></i> Informacje rodzica</h4>
-              <div class="children-list" *ngIf="userProfile.parentChildren">
-                <label>Dzieci:</label>
-                <div class="children">
-                  <p-tag
-                    *ngFor="let child of userProfile.parentChildren"
-                    [value]="child"
-                    severity="info"
-                  ></p-tag>
+            <div *ngIf="userProfile.role === UserRole.PARENT" class="role-info parent-info">
+              <div class="role-header">
+                <div class="role-icon">
+                  <i class="pi pi-users"></i>
+                </div>
+                <h4>Informacje rodzica</h4>
+              </div>
+              <div class="role-content">
+                <div class="children-section" *ngIf="userProfile.parentChildren">
+                  <span class="info-label">Dzieci:</span>
+                  <div class="children-tags">
+                    <p-tag
+                      *ngFor="let child of userProfile.parentChildren; trackBy: trackByChild"
+                      [value]="child"
+                      severity="success"
+                      styleClass="child-tag"
+                    ></p-tag>
+                  </div>
                 </div>
               </div>
             </div>
@@ -151,367 +198,501 @@
 
           <!-- Bio Section -->
           <div *ngIf="userProfile.bio" class="bio-section">
-            <p-divider></p-divider>
-            <h4><i class="pi pi-info-circle"></i> O mnie</h4>
-            <p>{{ userProfile.bio }}</p>
+            <p-divider styleClass="custom-divider"></p-divider>
+            <div class="bio-header">
+              <div class="bio-icon">
+                <i class="pi pi-info-circle"></i>
+              </div>
+              <h4>O mnie</h4>
+            </div>
+            <p class="bio-content">{{ userProfile.bio }}</p>
           </div>
-        </p-card>
+        </div>
       </div>
 
       <!-- Main Content Area -->
       <div class="col-12 lg:col-8">
-        <!-- Statistics Card -->
-        <p-card *ngIf="statistics" styleClass="statistics-card mb-4">
-          <ng-template pTemplate="header">
-            <div class="card-header">
-              <h3><i class="pi pi-chart-bar"></i> Statystyki</h3>
+        <!-- Enhanced Statistics Card -->
+        <div *ngIf="statistics" class="statistics-section">
+          <div class="section-header">
+            <div class="header-content">
+              <div class="header-icon">
+                <i class="pi pi-chart-bar"></i>
+              </div>
+              <div class="header-text">
+                <h3>Statystyki</h3>
+                <p>Przegląd aktywności w systemie</p>
+              </div>
             </div>
-          </ng-template>
+          </div>
 
-          <div class="statistics-grid">
+          <div class="statistics-content">
             <!-- Student Statistics -->
-            <div
-              *ngIf="userProfile.role === UserRole.STUDENT"
-              class="stats-content"
-            >
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.totalGrades }}</div>
-                <div class="stat-label">Oceny</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.averageGrade }}</div>
-                <div class="stat-label">Średnia</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.attendanceRate }}%</div>
-                <div class="stat-label">Frekwencja</div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">
-                  {{ statistics.completedAssignments }}/{{
-                    statistics.totalAssignments
-                  }}
+            <div *ngIf="userProfile.role === UserRole.STUDENT" class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon student-grades">
+                  <i class="pi pi-star"></i>
                 </div>
-                <div class="stat-label">Zadania</div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.totalGrades }}</div>
+                  <div class="stat-label">Oceny</div>
+                </div>
+              </div>
+              
+              <div class="stat-card">
+                <div class="stat-icon student-average">
+                  <i class="pi pi-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.averageGrade }}</div>
+                  <div class="stat-label">Średnia</div>
+                </div>
+              </div>
+              
+              <div class="stat-card">
+                <div class="stat-icon student-attendance">
+                  <i class="pi pi-calendar-plus"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.attendanceRate }}%</div>
+                  <div class="stat-label">Frekwencja</div>
+                </div>
+              </div>
+              
+              <div class="stat-card">
+                <div class="stat-icon student-assignments">
+                  <i class="pi pi-file-check"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.completedAssignments }}/{{ statistics.totalAssignments }}</div>
+                  <div class="stat-label">Zadania</div>
+                </div>
               </div>
             </div>
 
             <!-- Teacher Statistics -->
-            <div
-              *ngIf="userProfile.role === UserRole.TEACHER"
-              class="stats-content"
-            >
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.totalStudents }}</div>
-                <div class="stat-label">Uczniowie</div>
+            <div *ngIf="userProfile.role === UserRole.TEACHER" class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon teacher-students">
+                  <i class="pi pi-users"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.totalStudents }}</div>
+                  <div class="stat-label">Uczniowie</div>
+                </div>
               </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.totalClasses }}</div>
-                <div class="stat-label">Klasy</div>
+              
+              <div class="stat-card">
+                <div class="stat-icon teacher-classes">
+                  <i class="pi pi-home"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.totalClasses }}</div>
+                  <div class="stat-label">Klasy</div>
+                </div>
               </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.gradedAssignments }}</div>
-                <div class="stat-label">Ocenione prace</div>
+              
+              <div class="stat-card">
+                <div class="stat-icon teacher-graded">
+                  <i class="pi pi-check"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.gradedAssignments }}</div>
+                  <div class="stat-label">Ocenione prace</div>
+                </div>
               </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.pendingGrades }}</div>
-                <div class="stat-label">Do oceny</div>
+              
+              <div class="stat-card">
+                <div class="stat-icon teacher-pending">
+                  <i class="pi pi-clock"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.pendingGrades }}</div>
+                  <div class="stat-label">Do oceny</div>
+                </div>
               </div>
             </div>
 
             <!-- Parent Statistics -->
-            <div
-              *ngIf="userProfile.role === UserRole.PARENT"
-              class="stats-content"
-            >
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.totalChildren }}</div>
-                <div class="stat-label">Dzieci</div>
+            <div *ngIf="userProfile.role === UserRole.PARENT" class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon parent-children">
+                  <i class="pi pi-heart"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.totalChildren }}</div>
+                  <div class="stat-label">Dzieci</div>
+                </div>
               </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.averageGrade }}</div>
-                <div class="stat-label">Średnia ocen</div>
+              
+              <div class="stat-card">
+                <div class="stat-icon parent-average">
+                  <i class="pi pi-chart-line"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.averageGrade }}</div>
+                  <div class="stat-label">Średnia ocen</div>
+                </div>
               </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.upcomingEvents }}</div>
-                <div class="stat-label">Nadchodzące wydarzenia</div>
+              
+              <div class="stat-card">
+                <div class="stat-icon parent-events">
+                  <i class="pi pi-calendar"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.upcomingEvents }}</div>
+                  <div class="stat-label">Nadchodzące wydarzenia</div>
+                </div>
               </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.unreadMessages }}</div>
-                <div class="stat-label">Nieprzeczytane wiadomości</div>
+              
+              <div class="stat-card">
+                <div class="stat-icon parent-messages">
+                  <i class="pi pi-envelope"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.unreadMessages }}</div>
+                  <div class="stat-label">Nieprzeczytane wiadomości</div>
+                </div>
               </div>
             </div>
 
             <!-- Admin Statistics -->
-            <div
-              *ngIf="userProfile.role === UserRole.ADMIN"
-              class="stats-content"
-            >
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.totalUsers }}</div>
-                <div class="stat-label">Użytkownicy</div>
+            <div *ngIf="userProfile.role === UserRole.ADMIN" class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-icon admin-users">
+                  <i class="pi pi-users"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.totalUsers }}</div>
+                  <div class="stat-label">Użytkownicy</div>
+                </div>
               </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.totalStudents }}</div>
-                <div class="stat-label">Uczniowie</div>
+              
+              <div class="stat-card">
+                <div class="stat-icon admin-students">
+                  <i class="pi pi-graduation-cap"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.totalStudents }}</div>
+                  <div class="stat-label">Uczniowie</div>
+                </div>
               </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.totalTeachers }}</div>
-                <div class="stat-label">Nauczyciele</div>
+              
+              <div class="stat-card">
+                <div class="stat-icon admin-teachers">
+                  <i class="pi pi-book"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.totalTeachers }}</div>
+                  <div class="stat-label">Nauczyciele</div>
+                </div>
               </div>
-              <div class="stat-item">
-                <div class="stat-value">{{ statistics.systemUptime }}%</div>
-                <div class="stat-label">Dostępność systemu</div>
+              
+              <div class="stat-card">
+                <div class="stat-icon admin-uptime">
+                  <i class="pi pi-server"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-value">{{ statistics.systemUptime }}%</div>
+                  <div class="stat-label">Dostępność systemu</div>
+                </div>
               </div>
             </div>
           </div>
-        </p-card>
+        </div>
 
-        <!-- Settings Tabs -->
-        <p-tabView styleClass="settings-tabs">
-          <!-- Profile Settings Tab -->
-          <p-tabPanel header="Edytuj profil" leftIcon="pi pi-user">
-            <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()">
-              <div class="form-grid">
-                <div class="form-row">
-                  <p-floatLabel>
-                    <input
-                      id="name"
-                      type="text"
-                      pInputText
-                      formControlName="name"
-                      [class.ng-invalid]="isFieldInvalid(profileForm, 'name')"
-                    />
-                    <label for="name">Imię *</label>
-                  </p-floatLabel>
-                  <small
-                    *ngIf="isFieldInvalid(profileForm, 'name')"
-                    class="p-error"
-                  >
-                    {{ getFieldError(profileForm, 'name') }}
-                  </small>
-                </div>
+        <!-- Enhanced Settings Tabs -->
+        <div class="settings-section">
+          <p-tabView styleClass="custom-tabview">
+            <!-- Profile Settings Tab -->
+            <p-tabPanel header="Edytuj profil" leftIcon="pi pi-user">
+              <div class="tab-content">
+                <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()" class="profile-form">
+                  <div class="form-header">
+                    <h4><i class="pi pi-user-edit"></i> Edycja profilu</h4>
+                    <p>Zaktualizuj swoje dane osobowe</p>
+                  </div>
 
-                <div class="form-row">
-                  <p-floatLabel>
-                    <input
-                      id="lastname"
-                      type="text"
-                      pInputText
-                      formControlName="lastname"
-                      [class.ng-invalid]="
-                        isFieldInvalid(profileForm, 'lastname')
-                      "
-                    />
-                    <label for="lastname">Nazwisko *</label>
-                  </p-floatLabel>
-                  <small
-                    *ngIf="isFieldInvalid(profileForm, 'lastname')"
-                    class="p-error"
-                  >
-                    {{ getFieldError(profileForm, 'lastname') }}
-                  </small>
-                </div>
+                  <div class="form-grid">
+                    <div class="form-row">
+                      <div class="input-container">
+                        <p-floatLabel>
+                          <input
+                            id="name"
+                            type="text"
+                            pInputText
+                            formControlName="name"
+                            [class.ng-invalid]="isFieldInvalid(profileForm, 'name')"
+                          />
+                          <label for="name">Imię *</label>
+                        </p-floatLabel>
+                        <small *ngIf="isFieldInvalid(profileForm, 'name')" class="p-error">
+                          {{ getFieldError(profileForm, 'name') }}
+                        </small>
+                      </div>
 
-                <div class="form-row">
-                  <p-floatLabel>
-                    <input
-                      id="phone"
-                      type="tel"
-                      pInputText
-                      formControlName="phone"
-                      [class.ng-invalid]="isFieldInvalid(profileForm, 'phone')"
-                    />
-                    <label for="phone">Telefon</label>
-                  </p-floatLabel>
-                  <small
-                    *ngIf="isFieldInvalid(profileForm, 'phone')"
-                    class="p-error"
-                  >
-                    {{ getFieldError(profileForm, 'phone') }}
-                  </small>
-                </div>
+                      <div class="input-container">
+                        <p-floatLabel>
+                          <input
+                            id="lastname"
+                            type="text"
+                            pInputText
+                            formControlName="lastname"
+                            [class.ng-invalid]="isFieldInvalid(profileForm, 'lastname')"
+                          />
+                          <label for="lastname">Nazwisko *</label>
+                        </p-floatLabel>
+                        <small *ngIf="isFieldInvalid(profileForm, 'lastname')" class="p-error">
+                          {{ getFieldError(profileForm, 'lastname') }}
+                        </small>
+                      </div>
+                    </div>
 
-                <div class="form-row">
-                  <p-floatLabel>
-                    <input
-                      id="address"
-                      type="text"
-                      pInputText
-                      formControlName="address"
-                    />
-                    <label for="address">Adres</label>
-                  </p-floatLabel>
-                </div>
+                    <div class="form-row">
+                      <div class="input-container">
+                        <p-floatLabel>
+                          <input
+                            id="phone"
+                            type="tel"
+                            pInputText
+                            formControlName="phone"
+                            [class.ng-invalid]="isFieldInvalid(profileForm, 'phone')"
+                          />
+                          <label for="phone">Telefon</label>
+                        </p-floatLabel>
+                        <small *ngIf="isFieldInvalid(profileForm, 'phone')" class="p-error">
+                          {{ getFieldError(profileForm, 'phone') }}
+                        </small>
+                      </div>
 
-                <div class="form-row">
-                  <p-floatLabel>
-                    <textarea
-                      id="bio"
-                      pInputTextarea
-                      formControlName="bio"
-                      rows="4"
-                      [class.ng-invalid]="isFieldInvalid(profileForm, 'bio')"
-                    ></textarea>
-                    <label for="bio">O mnie</label>
-                  </p-floatLabel>
-                  <small
-                    *ngIf="isFieldInvalid(profileForm, 'bio')"
-                    class="p-error"
-                  >
-                    {{ getFieldError(profileForm, 'bio') }}
-                  </small>
+                      <div class="input-container">
+                        <p-floatLabel>
+                          <input
+                            id="address"
+                            type="text"
+                            pInputText
+                            formControlName="address"
+                          />
+                          <label for="address">Adres</label>
+                        </p-floatLabel>
+                      </div>
+                    </div>
+
+                    <div class="form-row full-width">
+                      <div class="input-container">
+                        <p-floatLabel>
+                          <textarea
+                            id="bio"
+                            pInputTextarea
+                            formControlName="bio"
+                            rows="4"
+                            [class.ng-invalid]="isFieldInvalid(profileForm, 'bio')"
+                          ></textarea>
+                          <label for="bio">O mnie</label>
+                        </p-floatLabel>
+                        <small *ngIf="isFieldInvalid(profileForm, 'bio')" class="p-error">
+                          {{ getFieldError(profileForm, 'bio') }}
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <p-button
+                      type="submit"
+                      label="Zapisz zmiany"
+                      icon="pi pi-save"
+                      [loading]="isUpdatingProfile"
+                      [disabled]="profileForm.invalid"
+                      styleClass="save-btn"
+                    ></p-button>
+                  </div>
+                </form>
+              </div>
+            </p-tabPanel>
+
+            <!-- Password Change Tab -->
+            <p-tabPanel header="Zmień hasło" leftIcon="pi pi-lock">
+              <div class="tab-content">
+                <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="password-form">
+                  <div class="form-header">
+                    <h4><i class="pi pi-lock"></i> Zmiana hasła</h4>
+                    <p>Zaktualizuj swoje hasło dostępu</p>
+                  </div>
+
+                  <div class="form-grid">
+                    <div class="form-row full-width">
+                      <div class="input-container">
+                        <p-floatLabel>
+                          <p-password
+                            id="currentPassword"
+                            formControlName="currentPassword"
+                            [feedback]="false"
+                            [toggleMask]="true"
+                            [class.ng-invalid]="isFieldInvalid(passwordForm, 'currentPassword')"
+                          ></p-password>
+                          <label for="currentPassword">Aktualne hasło *</label>
+                        </p-floatLabel>
+                        <small *ngIf="isFieldInvalid(passwordForm, 'currentPassword')" class="p-error">
+                          {{ getFieldError(passwordForm, 'currentPassword') }}
+                        </small>
+                      </div>
+                    </div>
+
+                    <div class="form-row full-width">
+                      <div class="input-container">
+                        <p-floatLabel>
+                          <p-password
+                            id="newPassword"
+                            formControlName="newPassword"
+                            [feedback]="true"
+                            [toggleMask]="true"
+                            [class.ng-invalid]="isFieldInvalid(passwordForm, 'newPassword')"
+                          ></p-password>
+                          <label for="newPassword">Nowe hasło *</label>
+                        </p-floatLabel>
+                        <small *ngIf="isFieldInvalid(passwordForm, 'newPassword')" class="p-error">
+                          {{ getFieldError(passwordForm, 'newPassword') }}
+                        </small>
+                      </div>
+                    </div>
+
+                    <div class="form-row full-width">
+                      <div class="input-container">
+                        <p-floatLabel>
+                          <p-password
+                            id="confirmPassword"
+                            formControlName="confirmPassword"
+                            [feedback]="false"
+                            [toggleMask]="true"
+                            [class.ng-invalid]="isFieldInvalid(passwordForm, 'confirmPassword') || passwordForm.hasError('passwordMismatch')"
+                          ></p-password>
+                          <label for="confirmPassword">Potwierdź hasło *</label>
+                        </p-floatLabel>
+                        <small *ngIf="isFieldInvalid(passwordForm, 'confirmPassword') || passwordForm.hasError('passwordMismatch')" class="p-error">
+                          {{ getFieldError(passwordForm, 'confirmPassword') || 'Hasła nie są identyczne' }}
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-actions">
+                    <p-button
+                      type="submit"
+                      label="Zmień hasło"
+                      icon="pi pi-lock"
+                      [loading]="isChangingPassword"
+                      [disabled]="passwordForm.invalid"
+                      styleClass="save-btn"
+                    ></p-button>
+                  </div>
+                </form>
+              </div>
+            </p-tabPanel>
+
+            <!-- Account Settings Tab -->
+            <p-tabPanel header="Ustawienia konta" leftIcon="pi pi-cog">
+              <div class="tab-content">
+                <div class="account-settings">
+                  <!-- Account Information Panel -->
+                  <div class="settings-panel account-info-panel">
+                    <div class="panel-header">
+                      <div class="panel-icon">
+                        <i class="pi pi-info-circle"></i>
+                      </div>
+                      <div class="panel-title">
+                        <h4>Informacje o koncie</h4>
+                        <p>Podstawowe dane Twojego konta</p>
+                      </div>
+                    </div>
+                    
+                    <div class="panel-content">
+                      <div class="account-info-grid">
+                        <div class="info-item">
+                          <div class="info-icon">
+                            <i class="pi pi-calendar-plus"></i>
+                          </div>
+                          <div class="info-details">
+                            <span class="info-label">Data utworzenia konta</span>
+                            <span class="info-value">{{ formatDate(userProfile.accountCreated!) }}</span>
+                          </div>
+                        </div>
+                        
+                        <div class="info-item">
+                          <div class="info-icon">
+                            <i class="pi pi-sign-in"></i>
+                          </div>
+                          <div class="info-details">
+                            <span class="info-label">Ostatnie logowanie</span>
+                            <span class="info-value">{{ formatDate(userProfile.lastLogin!) }}</span>
+                          </div>
+                        </div>
+                        
+                        <div class="info-item">
+                          <div class="info-icon">
+                            <i class="pi pi-envelope"></i>
+                          </div>
+                          <div class="info-details">
+                            <span class="info-label">Adres email</span>
+                            <span class="info-value">{{ userProfile.email }}</span>
+                          </div>
+                        </div>
+                        
+                        <div class="info-item">
+                          <div class="info-icon">
+                            <i class="pi pi-shield"></i>
+                          </div>
+                          <div class="info-details">
+                            <span class="info-label">Rola w systemie</span>
+                            <p-tag 
+                              [value]="getRoleLabel(userProfile.role)"
+                              [styleClass]="getRoleBadgeClass(userProfile.role)"
+                            ></p-tag>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Danger Zone Panel -->
+                  <div class="settings-panel danger-panel">
+                    <div class="panel-header">
+                      <div class="panel-icon danger">
+                        <i class="pi pi-exclamation-triangle"></i>
+                      </div>
+                      <div class="panel-title">
+                        <h4>Strefa niebezpieczna</h4>
+                        <p>Nieodwracalne akcje związane z kontem</p>
+                      </div>
+                    </div>
+                    
+                    <div class="panel-content">
+                      <div class="danger-content">
+                        <div class="danger-warning">
+                          <i class="pi pi-exclamation-triangle"></i>
+                          <p>
+                            Poniższe akcje są nieodwracalne. Upewnij się, że rozumiesz
+                            konsekwencje przed ich wykonaniem.
+                          </p>
+                        </div>
+                        
+                        <div class="danger-actions">
+                          <p-button
+                            label="Usuń konto"
+                            icon="pi pi-trash"
+                            severity="danger"
+                            styleClass="delete-account-btn"
+                            (onClick)="onDeleteAccount()"
+                          ></p-button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-
-              <div class="form-actions">
-                <p-button
-                  type="submit"
-                  label="Zapisz zmiany"
-                  icon="pi pi-save"
-                  [loading]="isUpdatingProfile"
-                  [disabled]="profileForm.invalid"
-                ></p-button>
-              </div>
-            </form>
-          </p-tabPanel>
-
-          <!-- Password Change Tab -->
-          <p-tabPanel header="Zmień hasło" leftIcon="pi pi-lock">
-            <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
-              <div class="form-grid">
-                <div class="form-row">
-                  <p-floatLabel>
-                    <p-password
-                      id="currentPassword"
-                      formControlName="currentPassword"
-                      [feedback]="false"
-                      [toggleMask]="true"
-                      [class.ng-invalid]="
-                        isFieldInvalid(passwordForm, 'currentPassword')
-                      "
-                    ></p-password>
-                    <label for="currentPassword">Aktualne hasło *</label>
-                  </p-floatLabel>
-                  <small
-                    *ngIf="isFieldInvalid(passwordForm, 'currentPassword')"
-                    class="p-error"
-                  >
-                    {{ getFieldError(passwordForm, 'currentPassword') }}
-                  </small>
-                </div>
-
-                <div class="form-row">
-                  <p-floatLabel>
-                    <p-password
-                      id="newPassword"
-                      formControlName="newPassword"
-                      [feedback]="true"
-                      [toggleMask]="true"
-                      [class.ng-invalid]="
-                        isFieldInvalid(passwordForm, 'newPassword')
-                      "
-                    ></p-password>
-                    <label for="newPassword">Nowe hasło *</label>
-                  </p-floatLabel>
-                  <small
-                    *ngIf="isFieldInvalid(passwordForm, 'newPassword')"
-                    class="p-error"
-                  >
-                    {{ getFieldError(passwordForm, 'newPassword') }}
-                  </small>
-                </div>
-
-                <div class="form-row">
-                  <p-floatLabel>
-                    <p-password
-                      id="confirmPassword"
-                      formControlName="confirmPassword"
-                      [feedback]="false"
-                      [toggleMask]="true"
-                      [class.ng-invalid]="
-                        isFieldInvalid(passwordForm, 'confirmPassword') ||
-                        passwordForm.hasError('passwordMismatch')
-                      "
-                    ></p-password>
-                    <label for="confirmPassword">Potwierdź hasło *</label>
-                  </p-floatLabel>
-                  <small
-                    *ngIf="
-                      isFieldInvalid(passwordForm, 'confirmPassword') ||
-                      passwordForm.hasError('passwordMismatch')
-                    "
-                    class="p-error"
-                  >
-                    {{
-                      getFieldError(passwordForm, 'confirmPassword') ||
-                        'Hasła nie są identyczne'
-                    }}
-                  </small>
-                </div>
-              </div>
-
-              <div class="form-actions">
-                <p-button
-                  type="submit"
-                  label="Zmień hasło"
-                  icon="pi pi-lock"
-                  [loading]="isChangingPassword"
-                  [disabled]="passwordForm.invalid"
-                ></p-button>
-              </div>
-            </form>
-          </p-tabPanel>
-
-          <!-- Account Settings Tab -->
-          <p-tabPanel header="Ustawienia konta" leftIcon="pi pi-cog">
-            <div class="account-settings">
-              <p-panel header="Informacje o koncie" [toggleable]="true">
-                <div class="account-info">
-                  <div class="info-item">
-                    <label>Data utworzenia konta:</label>
-                    <span>{{ formatDate(userProfile.accountCreated!) }}</span>
-                  </div>
-                  <div class="info-item">
-                    <label>Ostatnie logowanie:</label>
-                    <span>{{ formatDate(userProfile.lastLogin!) }}</span>
-                  </div>
-                  <div class="info-item">
-                    <label>Adres email:</label>
-                    <span>{{ userProfile.email }}</span>
-                  </div>
-                  <div class="info-item">
-                    <label>Rola w systemie:</label>
-                    <span>{{ getRoleLabel(userProfile.role) }}</span>
-                  </div>
-                </div>
-              </p-panel>
-
-              <p-panel
-                header="Zarządzanie kontem"
-                [toggleable]="true"
-                styleClass="mt-4"
-              >
-                <div class="danger-zone">
-                  <h4 class="danger-title">
-                    <i class="pi pi-exclamation-triangle"></i>
-                    Strefa niebezpieczna
-                  </h4>
-                  <p class="danger-description">
-                    Poniższe akcje są nieodwracalne. Upewnij się, że rozumiesz
-                    konsekwencje przed ich wykonaniem.
-                  </p>
-                  <p-button
-                    label="Usuń konto"
-                    icon="pi pi-trash"
-                    styleClass="p-button-danger"
-                    (onClick)="onDeleteAccount()"
-                  ></p-button>
-                </div>
-              </p-panel>
-            </div>
-          </p-tabPanel>
-        </p-tabView>
+            </p-tabPanel>
+          </p-tabView>
+        </div>
       </div>
     </div>
   </div>
