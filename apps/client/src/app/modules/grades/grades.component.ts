@@ -1,5 +1,5 @@
 // Core imports
-import { AuthService, GradesService } from '../../core/services';
+import { AuthService, GradesService, ApiService } from '../../core/services';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { GradeStatistics, SubjectGrades } from '../../core/models';
 import { UserRole } from '../../core/models/enums';
@@ -66,7 +66,8 @@ export class GradesComponent implements OnInit {
 
   constructor(
     private gradesService: GradesService,
-    private authService: AuthService
+    private authService: AuthService,
+    private apiService: ApiService
   ) {}
 
   ngOnInit(): void {
@@ -89,6 +90,41 @@ export class GradesComponent implements OnInit {
 
     const userId = user.id;
 
+    // For students, get student ID first, then load grades
+    if (this.isStudent()) {
+      this.apiService.getStudentByUserId(userId).subscribe({
+        next: (student: any) => {
+          console.log('Grades: Found student for user:', student);
+          this.loadStudentGrades(student.id);
+        },
+        error: (error) => {
+          console.error('Grades: Error getting student data:', error);
+          this.isLoading = false;
+        }
+      });
+    } else {
+      // For other roles, use userId directly
+      this.loadGradesByUserId(userId);
+    }
+  }
+
+  private loadStudentGrades(studentId: number): void {
+    console.log('Loading grades for student ID:', studentId);
+
+    // Pobierz statystyki ocen
+    this.statistics$ = this.gradesService.getGradeStatistics(studentId);
+
+    // Pobierz ostatnie oceny
+    this.recentGrades$ = this.gradesService.getRecentGrades(studentId, 5);
+
+    // Pobierz oceny pogrupowane według przedmiotów
+    this.subjectGrades$ = this.gradesService.getSubjectGrades(studentId);
+
+    // Finished loading
+    this.isLoading = false;
+  }
+
+  private loadGradesByUserId(userId: number): void {
     // Pobierz statystyki ocen
     this.statistics$ = this.gradesService.getGradeStatistics(userId);
 
@@ -98,10 +134,8 @@ export class GradesComponent implements OnInit {
     // Pobierz oceny pogrupowane według przedmiotów
     this.subjectGrades$ = this.gradesService.getSubjectGrades(userId);
 
-    // Symulacja zakończenia ładowania
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 1000);
+    // Finished loading
+    this.isLoading = false;
   }
 
   onSubjectSelect(subjectName: string): void {
