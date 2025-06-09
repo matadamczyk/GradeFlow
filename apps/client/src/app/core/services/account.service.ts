@@ -1,7 +1,9 @@
 import { AuthService, AuthUser } from './auth.service';
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
-import { delay, map } from 'rxjs/operators';
+import { catchError, delay, map, switchMap } from 'rxjs/operators';
 
+import { ApiService } from './api.service';
+import { GradesService } from './grades.service';
 import { Injectable } from '@angular/core';
 import { UserRole } from '../models/enums';
 
@@ -107,7 +109,11 @@ export class AccountService {
     },
   ];
 
-  constructor(private authService: AuthService) {
+  constructor(
+    private authService: AuthService,
+    private apiService: ApiService,
+    private gradesService: GradesService
+  ) {
     // Subskrybuj zmiany aktualnego użytkownika
     this.authService.currentUser$.subscribe((user) => {
       if (user) {
@@ -131,14 +137,36 @@ export class AccountService {
       return throwError(() => new Error('Użytkownik nie jest zalogowany'));
     }
 
-    const profile = this.mockProfiles.find((p) => p.id === currentUser.id);
-    if (profile) {
-      return of(profile).pipe(delay(500));
-    } else {
-      return throwError(
-        () => new Error('Profil użytkownika nie został znaleziony')
-      );
-    }
+    return this.apiService.getUserById(currentUser.id).pipe(
+      map((apiUser: any) => {
+        // Map API response to UserProfile
+        const profile: UserProfile = {
+          id: apiUser.id,
+          email: apiUser.email,
+          role: apiUser.role as UserRole,
+          name: apiUser.name || '',
+          lastname: apiUser.lastname || '',
+          phone: apiUser.phone || '',
+          address: apiUser.address || '',
+          dateOfBirth: apiUser.dateOfBirth || '',
+          bio: apiUser.bio || '',
+          lastLogin: apiUser.lastLogin || new Date().toISOString(),
+          accountCreated: apiUser.accountCreated || new Date().toISOString(),
+          avatar: apiUser.avatar || `https://ui-avatars.com/api/?name=${apiUser.email}&background=random`,
+        };
+        return profile;
+      }),
+      catchError((error: any) => {
+        console.warn('API error, falling back to mock data:', error);
+        const profile = this.mockProfiles.find((p) => p.id === currentUser.id);
+        if (profile) {
+          return of(profile);
+        } else {
+          return throwError(() => new Error('Profil użytkownika nie został znaleziony'));
+        }
+      }),
+      delay(300)
+    );
   }
 
   updateProfile(updateData: ProfileUpdateRequest): Observable<UserProfile> {
@@ -215,52 +243,73 @@ export class AccountService {
       return throwError(() => new Error('Użytkownik nie jest zalogowany'));
     }
 
-    // Mock statystyk w zależności od roli
-    let stats: any = {};
-
     switch (currentUser.role) {
       case UserRole.STUDENT:
-        stats = {
-          totalGrades: 45,
-          averageGrade: 4.2,
-          attendanceRate: 95,
-          completedAssignments: 38,
-          totalAssignments: 42,
-          favoriteSubject: 'Matematyka',
-        };
-        break;
+        // For students, get real statistics from grades
+        return this.apiService.getStudentByUserId(currentUser.id).pipe(
+          switchMap((student: any) => {
+            return this.gradesService.getGradeStatistics(student.id).pipe(
+              map((gradeStats: any) => {
+                const stats = {
+                  totalGrades: gradeStats.totalGrades || 0,
+                  averageGrade: gradeStats.overallAverage || 0,
+                  attendanceRate: 95, // Still mock - no attendance API
+                  completedAssignments: gradeStats.totalGrades || 0,
+                  totalAssignments: gradeStats.totalGrades || 0,
+                  favoriteSubject: gradeStats.subjectGrades?.length > 0 
+                    ? gradeStats.subjectGrades[0].subjectName 
+                    : 'Brak danych',
+                };
+                console.log('Real account statistics for student:', stats);
+                return stats;
+              })
+            );
+          }),
+          catchError((error: any) => {
+            console.warn('Error getting real statistics, falling back to mock:', error);
+            return of({
+              totalGrades: 0,
+              averageGrade: 0,
+              attendanceRate: 95,
+              completedAssignments: 0,
+              totalAssignments: 0,
+              favoriteSubject: 'Brak danych',
+            });
+          })
+        );
+      
       case UserRole.TEACHER:
-        stats = {
+        return of({
           totalStudents: 120,
           totalClasses: 5,
           averageClassGrade: 3.8,
           gradedAssignments: 156,
           pendingGrades: 12,
           teachingExperience: 15,
-        };
-        break;
+        }).pipe(delay(800));
+        
       case UserRole.PARENT:
-        stats = {
+        return of({
           totalChildren: 2,
           averageGrade: 4.1,
           attendanceRate: 92,
           upcomingEvents: 3,
           unreadMessages: 2,
           meetingsScheduled: 1,
-        };
-        break;
+        }).pipe(delay(800));
+        
       case UserRole.ADMIN:
-        stats = {
+        return of({
           totalUsers: 1250,
           totalStudents: 800,
           totalTeachers: 45,
           totalParents: 400,
           systemUptime: 99.8,
           activeClasses: 32,
-        };
-        break;
+        }).pipe(delay(800));
+        
+      default:
+        return of({}).pipe(delay(800));
     }
-
-    return of(stats).pipe(delay(800));
   }
 }
