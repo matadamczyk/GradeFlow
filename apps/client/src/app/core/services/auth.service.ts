@@ -1,9 +1,10 @@
 import { BehaviorSubject, Observable, of, throwError } from 'rxjs';
+import { catchError, delay, map, switchMap } from 'rxjs/operators';
 
+import { ApiService } from './api.service';
 import { Injectable } from '@angular/core';
 import { LoginRequest } from '../models/user.model';
 import { UserRole } from '../models/enums';
-import { delay } from 'rxjs/operators';
 
 export interface AuthUser {
   id: number;
@@ -51,7 +52,7 @@ export class AuthService {
     },
   ];
 
-  constructor() {
+  constructor(private apiService: ApiService) {
     // Sprawdź czy użytkownik jest zalogowany (localStorage)
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
@@ -70,29 +71,58 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<AuthUser> {
     console.log('Próba logowania:', credentials.email);
 
-    // Symulacja logowania
-    const user = this.mockUsers.find((u) => u.email === credentials.email);
+    // Najpierw spróbuj API
+    return this.apiService.loginUser(credentials).pipe(
+      map((response: any) => {
+        console.log('API response:', response);
+        
+        // Sprawdź czy dostaliśmy JWT token i dane użytkownika
+        if (response && response.token && response.user) {
+          const authUser: AuthUser = {
+            id: response.user.id,
+            email: response.user.email,
+            role: response.user.role as UserRole,
+            name: response.user.name || 'User',
+            lastname: response.user.lastname || ''
+          };
 
-    if (user && credentials.password === 'password') {
-      console.log('Logowanie udane dla użytkownika:', user);
+          console.log('Logowanie udane dla użytkownika:', authUser);
 
-      // Zapisz w localStorage
-      localStorage.setItem('currentUser', JSON.stringify(user));
-      localStorage.setItem('token', 'mock-jwt-token');
+          // Zapisz token i dane użytkownika w localStorage
+          localStorage.setItem('currentUser', JSON.stringify(authUser));
+          localStorage.setItem('token', response.token);
 
-      // Aktualizuj stan
-      this.currentUserSubject.next(user);
+          // Aktualizuj stan
+          this.currentUserSubject.next(authUser);
 
-      console.log('Stan po logowaniu - isLoggedIn:', this.isLoggedIn());
-      console.log('Stan po logowaniu - currentUser:', this.getCurrentUser());
-
-      return of(user).pipe(delay(1000)); // Symulacja opóźnienia sieci
-    } else {
-      console.log('Logowanie nieudane - nieprawidłowe dane');
-      return throwError(() => new Error('Nieprawidłowe dane logowania')).pipe(
-        delay(1000)
-      );
-    }
+          return authUser;
+        }
+        
+        // Fallback dla starych odpowiedzi
+        if (response === 'Login successful' || (typeof response === 'string' && response.includes('successful'))) {
+          throw new Error('Stary format odpowiedzi - wymagana aktualizacja backend');
+        }
+        
+        throw new Error('Nieprawidłowa odpowiedź z API: ' + JSON.stringify(response));
+      }),
+      catchError((error: any) => {
+        console.warn('API login failed, falling back to mock:', error);
+        
+        // Fallback na mock logowanie
+        const user = this.mockUsers.find((u) => u.email === credentials.email);
+        if (user && credentials.password === 'password') {
+          console.log('Fallback - logowanie mock udane:', user);
+          
+          localStorage.setItem('currentUser', JSON.stringify(user));
+          localStorage.setItem('token', 'mock-jwt-token');
+          this.currentUserSubject.next(user);
+          
+          return of(user);
+        }
+        
+        return throwError(() => new Error('Nieprawidłowe dane logowania'));
+      })
+    );
   }
 
   logout(): void {
@@ -124,7 +154,9 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    const token = localStorage.getItem('token');
+    console.log('getToken() called:', token ? 'Token exists' : 'No token in localStorage');
+    return token;
   }
 
   // Mock registration (dla przyszłego użycia)

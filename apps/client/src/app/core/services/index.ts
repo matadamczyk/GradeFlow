@@ -1,3 +1,4 @@
+export * from './api.service';
 export * from './loading.service';
 export * from './theme.service';
 export * from './initial-loading.service';
