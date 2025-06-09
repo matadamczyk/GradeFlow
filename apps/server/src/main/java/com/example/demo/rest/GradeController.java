@@ -19,7 +19,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/grades")
+@RequestMapping("/api/grades")
 public class GradeController {
 
   @Autowired
@@ -34,6 +34,12 @@ public class GradeController {
   @Autowired
   private TimetableRepository timetableRepository;
 
+  // GET all grades
+  @GetMapping
+  public ResponseEntity<List<Grade>> getAllGrades(){
+    List<Grade> grades = gradeRepository.findAll();
+    return ResponseEntity.ok(grades);
+  }
 
   @GetMapping("/student/{studentId}/teacherSubject/{teacherSubjectId}")
   public ResponseEntity<List<Grade>> getGradesFromTeacherSubject(@PathVariable Integer studentId, @PathVariable Integer teacherSubjectId) {

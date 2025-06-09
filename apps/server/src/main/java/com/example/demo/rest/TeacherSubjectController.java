@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/teacherSubjects")
+@RequestMapping("/api/teacherSubjects")
 public class TeacherSubjectController {
 
   private final TeacherRepository teacherRepository;

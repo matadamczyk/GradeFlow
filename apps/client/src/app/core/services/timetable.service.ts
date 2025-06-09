@@ -1,58 +1,82 @@
 import { Observable, of } from 'rxjs';
+import { TimetableEntry, WeeklyTimetable } from '../models';
+import { catchError, delay, map, switchMap } from 'rxjs/operators';
 
+import { ApiService } from './api.service';
 import { Injectable } from '@angular/core';
 import { MockDataService } from './mock-data.service';
-import { delay, map } from 'rxjs/operators';
-import { TimetableEntry, WeeklyTimetable } from '../models';
 
 @Injectable({
   providedIn: 'root',
 })
 export class TimetableService {
-  constructor(private mockDataService: MockDataService) {}
+  constructor(
+    private mockDataService: MockDataService,
+    private apiService: ApiService
+  ) {}
 
   getStudentTimetable(studentId: number): Observable<TimetableEntry[]> {
-    const student = this.mockDataService.getStudentById(studentId);
-    if (!student) {
-      return of([]);
-    }
+    // First, get student by user ID to find their class
+    return this.apiService.getStudentByUserId(studentId).pipe(
+      switchMap((student: any) => {
+        console.log('Found student for timetable:', student);
+        // Get timetable for student's class
+        return this.apiService.getTimetableByStudentClass(
+          student.studentClass.id
+        );
+      }),
+      map((timetables: any[]) => {
+        console.log('Received timetables for class:', timetables);
+        const mappedTimetable = timetables.map((entry) =>
+          this.mapApiToTimetableEntry(entry)
+        );
+        return mappedTimetable;
+      }),
+      catchError((error: any) => {
+        console.warn('API error, falling back to mock data:', error);
+        const student = this.mockDataService.getStudentById(studentId);
+        if (!student) {
+          return of([]);
+        }
 
-    const timetable = this.mockDataService.getTimetableByClass(
-      student.studentClass.id
-    );
+        const timetable = this.mockDataService.getTimetableByClass(
+          student.studentClass.id
+        );
 
-    const mappedTimetable = timetable.map((entry) =>
-      this.mapToTimetableEntry(entry)
+        const mappedTimetable = timetable.map((entry) =>
+          this.mapToTimetableEntry(entry)
+        );
+        return of(mappedTimetable);
+      }),
+      delay(300)
     );
-    return of(mappedTimetable).pipe(delay(500));
   }
 
   getWeeklyTimetable(studentId: number): Observable<WeeklyTimetable> {
-    const student = this.mockDataService.getStudentById(studentId);
-    if (!student) {
-      return of({});
-    }
+    // Use getStudentTimetable which now uses API data
+    return this.getStudentTimetable(studentId).pipe(
+      map((timetableEntries: TimetableEntry[]) => {
+        const weeklyTimetable: WeeklyTimetable = {};
 
-    const timetable = this.mockDataService.getTimetableByClass(
-      student.studentClass.id
+        // Grupuj lekcje według dni
+        timetableEntries.forEach((entry) => {
+          if (!weeklyTimetable[entry.day]) {
+            weeklyTimetable[entry.day] = [];
+          }
+          weeklyTimetable[entry.day].push(entry);
+        });
+
+        // Sortuj lekcje w każdym dniu według numeru lekcji
+        Object.keys(weeklyTimetable).forEach((day) => {
+          weeklyTimetable[day].sort(
+            (a, b) => a.lesson_number - b.lesson_number
+          );
+        });
+
+        console.log('Generated weekly timetable:', weeklyTimetable);
+        return weeklyTimetable;
+      })
     );
-    const weeklyTimetable: WeeklyTimetable = {};
-
-    // Grupuj lekcje według dni
-    timetable.forEach((entry) => {
-      const mappedEntry = this.mapToTimetableEntry(entry);
-      if (!weeklyTimetable[entry.day]) {
-        weeklyTimetable[entry.day] = [];
-      }
-      weeklyTimetable[entry.day].push(mappedEntry);
-    });
-
-    // Sortuj lekcje w każdym dniu według numeru lekcji
-    Object.keys(weeklyTimetable).forEach((day) => {
-      weeklyTimetable[day].sort((a, b) => a.lesson_number - b.lesson_number);
-    });
-
-    return of(weeklyTimetable).pipe(delay(500));
   }
 
   getDayTimetable(
@@ -80,26 +104,22 @@ export class TimetableService {
     const currentDay = this.getCurrentDayCode();
     const currentTime = now.getHours() * 60 + now.getMinutes(); // minuty od północy
 
-    const student = this.mockDataService.getStudentById(studentId);
-    if (!student) {
-      return of(null);
-    }
+    return this.getStudentTimetable(studentId).pipe(
+      map((timetableEntries: TimetableEntry[]) => {
+        const todayLessons = timetableEntries.filter(
+          (entry) => entry.day === currentDay
+        );
 
-    const timetable = this.mockDataService.getTimetableByClass(
-      student.studentClass.id
+        const currentLesson = todayLessons.find((lesson) => {
+          const startTime = this.timeToMinutes(lesson.startTime);
+          const endTime = this.timeToMinutes(lesson.endTime);
+          return currentTime >= startTime && currentTime <= endTime;
+        });
+
+        console.log('Current lesson:', currentLesson);
+        return currentLesson || null;
+      })
     );
-    const todayLessons = timetable.filter((entry) => entry.day === currentDay);
-
-    const currentLesson = todayLessons.find((lesson) => {
-      const startTime = this.timeToMinutes(lesson.startTime);
-      const endTime = this.timeToMinutes(lesson.endTime);
-      return currentTime >= startTime && currentTime <= endTime;
-    });
-
-    const mappedLesson = currentLesson
-      ? this.mapToTimetableEntry(currentLesson)
-      : null;
-    return of(mappedLesson).pipe(delay(500));
   }
 
   getNextLesson(studentId: number): Observable<TimetableEntry | null> {
@@ -107,27 +127,61 @@ export class TimetableService {
     const currentDay = this.getCurrentDayCode();
     const currentTime = now.getHours() * 60 + now.getMinutes();
 
-    const student = this.mockDataService.getStudentById(studentId);
-    if (!student) {
-      return of(null);
-    }
+    return this.getStudentTimetable(studentId).pipe(
+      map((timetableEntries: TimetableEntry[]) => {
+        const todayLessons = timetableEntries
+          .filter((entry) => entry.day === currentDay)
+          .sort((a, b) => a.lesson_number - b.lesson_number);
 
-    const timetable = this.mockDataService.getTimetableByClass(
-      student.studentClass.id
+        const nextLesson = todayLessons.find((lesson) => {
+          const startTime = this.timeToMinutes(lesson.startTime);
+          return currentTime < startTime;
+        });
+
+        console.log('Next lesson:', nextLesson);
+        return nextLesson || null;
+      })
     );
-    const todayLessons = timetable
-      .filter((entry) => entry.day === currentDay)
-      .sort((a, b) => a.lesson_number - b.lesson_number);
+  }
 
-    const nextLesson = todayLessons.find((lesson) => {
-      const startTime = this.timeToMinutes(lesson.startTime);
-      return currentTime < startTime;
-    });
+  // Metoda pomocnicza do mapowania API data na TimetableEntry
+  private mapApiToTimetableEntry(apiEntry: any): TimetableEntry {
+    // Generate time slots based on lesson number (since API doesn't provide startTime/endTime)
+    const timeSlots = [
+      { start: '08:00', end: '08:45' },
+      { start: '08:55', end: '09:40' },
+      { start: '09:50', end: '10:35' },
+      { start: '10:45', end: '11:30' },
+      { start: '11:40', end: '12:25' },
+      { start: '12:35', end: '13:20' },
+      { start: '13:30', end: '14:15' },
+      { start: '14:25', end: '15:10' },
+    ];
 
-    const mappedLesson = nextLesson
-      ? this.mapToTimetableEntry(nextLesson)
-      : null;
-    return of(mappedLesson).pipe(delay(500));
+    const lessonNumber = apiEntry.lesson_number || 1;
+    const timeSlot = timeSlots[lessonNumber - 1] || timeSlots[0];
+
+    return {
+      lesson_id: apiEntry.lesson_id || apiEntry.id,
+      studentClass: apiEntry.studentClass || { id: 0, number: 0, letter: 'A' },
+      teacherSubject: {
+        id: apiEntry.teacherSubject?.id || apiEntry.id,
+        subject: {
+          id: apiEntry.teacherSubject?.subject?.id || 0,
+          name: apiEntry.teacherSubject?.subject?.name || 'Unknown Subject',
+        },
+        teacher: {
+          id: apiEntry.teacherSubject?.teacher?.id || 0,
+          name: apiEntry.teacherSubject?.teacher?.name || 'Unknown',
+          lastname: apiEntry.teacherSubject?.teacher?.lastname || 'Teacher',
+        },
+      },
+      lesson_number: lessonNumber,
+      day: apiEntry.day || 'MON',
+      startTime: apiEntry.startTime || timeSlot.start,
+      endTime: apiEntry.endTime || timeSlot.end,
+      room: apiEntry.room || `Sala ${lessonNumber}`,
+    };
   }
 
   // Metoda pomocnicza do mapowania mock data na TimetableEntry

@@ -3,16 +3,19 @@ package com.example.demo.rest;
 import com.example.demo.dao.UserRepository;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.entity.User;
+import com.example.demo.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
 
   @Autowired
@@ -20,6 +23,9 @@ public class UserController {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
+
+  @Autowired
+  private JwtUtil jwtUtil;
 
   @PostMapping("/register")
   public ResponseEntity<String> register(@RequestBody User user) {
@@ -35,7 +41,7 @@ public class UserController {
 
   // Login: check credentials
   @PostMapping("/login")
-  public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+  public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
     Optional<User> userOpt = userRepository.findByEmail(loginRequest.getEmail());
 
     if (userOpt.isEmpty()) {
@@ -46,7 +52,21 @@ public class UserController {
 
     // Check hashed password match
     if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-      return ResponseEntity.ok("Login successful");
+      // Generate JWT token
+      String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toString(), (long) user.getId());
+      
+      // Return token and user info
+      Map<String, Object> response = new HashMap<>();
+      response.put("token", token);
+      response.put("user", Map.of(
+        "id", user.getId(),
+        "email", user.getEmail(),
+        "role", user.getRole(),
+        "name", "",
+        "lastname", ""
+      ));
+      
+      return ResponseEntity.ok(response);
     } else {
       return ResponseEntity.status(401).body("Invalid password");
     }

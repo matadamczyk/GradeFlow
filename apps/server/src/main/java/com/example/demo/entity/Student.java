@@ -22,6 +22,9 @@ public class Student {
   @JoinColumn(name = "class_id",nullable = false,foreignKey = @ForeignKey(name = "fk_student_class"))
   private StudentClass studentClass;
 
+  @Column(name = "user_id", nullable = true)
+  private Integer userId;
+
   public Student() {
 
   }
@@ -31,6 +34,14 @@ public class Student {
     this.name = name;
     this.lastname = lastname;
     this.studentClass = studentClass;
+  }
+
+  public Student(Integer id, String name, String lastname, StudentClass studentClass, Integer userId) {
+    this.id = id;
+    this.name = name;
+    this.lastname = lastname;
+    this.studentClass = studentClass;
+    this.userId = userId;
   }
 
   public StudentClass getStudentClass() {
@@ -63,6 +74,14 @@ public class Student {
 
   public void setId(Integer id) {
     this.id = id;
+  }
+
+  public Integer getUserId() {
+    return userId;
+  }
+
+  public void setUserId(Integer userId) {
+    this.userId = userId;
   }
 
   @Override

@@ -2,6 +2,7 @@ import {
   AuthService,
   GradesService,
   TimetableService,
+  ApiService,
 } from '../../core/services';
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 import { Observable, Subject, forkJoin, of, takeUntil } from 'rxjs';
@@ -128,10 +129,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private gradesService: GradesService,
     private timetableService: TimetableService,
+    private apiService: ApiService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
+    // Test API communication
+    this.testApiConnection();
+
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe((user) => {
@@ -140,6 +145,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.loadDashboardData(user.id);
         }
       });
+  }
+
+  private testApiConnection(): void {
+    console.log('Testing API connection...');
+    this.apiService.getAllUsers().subscribe({
+      next: (users) => {
+        console.log('✅ API connection successful! Users:', users);
+      },
+      error: (error) => {
+        console.error('❌ API connection failed:', error);
+      },
+    });
   }
 
   ngOnDestroy(): void {
@@ -151,6 +168,65 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     const userRole = this.userRole();
 
+    // For students, first get student data, then proceed
+    if (userRole === UserRole.STUDENT) {
+      this.apiService.getStudentByUserId(userId).subscribe({
+        next: (student: any) => {
+          console.log('Dashboard: Found student for user:', student);
+          this.loadStudentDashboardData(userId, student.id);
+        },
+        error: (error) => {
+          console.error('Dashboard: Error getting student data:', error);
+          this.isLoading.set(false);
+        },
+      });
+    } else {
+      // For other roles, load data directly with userId
+      this.loadGeneralDashboardData(userId, userRole);
+    }
+  }
+
+  private loadStudentDashboardData(userId: number, studentId: number): void {
+    // Base data for student role
+    const baseData = {
+      currentLesson: this.timetableService.getCurrentLesson(userId),
+      nextLesson: this.timetableService.getNextLesson(userId),
+      todayTimetable: this.timetableService.getDayTimetable(
+        userId,
+        this.getCurrentDayCode()
+      ),
+      recentGrades: this.gradesService.getRecentGrades(studentId, 5),
+      gradeStatistics: this.gradesService.getGradeStatistics(studentId),
+    };
+
+    forkJoin(baseData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data: any) => {
+          const dashboardData: DashboardData = {
+            currentLesson: data.currentLesson,
+            nextLesson: data.nextLesson,
+            todayTimetable: data.todayTimetable,
+            notifications: this.generateNotifications(data),
+            recentGrades: data.recentGrades || [],
+            gradeStatistics: data.gradeStatistics || {},
+          };
+
+          console.log('Dashboard data loaded:', dashboardData);
+          this.dashboardData.set(dashboardData);
+          if (data.gradeStatistics) {
+            this.setupCharts(data.gradeStatistics);
+          }
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          console.error('Błąd ładowania danych dashboard studenta:', error);
+          this.isLoading.set(false);
+        },
+      });
+  }
+
+  private loadGeneralDashboardData(userId: number, userRole: string): void {
     // Base data for all roles
     const baseData = {
       currentLesson: this.timetableService.getCurrentLesson(userId),
@@ -165,15 +241,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const requests: Record<string, Observable<any>> = { ...baseData };
 
     switch (userRole) {
-      case UserRole.STUDENT:
-        requests['recentGrades'] = this.gradesService.getRecentGrades(
-          userId,
-          5
-        );
-        requests['gradeStatistics'] =
-          this.gradesService.getGradeStatistics(userId);
-        break;
-
       case UserRole.TEACHER:
         requests['teacherData'] = this.loadTeacherData(userId);
         break;
@@ -221,12 +288,22 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private setupCharts(statistics: any): void {
+    console.log('Setting up charts with statistics:', statistics);
+
+    // Use real trend data from statistics or fallback to mock
+    const trendLabels = statistics.monthlyTrends?.map(
+      (trend: any) => trend.month
+    ) || ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze'];
+    const trendValues = statistics.monthlyTrends?.map(
+      (trend: any) => trend.average
+    ) || [statistics.overallAverage || 0];
+
     const trendData = {
-      labels: ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze'],
+      labels: trendLabels,
       datasets: [
         {
           label: 'Średnia ocen',
-          data: [3.5, 3.8, 4.1, 3.9, 4.2, 4.0],
+          data: trendValues,
           borderColor: '#3B82F6',
           backgroundColor: 'rgba(59, 130, 246, 0.1)',
           tension: 0.4,
