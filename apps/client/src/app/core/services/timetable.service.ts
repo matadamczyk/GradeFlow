@@ -21,7 +21,9 @@ export class TimetableService {
       switchMap((student: any) => {
         console.log('Found student for timetable:', student);
         // Get timetable for student's class
-        return this.apiService.getTimetableByStudentClass(student.studentClass.id);
+        return this.apiService.getTimetableByStudentClass(
+          student.studentClass.id
+        );
       }),
       map((timetables: any[]) => {
         console.log('Received timetables for class:', timetables);
@@ -66,7 +68,9 @@ export class TimetableService {
 
         // Sortuj lekcje w każdym dniu według numeru lekcji
         Object.keys(weeklyTimetable).forEach((day) => {
-          weeklyTimetable[day].sort((a, b) => a.lesson_number - b.lesson_number);
+          weeklyTimetable[day].sort(
+            (a, b) => a.lesson_number - b.lesson_number
+          );
         });
 
         console.log('Generated weekly timetable:', weeklyTimetable);
@@ -102,7 +106,9 @@ export class TimetableService {
 
     return this.getStudentTimetable(studentId).pipe(
       map((timetableEntries: TimetableEntry[]) => {
-        const todayLessons = timetableEntries.filter((entry) => entry.day === currentDay);
+        const todayLessons = timetableEntries.filter(
+          (entry) => entry.day === currentDay
+        );
 
         const currentLesson = todayLessons.find((lesson) => {
           const startTime = this.timeToMinutes(lesson.startTime);

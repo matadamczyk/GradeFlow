@@ -136,7 +136,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Test API communication
     this.testApiConnection();
-    
+
     this.authService.currentUser$
       .pipe(takeUntil(this.destroy$))
       .subscribe((user) => {
@@ -155,7 +155,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('❌ API connection failed:', error);
-      }
+      },
     });
   }
 
@@ -178,7 +178,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         error: (error) => {
           console.error('Dashboard: Error getting student data:', error);
           this.isLoading.set(false);
-        }
+        },
       });
     } else {
       // For other roles, load data directly with userId
@@ -241,7 +241,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const requests: Record<string, Observable<any>> = { ...baseData };
 
     switch (userRole) {
-
       case UserRole.TEACHER:
         requests['teacherData'] = this.loadTeacherData(userId);
         break;
@@ -290,12 +289,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   private setupCharts(statistics: any): void {
     console.log('Setting up charts with statistics:', statistics);
-    
+
     // Use real trend data from statistics or fallback to mock
-    const trendLabels = statistics.monthlyTrends?.map((trend: any) => trend.month) || 
-                       ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze'];
-    const trendValues = statistics.monthlyTrends?.map((trend: any) => trend.average) || 
-                       [statistics.overallAverage || 0];
+    const trendLabels = statistics.monthlyTrends?.map(
+      (trend: any) => trend.month
+    ) || ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze'];
+    const trendValues = statistics.monthlyTrends?.map(
+      (trend: any) => trend.average
+    ) || [statistics.overallAverage || 0];
 
     const trendData = {
       labels: trendLabels,

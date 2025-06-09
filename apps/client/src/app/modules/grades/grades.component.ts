@@ -100,7 +100,7 @@ export class GradesComponent implements OnInit {
         error: (error) => {
           console.error('Grades: Error getting student data:', error);
           this.isLoading = false;
-        }
+        },
       });
     } else {
       // For other roles, use userId directly

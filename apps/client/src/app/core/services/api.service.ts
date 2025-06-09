@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ApiService {
   private readonly apiUrl = 'http://localhost:8080/api';
@@ -15,37 +15,37 @@ export class ApiService {
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
       'Content-Type': 'application/json',
-      'Accept': 'application/json'
+      Accept: 'application/json',
     });
   }
 
   // Generic HTTP methods
   get<T>(endpoint: string): Observable<T> {
     return this.http.get<T>(`${this.apiUrl}${endpoint}`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 
   post<T>(endpoint: string, data: any): Observable<T> {
     return this.http.post<T>(`${this.apiUrl}${endpoint}`, data, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 
   put<T>(endpoint: string, data: any): Observable<T> {
     return this.http.put<T>(`${this.apiUrl}${endpoint}`, data, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 
   delete<T>(endpoint: string): Observable<T> {
     return this.http.delete<T>(`${this.apiUrl}${endpoint}`, {
-      headers: this.getHeaders()
+      headers: this.getHeaders(),
     });
   }
 
   // Specific API methods
-  
+
   // Users
   getAllUsers(): Observable<any[]> {
     return this.get<any[]>('/users');
@@ -104,7 +104,7 @@ export class ApiService {
     // Get all students and filter by userId client-side
     return this.getAllStudents().pipe(
       map((students: any[]) => {
-        const student = students.find(s => s.userId === userId);
+        const student = students.find((s) => s.userId === userId);
         if (!student) {
           throw new Error(`No student found for user ID: ${userId}`);
         }
@@ -138,4 +138,4 @@ export class ApiService {
     // TODO: Backend should provide endpoint for student-specific timetable
     return this.getAllTimetables();
   }
-} 
+}

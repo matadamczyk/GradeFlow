@@ -152,7 +152,9 @@ export class AccountService {
           bio: apiUser.bio || '',
           lastLogin: apiUser.lastLogin || new Date().toISOString(),
           accountCreated: apiUser.accountCreated || new Date().toISOString(),
-          avatar: apiUser.avatar || `https://ui-avatars.com/api/?name=${apiUser.email}&background=random`,
+          avatar:
+            apiUser.avatar ||
+            `https://ui-avatars.com/api/?name=${apiUser.email}&background=random`,
         };
         return profile;
       }),
@@ -162,7 +164,9 @@ export class AccountService {
         if (profile) {
           return of(profile);
         } else {
-          return throwError(() => new Error('Profil użytkownika nie został znaleziony'));
+          return throwError(
+            () => new Error('Profil użytkownika nie został znaleziony')
+          );
         }
       }),
       delay(300)
@@ -256,9 +260,10 @@ export class AccountService {
                   attendanceRate: 95, // Still mock - no attendance API
                   completedAssignments: gradeStats.totalGrades || 0,
                   totalAssignments: gradeStats.totalGrades || 0,
-                  favoriteSubject: gradeStats.subjectGrades?.length > 0 
-                    ? gradeStats.subjectGrades[0].subjectName 
-                    : 'Brak danych',
+                  favoriteSubject:
+                    gradeStats.subjectGrades?.length > 0
+                      ? gradeStats.subjectGrades[0].subjectName
+                      : 'Brak danych',
                 };
                 console.log('Real account statistics for student:', stats);
                 return stats;
@@ -266,7 +271,10 @@ export class AccountService {
             );
           }),
           catchError((error: any) => {
-            console.warn('Error getting real statistics, falling back to mock:', error);
+            console.warn(
+              'Error getting real statistics, falling back to mock:',
+              error
+            );
             return of({
               totalGrades: 0,
               averageGrade: 0,
@@ -277,7 +285,7 @@ export class AccountService {
             });
           })
         );
-      
+
       case UserRole.TEACHER:
         return of({
           totalStudents: 120,
@@ -287,7 +295,7 @@ export class AccountService {
           pendingGrades: 12,
           teachingExperience: 15,
         }).pipe(delay(800));
-        
+
       case UserRole.PARENT:
         return of({
           totalChildren: 2,
@@ -297,7 +305,7 @@ export class AccountService {
           unreadMessages: 2,
           meetingsScheduled: 1,
         }).pipe(delay(800));
-        
+
       case UserRole.ADMIN:
         return of({
           totalUsers: 1250,
@@ -307,7 +315,7 @@ export class AccountService {
           systemUptime: 99.8,
           activeClasses: 32,
         }).pipe(delay(800));
-        
+
       default:
         return of({}).pipe(delay(800));
     }

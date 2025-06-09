@@ -19,9 +19,12 @@ export class GradesService {
       map((grades: any[]) => {
         console.log('Student grades raw API data:', grades);
         // Map grades with subjectName for compatibility
-        return grades.map(grade => ({
+        return grades.map((grade) => ({
           ...grade,
-          subjectName: grade.teacherSubject?.subject?.name || grade.subjectName || 'Unknown Subject'
+          subjectName:
+            grade.teacherSubject?.subject?.name ||
+            grade.subjectName ||
+            'Unknown Subject',
         }));
       }),
       catchError((error: any) => {
@@ -38,13 +41,15 @@ export class GradesService {
       map((grades: any[]) => {
         // Calculate statistics from API data
         const totalGrades = grades.length;
-        const overallAverage = grades.length > 0 
-          ? grades.reduce((sum, grade) => sum + grade.grade_value, 0) / grades.length 
-          : 0;
-        
+        const overallAverage =
+          grades.length > 0
+            ? grades.reduce((sum, grade) => sum + grade.grade_value, 0) /
+              grades.length
+            : 0;
+
         // Group by subject for subject grades
         const subjectGrades = this.calculateSubjectGrades(grades);
-        
+
         return {
           overallAverage,
           subjectGrades,
@@ -54,8 +59,10 @@ export class GradesService {
       catchError((error: any) => {
         console.warn('API error, falling back to mock data:', error);
         const subjectGrades = this.mockDataService.getSubjectGrades(studentId);
-        const overallAverage = this.mockDataService.getOverallAverage(studentId);
-        const totalGrades = this.mockDataService.getGradesByStudent(studentId).length;
+        const overallAverage =
+          this.mockDataService.getOverallAverage(studentId);
+        const totalGrades =
+          this.mockDataService.getGradesByStudent(studentId).length;
 
         return of({
           overallAverage,
@@ -70,32 +77,39 @@ export class GradesService {
   private calculateSubjectGrades(grades: any[]): any[] {
     console.log('Calculating subject grades from API data:', grades);
     const subjectMap = new Map();
-    
-    grades.forEach(grade => {
+
+    grades.forEach((grade) => {
       // Map API structure: grade.teacherSubject.subject.name
-      const subjectName = grade.teacherSubject?.subject?.name || 
-                         grade.subjectName || 
-                         'Unknown Subject';
+      const subjectName =
+        grade.teacherSubject?.subject?.name ||
+        grade.subjectName ||
+        'Unknown Subject';
       if (!subjectMap.has(subjectName)) {
         subjectMap.set(subjectName, []);
       }
       // Add mapped grade with subjectName for compatibility
       const mappedGrade = {
         ...grade,
-        subjectName: subjectName
+        subjectName: subjectName,
       };
       subjectMap.get(subjectName).push(mappedGrade);
     });
-    
-    return Array.from(subjectMap.entries()).map(([subjectName, subjectGrades]) => {
-      const average = subjectGrades.reduce((sum: number, grade: any) => sum + grade.grade_value, 0) / subjectGrades.length;
-      return {
-        subjectName,
-        grades: subjectGrades,
-        average: average,
-        weightedAverage: average // For now, treat as same as average
-      };
-    });
+
+    return Array.from(subjectMap.entries()).map(
+      ([subjectName, subjectGrades]) => {
+        const average =
+          subjectGrades.reduce(
+            (sum: number, grade: any) => sum + grade.grade_value,
+            0
+          ) / subjectGrades.length;
+        return {
+          subjectName,
+          grades: subjectGrades,
+          average: average,
+          weightedAverage: average, // For now, treat as same as average
+        };
+      }
+    );
   }
 
   getSubjectGrades(studentId: number): Observable<any[]> {
@@ -115,20 +129,27 @@ export class GradesService {
       map((grades: any[]) => {
         console.log('Recent grades raw API data:', grades);
         // Map grades with subjectName for compatibility
-        const mappedGrades = grades.map(grade => ({
+        const mappedGrades = grades.map((grade) => ({
           ...grade,
-          subjectName: grade.teacherSubject?.subject?.name || grade.subjectName || 'Unknown Subject'
+          subjectName:
+            grade.teacherSubject?.subject?.name ||
+            grade.subjectName ||
+            'Unknown Subject',
         }));
-        
+
         return mappedGrades
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          )
           .slice(0, limit);
       }),
       catchError((error: any) => {
         console.warn('API error, falling back to mock data:', error);
         const allGrades = this.mockDataService.getGradesByStudent(studentId);
         const recentGrades = allGrades
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+          .sort(
+            (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+          )
           .slice(0, limit);
         return of(recentGrades);
       }),
