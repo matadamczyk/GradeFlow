@@ -28,10 +28,11 @@ public class DemoApplication {
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   public static void main(String[] args) {
-    Dotenv dotenv = Dotenv.load();
-    System.setProperty("SPRING_DATASOURCE_URL", dotenv.get("SPRING_DATASOURCE_URL"));
-    System.setProperty("SPRING_DATASOURCE_USERNAME", dotenv.get("SPRING_DATASOURCE_USERNAME"));
-    System.setProperty("SPRING_DATASOURCE_PASSWORD", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
+    // UNCOMMENT IF LAUNCHING LOCALLY
+    // Dotenv dotenv = Dotenv.load();
+    // System.setProperty("SPRING_DATASOURCE_URL", dotenv.get("SPRING_DATASOURCE_URL"));
+    // System.setProperty("SPRING_DATASOURCE_USERNAME", dotenv.get("SPRING_DATASOURCE_USERNAME"));
+    // System.setProperty("SPRING_DATASOURCE_PASSWORD", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
     SpringApplication.run(DemoApplication.class, args);
   }
 

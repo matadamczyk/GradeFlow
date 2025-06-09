@@ -8,7 +8,7 @@ RUN cd apps/server && mvn clean package -DskipTests
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
-COPY --from=build /workspace/apps/server/src/main/resources/.env ./.env
+# COPY --from=build /workspace/apps/server/src/main/resources/.env ./.env
 
 COPY --from=build /workspace/apps/server/target/*.jar app.jar
 
