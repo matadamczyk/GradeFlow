@@ -1,15 +1,15 @@
 package com.example.demo.rest;
 
 import com.example.demo.dao.UserRepository;
+import com.example.demo.dto.LoginRequest;
 import com.example.demo.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/users")
@@ -20,6 +20,37 @@ public class UserController {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
+
+  @PostMapping("/register")
+  public ResponseEntity<String> register(@RequestBody User user) {
+    if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+      return ResponseEntity.badRequest().body("Email already in use");
+    }
+
+    // Hash password before saving
+    user.setPassword(passwordEncoder.encode(user.getPassword()));
+    userRepository.save(user);
+    return ResponseEntity.ok("User registered");
+  }
+
+  // Login: check credentials
+  @PostMapping("/login")
+  public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
+    Optional<User> userOpt = userRepository.findByEmail(loginRequest.getEmail());
+
+    if (userOpt.isEmpty()) {
+      return ResponseEntity.status(401).body("Invalid email");
+    }
+
+    User user = userOpt.get();
+
+    // Check hashed password match
+    if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+      return ResponseEntity.ok("Login successful");
+    } else {
+      return ResponseEntity.status(401).body("Invalid password");
+    }
+  }
 
   // CREATE
   @PostMapping
