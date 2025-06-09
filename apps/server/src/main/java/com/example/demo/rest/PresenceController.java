@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/presences")
+@RequestMapping("/api/presences")
 public class PresenceController {
 
   @Autowired

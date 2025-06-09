@@ -18,7 +18,7 @@ import java.sql.Time;
 import java.util.List;
 
 @RestController
-@RequestMapping("/timetables")
+@RequestMapping("/api/timetables")
 public class TimetableController {
 
   private final TimetableRepository timetableRepository;

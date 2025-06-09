@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/students")
+@RequestMapping("/api/students")
 public class StudentController {
 
   @Autowired
@@ -31,7 +31,7 @@ public class StudentController {
       .orElseThrow(() -> new IllegalArgumentException("Invalid class ID"));
 
     // Create and save student
-    Student student = new Student(null, request.getName(), request.getLastname(), studentClass);
+    Student student = new Student(null, request.getName(), request.getLastname(), studentClass, request.getUserId());
     Student saved = studentRepository.save(student);
 
     return ResponseEntity.ok(saved);
@@ -48,6 +48,14 @@ public class StudentController {
       .orElseThrow(() -> new IllegalArgumentException("Invalid class ID"));
 
     return ResponseEntity.ok(studentRepository.findByStudentClass(studentClass));
+  }
+
+  @GetMapping("/user/{userId}")
+  public ResponseEntity<Student> getStudentByUserId(@PathVariable Integer userId){
+    Student student = studentRepository.findByUserId(userId)
+      .orElseThrow(() -> new IllegalArgumentException("No student found for user ID: " + userId));
+
+    return ResponseEntity.ok(student);
   }
 
   @DeleteMapping("/delete/{studentId}")
@@ -72,6 +80,7 @@ public class StudentController {
     student.setStudentClass(studentClass);
     student.setName(request.getName());
     student.setLastname(request.getLastname());
+    student.setUserId(request.getUserId());
 
     studentRepository.save(student);
     return ResponseEntity.ok(student);

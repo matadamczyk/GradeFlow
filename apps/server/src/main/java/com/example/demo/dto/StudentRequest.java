@@ -9,6 +9,9 @@ public class StudentRequest {
   @JsonProperty("class_id")
   private Integer classId;
 
+  @JsonProperty("user_id")
+  private Integer userId;
+
   // getters and setters
 
   public String getName() {
@@ -33,5 +36,13 @@ public class StudentRequest {
 
   public void setClassId(Integer classId) {
     this.classId = classId;
+  }
+
+  public Integer getUserId() {
+    return userId;
+  }
+
+  public void setUserId(Integer userId) {
+    this.userId = userId;
   }
 }
