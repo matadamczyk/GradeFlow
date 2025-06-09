@@ -8,9 +8,20 @@ import { map } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class ApiService {
-  private readonly apiUrl = 'http://localhost:8080/api';
+  private readonly apiUrl = this.getApiUrl();
 
   constructor(private http: HttpClient) {}
+
+  private getApiUrl(): string {
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                       window.location.hostname === '127.0.0.1';
+    
+    if (isLocalhost) {
+      return 'http://localhost:8080/api';
+    } else {
+      return 'https://gradeflow-bdmy.onrender.com/api';
+    }
+  }
 
   private getHeaders(): HttpHeaders {
     return new HttpHeaders({
