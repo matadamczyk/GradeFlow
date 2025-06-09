@@ -17,14 +17,18 @@ public class User {
   @Column(name="password")
   private String password;
 
+  @Column(name="role")
+  private Role role;
+
   public User(){
 
   }
 
-  public User(int id, String email, String password) {
+  public User(int id, String email, String password, Role role) {
     this.id = id;
     this.email = email;
     this.password = password;
+    this.role = role;
   }
 
   public int getId() {
@@ -51,12 +55,21 @@ public class User {
     this.password = password;
   }
 
+  public Role getRole() {
+    return role;
+  }
+
+  public void setRole(Role role) {
+    this.role = role;
+  }
+
   @Override
   public String toString() {
     return "User{" +
       "id=" + id +
       ", email='" + email + '\'' +
       ", password='" + password + '\'' +
+      ", role=" + role +
       '}';
   }
 }
