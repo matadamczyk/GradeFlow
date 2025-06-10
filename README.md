@@ -1,4 +1,4 @@
-# Dziennik Elektroniczny
+# Dziennik Elektroniczny "GradeFlow"
 
 Projekt zespołowy realizowany w ramach przedmiotu Inżynieria Oprogramowania. Aplikacja webowa do zarządzania ocenami, planem lekcji i użytkownikami w szkole.
 
@@ -13,9 +13,20 @@ Dziennik Elektroniczny to kompleksowa aplikacja webowa zaprojektowana do zarząd
 
 ## Stack technologiczny
 - **Frontend:** Angular
-- **Backend:** Spring Boot (Java)
+- **Backend:** Spring Boot (Java 21)
 - **Baza danych:** PostgreSQL
-- **Narzędzia:** Docker, GitHub Actions, Nx
+- **Testy:**
+  - Jednostkowe: JUnit
+  - Integracyjne: Angular + JUnit
+  - E2E: Playwright
+- **Narzędzia:** Docker, GitHub Actions, Render (deployment)
+
+## Wymagania systemowe
+- Node.js (wersja 16 lub wyższa)
+- Java 21
+- Docker i Docker Compose
+- PostgreSQL 13 lub wyższy
+- Maven 3.6.3 lub wyższy
 
 ## Struktura branchy
 W projekcie używamy dwóch głównych branchy oraz branchy funkcyjnych:
@@ -35,10 +46,9 @@ W projekcie używamy dwóch głównych branchy oraz branchy funkcyjnych:
 
 ## Konwencja commitów
 
-W tym projekcie używamy standardu [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) do formatowania wiadomości commitów. Przestrzeganie tej konwencji pomaga nam automatycznie generować zmiany w CHANGELOG, określać wersje semantyczne oraz ułatwia przeglądanie historii projektu.
+W tym projekcie używamy standardu [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) do formatowania wiadomości commitów.
 
 ### Format wiadomości commit
-
 ```
 <typ>[opcjonalny zakres]: <opis>
 
@@ -75,13 +85,15 @@ BREAKING CHANGE: zmiana wymaga zaktualizowania zależności klienta
 ### Breaking Changes
 Breaking changes (zmiany łamiące kompatybilność) powinny być oznaczone wykrzyknikiem po typie/zakresie lub uwzględnione w sekcji stopki jako `BREAKING CHANGE:`.
 
-## Instrukcja działania w repozytorium
+## Uruchomienie projektu
 
 ### 1. Przygotowanie środowiska
 1. Sklonuj repozytorium:
    ```bash
-   git clone <adres-repozytorium>
-   cd <nazwa-repozytorium>
+```bash
+git clone https://github.com/matadamczyk/GradeFlow
+cd GradeFlow
+```
    ```
 2. Przełącz się na branch develop:
    ```bash
@@ -196,40 +208,42 @@ git push origin develop
    docker-compose up -d
    ```
 
-2. Uruchom backend:
-   ```bash
-   cd backend
-   ./mvnw spring-boot:run
-   ```
+2. Uruchomienie backendu
+```bash
+cd apps/server
+mvn spring-boot:run
+```
 
-3. Uruchom frontend:
-   ```bash
-   cd frontend
-   npm install
-   npm start
-   ```
+3. Uruchomienie frontendu
+```bash
+cd apps/client
+npm install
+npm start
+```
 
 4. Aplikacja będzie dostępna pod adresem http://localhost:4200
 
 ## Testowanie
-- Testy jednostkowe backend:
-  ```bash
-  cd backend
-  ./mvnw test
-  ```
 
-- Testy jednostkowe frontend:
-  ```bash
-  cd frontend
-  npm test
-  ```
+### Testy jednostkowe backend
+```bash
+cd apps/server
+mvn test
+```
 
-- Testy E2E:
-  ```bash
-  cd frontend
-  npm run e2e
-  ```
+### Testy jednostkowe frontend
+```bash
+cd apps/client
+npm test
+```
+
+### Testy E2E
+```bash
+cd apps/client
+npm run e2e
+```
 
 ## Wdrażanie
-Aplikacja jest wdrażana automatycznie po zmergowaniu do brancha `main` za pomocą GitHub Actions i jest dostępna na platformie Render.
+Aplikacja jest wdrażana automatycznie na platformie Render po zmergowaniu do brancha `main` za pomocą GitHub Actions.
+
 ```
