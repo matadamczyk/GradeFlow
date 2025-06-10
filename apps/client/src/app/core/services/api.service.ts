@@ -13,9 +13,10 @@ export class ApiService {
   constructor(private http: HttpClient) {}
 
   private getApiUrl(): string {
-    const isLocalhost = window.location.hostname === 'localhost' || 
-                       window.location.hostname === '127.0.0.1';
-    
+    const isLocalhost =
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1';
+
     if (isLocalhost) {
       return 'http://localhost:8080/api';
     } else {
