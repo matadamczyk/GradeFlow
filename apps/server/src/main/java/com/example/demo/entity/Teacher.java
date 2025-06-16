@@ -16,9 +16,10 @@ public class Teacher {
   @Column( name = "last_name", nullable = false)
   private String lastname;
 
-  public Teacher() {
+  @Column(name = "user_id", nullable = true)
+  private Integer userId;
 
-  }
+  public Teacher() {}
 
   public Teacher(Integer id, String name, String lastname) {
     this.id = id;
@@ -48,6 +49,14 @@ public class Teacher {
 
   public void setId(Integer id) {
     this.id = id;
+  }
+
+  public Integer getUserId() {
+    return userId;
+  }
+
+  public void setUserId(Integer userId) {
+    this.userId = userId;
   }
 
   @Override

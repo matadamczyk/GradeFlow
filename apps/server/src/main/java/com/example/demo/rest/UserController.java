@@ -54,18 +54,16 @@ public class UserController {
     if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
       // Generate JWT token
       String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toString(), (long) user.getId());
-      
+
       // Return token and user info
       Map<String, Object> response = new HashMap<>();
       response.put("token", token);
       response.put("user", Map.of(
         "id", user.getId(),
         "email", user.getEmail(),
-        "role", user.getRole(),
-        "name", "",
-        "lastname", ""
+        "role", user.getRole()
       ));
-      
+
       return ResponseEntity.ok(response);
     } else {
       return ResponseEntity.status(401).body("Invalid password");

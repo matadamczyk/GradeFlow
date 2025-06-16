@@ -5,12 +5,12 @@ import com.example.demo.dao.StudentRepository;
 import com.example.demo.dao.TeacherSubjectRepository;
 import com.example.demo.dao.TimetableRepository;
 import com.example.demo.dto.GradeRequest;
-import com.example.demo.entity.Grade;
-import com.example.demo.entity.Student;
-import com.example.demo.entity.TeacherSubject;
-import com.example.demo.entity.Timetable;
+import com.example.demo.entity.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -34,38 +34,56 @@ public class GradeController {
   @Autowired
   private TimetableRepository timetableRepository;
 
-  // GET all grades
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping
   public ResponseEntity<List<Grade>> getAllGrades(){
     List<Grade> grades = gradeRepository.findAll();
     return ResponseEntity.ok(grades);
   }
 
+  @PreAuthorize("hasRole('STUDENT') or hasRole('ADMIN') or hasRole('TEACHER') or hasRole('PARENT')")
   @GetMapping("/student/{studentId}/teacherSubject/{teacherSubjectId}")
-  public ResponseEntity<List<Grade>> getGradesFromTeacherSubject(@PathVariable Integer studentId, @PathVariable Integer teacherSubjectId) {
+  public ResponseEntity<List<Grade>> getGradesFromTeacherSubject(
+    @PathVariable Integer studentId,
+    @PathVariable Integer teacherSubjectId) {
+
+    User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     Student student = studentRepository.findById(studentId)
       .orElseThrow(() -> new IllegalArgumentException("Invalid student ID"));
+
+    if (currentUser.getRole().name().equals("STUDENT") &&
+      !student.getUserId().equals(currentUser.getId())) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 
     TeacherSubject teacherSubject = teacherSubjectRepository.findById(teacherSubjectId)
       .orElseThrow(() -> new IllegalArgumentException("Invalid teacherSubject ID"));
 
-    List<Grade> grades = gradeRepository.findByStudentAndTeacherSubject(student,teacherSubject);
+    List<Grade> grades = gradeRepository.findByStudentAndTeacherSubject(student, teacherSubject);
 
     return ResponseEntity.ok(grades);
   }
 
+
+  @PreAuthorize("hasRole('STUDENT') or hasRole('ADMIN') or hasRole('TEACHER') or hasRole('PARENT')")
   @GetMapping("/student/{studentId}")
   public ResponseEntity<List<Grade>> getGrades(@PathVariable Integer studentId){
-
     Student student = studentRepository.findById(studentId)
       .orElseThrow(() -> new IllegalArgumentException("Invalid student ID"));
+
+    User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (currentUser.getRole().name().equals("STUDENT") &&
+      (student.getUserId() == null || currentUser.getId().equals(student.getUserId()))) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
 
     List<Grade> grades = gradeRepository.findByStudent(student);
     return ResponseEntity.ok(grades);
   }
 
-  //ogólne dodanie oceny
+  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
   @PostMapping("/add")
   public ResponseEntity<?> addGrade(@RequestBody GradeRequest request){
     Student student = studentRepository.findById(request.getStudentId())
@@ -100,7 +118,7 @@ public class GradeController {
     return ResponseEntity.ok(grade);
   }
 
-
+  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
   @DeleteMapping("/delete/{gradeId}")
   public ResponseEntity<?> deleteGrade(@PathVariable Integer gradeId){
     Grade grade = gradeRepository.findById(gradeId)
@@ -111,6 +129,7 @@ public class GradeController {
     return ResponseEntity.ok(grade);
   }
 
+  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
   @PutMapping("/update/{gradeId}")
   public ResponseEntity<?> updateGrade(@PathVariable Integer gradeId, @RequestBody GradeRequest request){
     Grade grade = gradeRepository.findById(gradeId)

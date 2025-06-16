@@ -4,13 +4,15 @@ import com.example.demo.dao.PresenceRepository;
 import com.example.demo.dao.StudentRepository;
 import com.example.demo.dao.TimetableRepository;
 import com.example.demo.dto.PresenceRequest;
-import com.example.demo.entity.Presence;
-import com.example.demo.entity.Student;
-import com.example.demo.entity.Timetable;
+import com.example.demo.entity.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.sql.Date;
 import java.time.LocalDate;
@@ -30,6 +32,7 @@ public class PresenceController {
   @Autowired
   private TimetableRepository timetableRepository;
 
+  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
   @PostMapping
   public ResponseEntity<?> createPresence(@RequestBody PresenceRequest request) {
     // Load Student
@@ -56,10 +59,28 @@ public class PresenceController {
     return ResponseEntity.ok(presence);
   }
 
-  // Add GET methods if needed
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping
   public ResponseEntity<List<Presence>> getAllPresences() {
     List<Presence> presences = presenceRepository.findAll();
+    return ResponseEntity.ok(presences);
+  }
+
+  @PreAuthorize("hasRole('STUDENT') or hasRole('ADMIN') or hasRole('TEACHER') or hasRole('PARENT')")
+  @GetMapping("/student/{studentId}")
+  public ResponseEntity<List<Presence>> getPresences(@PathVariable Integer studentId){
+    Student student = studentRepository.findById(studentId)
+      .orElseThrow(() -> new IllegalArgumentException("Invalid student ID"));
+
+    User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+    if (currentUser.getRole().name().equals("STUDENT") &&
+      (student.getUserId() == null || currentUser.getId().equals(student.getUserId()))) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+    }
+
+
+    List<Presence> presences = presenceRepository.findByStudent(student);
     return ResponseEntity.ok(presences);
   }
 

@@ -9,6 +9,7 @@ import com.example.demo.entity.Teacher;
 import com.example.demo.entity.TeacherSubject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,7 @@ public class TeacherSubjectController {
     this.teacherSubjectRepository = teacherSubjectRepository;
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public ResponseEntity<?> assignSubjectToTeacher(@RequestBody TeacherSubjectRequest dto) {
     Optional<Teacher> teacherOpt = teacherRepository.findById(dto.getTeacher_id());
@@ -47,6 +49,7 @@ public class TeacherSubjectController {
     return ResponseEntity.ok("Assignment saved successfully");
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping
   public ResponseEntity<List<TeacherSubject>> getAllAssignments() {
     List<TeacherSubject> assignments = teacherSubjectRepository.findAll();

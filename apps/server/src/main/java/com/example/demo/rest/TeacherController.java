@@ -13,6 +13,7 @@ import com.example.demo.entity.Teacher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,6 +30,7 @@ public class TeacherController {
   @Autowired
   private TeacherSubjectRepository teacherSubjectRepository;
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public ResponseEntity<?> createTeacher(@RequestBody TeacherRequest request) {
 
@@ -37,12 +39,14 @@ public class TeacherController {
     return ResponseEntity.ok(saved);
   }
 
+  @PreAuthorize("hasRole('ADMIN') or hasRole('STUDENT') or hasRole('TEACHER') or hasRole('PARENT')")
   @GetMapping
   public ResponseEntity<?> getAllTeachers() {
     return ResponseEntity.ok(teacherRepository.findAll());
   }
 
   //Zwraca nauczycieli, ktorzy ucza dana klase
+  @PreAuthorize("hasRole('STUDENT') or hasRole('ADMIN') or hasRole('TEACHER') or hasRole('PARENT')")
   @GetMapping("/studentClass/{studentClassId}")
   public ResponseEntity<List<Teacher>> getTeachersByStudentClassFromTimetable(@PathVariable Integer studentClassId){
     List<Teacher> teachers = teacherRepository.findTeachersByClassId(studentClassId);
@@ -51,8 +55,9 @@ public class TeacherController {
   }
 
   //Usuwa nauczyciela pod warunkiem ze nie jest wychowawca klasy, jesli nei jest to usuwa takze polaczenia w teacherSubject
+  @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/delete/{teacherId}")
-  public ResponseEntity<?> deleteStudent(@PathVariable Integer teacherId){
+  public ResponseEntity<?> deleteTeacher(@PathVariable Integer teacherId){
     Teacher teacher = teacherRepository.findById(teacherId)
       .orElseThrow(() -> new IllegalArgumentException("Invalid teacher ID"));
 
@@ -69,8 +74,9 @@ public class TeacherController {
     return ResponseEntity.ok(teacher);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PutMapping("/update/{teacherId}")
-  public ResponseEntity<?> updateStudent(@PathVariable Integer teacherId, @RequestBody TeacherRequest request){
+  public ResponseEntity<?> updateTeacher(@PathVariable Integer teacherId, @RequestBody TeacherRequest request){
     Teacher teacher = teacherRepository.findById(teacherId)
       .orElseThrow(() -> new IllegalArgumentException("Invalid teacher ID"));
 
