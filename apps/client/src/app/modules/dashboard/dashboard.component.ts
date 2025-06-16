@@ -82,11 +82,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
   userName = computed(() => {
     const user = this.currentUser();
     const student = this.currentStudent();
-    
+
     if (user?.role === UserRole.STUDENT && student) {
       return `${student.name} ${student.lastname}`;
     }
-    
+
     return user ? `${user.email}` : 'Użytkownik';
   });
 
@@ -129,11 +129,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const user = this.currentUser();
     const student = this.currentStudent();
     const greeting = this.greeting();
-    
+
     if (user?.role === UserRole.STUDENT && student) {
       return `${greeting}, ${student.name} ${student.lastname}`;
     }
-    
+
     return `${greeting}, ${user?.email}`;
   });
 
@@ -180,40 +180,47 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private calculateSystemLoad(data: any): number {
     // Oblicz obciążenie systemu na podstawie rzeczywistych danych
     const totalUsers = data.users.length;
-    const activeUsers = data.users.filter((u: any) => u.isActive !== false).length;
+    const activeUsers = data.users.filter(
+      (u: any) => u.isActive !== false
+    ).length;
     const totalStudents = data.students.length;
     const totalTeachers = data.teachers.length;
     const totalGrades = data.grades?.length || 0;
-    
+
     // Bazowe obciążenie na podstawie liczby użytkowników (0-40%)
     const userLoad = Math.min((totalUsers / 100) * 40, 40);
-    
+
     // Obciążenie na podstawie aktywności (stosunek aktywnych do wszystkich) (0-30%)
     const activityLoad = totalUsers > 0 ? (activeUsers / totalUsers) * 30 : 0;
-    
+
     // Obciążenie na podstawie ilości danych (ocen) (0-20%)
     const dataLoad = Math.min((totalGrades / 1000) * 20, 20);
-    
+
     // Losowy czynnik dla symulacji zmiennego obciążenia (0-10%)
     const randomFactor = Math.random() * 10;
-    
-    const totalLoad = Math.round(userLoad + activityLoad + dataLoad + randomFactor);
+
+    const totalLoad = Math.round(
+      userLoad + activityLoad + dataLoad + randomFactor
+    );
     return Math.min(totalLoad, 100);
   }
 
   private generateRecentActivity(data: any): any[] {
     const activities: any[] = [];
     const now = new Date();
-    
+
     // Dodaj aktywność dla nowych użytkowników
     const recentUsers = data.users
       .filter((u: any) => {
         if (!u.createdAt) return false;
         const userDate = new Date(u.createdAt);
-        const threeDaysAgo = new Date(now.getTime() - (3 * 24 * 60 * 60 * 1000));
+        const threeDaysAgo = new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000);
         return userDate > threeDaysAgo;
       })
-      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
       .slice(0, 3);
 
     recentUsers.forEach((user: any) => {
@@ -223,7 +230,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         user: `${user.email} (${user.role})`,
         time: this.formatActivityTime(createdDate),
         icon: 'pi-user-plus',
-        severity: 'success'
+        severity: 'success',
       });
     });
 
@@ -233,7 +240,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         .filter((g: any) => {
           if (!g.date) return false;
           const gradeDate = new Date(g.date);
-          const oneDayAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+          const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
           return gradeDate > oneDayAgo;
         })
         .slice(0, 2);
@@ -245,7 +252,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           user: `Ocena ${grade.grade_value} dodana`,
           time: this.formatActivityTime(gradeDate),
           icon: 'pi-star',
-          severity: 'info'
+          severity: 'info',
         });
       });
     }
@@ -253,10 +260,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // Aktywność systemowa
     activities.push({
       action: 'System aktywny',
-      user: `${data.users.filter((u: any) => u.isActive !== false).length} aktywnych użytkowników`,
+      user: `${
+        data.users.filter((u: any) => u.isActive !== false).length
+      } aktywnych użytkowników`,
       time: this.formatActivityTime(now),
       icon: 'pi-check-circle',
-      severity: 'info'
+      severity: 'info',
     });
 
     // Sortuj według czasu i zwróć maksymalnie 5 elementów
@@ -274,14 +283,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
         type: 'error',
         message: `Wysokie obciążenie systemu: ${systemStats.systemLoad}%`,
         priority: 'high',
-        icon: 'pi-exclamation-triangle'
+        icon: 'pi-exclamation-triangle',
       });
     } else if (systemStats.systemLoad > 60) {
       alerts.push({
         type: 'warn',
         message: `Średnie obciążenie systemu: ${systemStats.systemLoad}%`,
         priority: 'medium',
-        icon: 'pi-info-circle'
+        icon: 'pi-info-circle',
       });
     }
 
@@ -291,7 +300,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         type: 'success',
         message: `${systemStats.newRegistrations} nowych rejestracji w tym tygodniu`,
         priority: 'low',
-        icon: 'pi-users'
+        icon: 'pi-users',
       });
     }
 
@@ -302,7 +311,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         type: 'warn',
         message: `${inactiveUsers} nieaktywnych użytkowników w systemie`,
         priority: 'medium',
-        icon: 'pi-user-minus'
+        icon: 'pi-user-minus',
       });
     }
 
@@ -311,7 +320,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       type: 'info',
       message: `System zarządza ${systemStats.totalUsers} użytkownikami`,
       priority: 'low',
-      icon: 'pi-info'
+      icon: 'pi-info',
     });
 
     return alerts.slice(0, 3); // Maksymalnie 3 alerty
@@ -338,7 +347,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         month: '2-digit',
         year: 'numeric',
         hour: '2-digit',
-        minute: '2-digit'
+        minute: '2-digit',
       });
     }
   }
@@ -704,12 +713,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
       users: this.apiService.getAllUsers(),
       students: this.apiService.getAllStudents(),
       teachers: this.apiService.getAllTeachers(),
-      grades: this.apiService.getAllGrades()
+      grades: this.apiService.getAllGrades(),
     }).pipe(
       map((data: any) => {
         const systemStats = {
           totalUsers: data.users.length,
-          activeUsers: data.users.filter((u: any) => u.isActive !== false).length,
+          activeUsers: data.users.filter((u: any) => u.isActive !== false)
+            .length,
           newRegistrations: data.users.filter((u: any) => {
             if (!u.createdAt) return false;
             const userDate = new Date(u.createdAt);
@@ -726,7 +736,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
         return { systemStats, recentActivity, alerts };
       }),
-             catchError((error: any) => {
+      catchError((error: any) => {
         console.error('Error loading admin data:', error);
         // Fallback na mock data w przypadku błędu
         return of({
@@ -737,7 +747,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
             systemLoad: 0,
           },
           recentActivity: [
-            { action: 'Błąd ładowania', details: 'Problem z API', time: 'Teraz' },
+            {
+              action: 'Błąd ładowania',
+              details: 'Problem z API',
+              time: 'Teraz',
+            },
           ],
           alerts: [
             {

@@ -539,7 +539,10 @@
                     let activity of dashboardData()?.adminData?.recentActivity
                   "
                 >
-                  <div class="activity-icon" [ngClass]="'severity-' + (activity.severity || 'info')">
+                  <div
+                    class="activity-icon"
+                    [ngClass]="'severity-' + (activity.severity || 'info')"
+                  >
                     <i class="pi" [ngClass]="activity.icon"></i>
                   </div>
                   <div class="activity-details">

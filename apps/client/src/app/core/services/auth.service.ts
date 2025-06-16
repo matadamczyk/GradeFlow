@@ -99,20 +99,23 @@ export class AuthService {
       }),
       catchError((error: any) => {
         console.error('Login failed:', error);
-        
+
         // Usuń ewentualne stare dane
         localStorage.removeItem('currentUser');
         localStorage.removeItem('token');
-        
+
         if (error.status === 401) {
           return throwError(() => new Error('Nieprawidłowy email lub hasło'));
         }
-        
+
         if (error.status === 0) {
           return throwError(() => new Error('Brak połączenia z serwerem'));
         }
-        
-        return throwError(() => new Error('Błąd logowania: ' + (error.message || 'Nieznany błąd')));
+
+        return throwError(
+          () =>
+            new Error('Błąd logowania: ' + (error.message || 'Nieznany błąd'))
+        );
       })
     );
   }

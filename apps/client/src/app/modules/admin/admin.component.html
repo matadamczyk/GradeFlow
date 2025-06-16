@@ -6,11 +6,9 @@
         <i class="pi pi-cog"></i>
         Panel Administratora
       </h1>
-      <p class="page-subtitle">
-        Zarządzaj użytkownikami i systemem GradeFlow
-      </p>
+      <p class="page-subtitle">Zarządzaj użytkownikami i systemem GradeFlow</p>
     </div>
-    
+
     <div class="header-actions">
       <p-button
         label="Dashboard"
@@ -20,7 +18,7 @@
         class="mr-2"
       >
       </p-button>
-      
+
       <p-button
         icon="pi pi-refresh"
         [text]="true"
@@ -139,7 +137,7 @@
             class="mr-2"
           >
           </p-button>
-          
+
           <p-button
             label="Usuń zaznaczone"
             icon="pi pi-trash"
@@ -159,7 +157,9 @@
 
       <!-- Loading state -->
       <div *ngIf="isLoading()" class="loading-container">
-        <p-progressSpinner [style]="{ width: '50px', height: '50px' }"></p-progressSpinner>
+        <p-progressSpinner
+          [style]="{ width: '50px', height: '50px' }"
+        ></p-progressSpinner>
         <p>Ładowanie użytkowników...</p>
       </div>
 
@@ -180,15 +180,15 @@
       >
         <ng-template pTemplate="caption">
           <div class="table-header">
-                         <span class="p-input-icon-left">
-               <i class="pi pi-search"></i>
-               <input
-                 pInputText
-                 type="text"
-                 placeholder="Szukaj użytkownika..."
-                 (input)="dt.filterGlobal($any($event.target).value, 'contains')"
-               />
-             </span>
+            <span class="p-input-icon-left">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                placeholder="Szukaj użytkownika..."
+                (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+              />
+            </span>
           </div>
         </ng-template>
 
@@ -237,19 +237,32 @@
               ></p-tag>
             </td>
             <td>
-              <span class="status-badge" [class.active]="user.isActive !== false">
-                <i class="pi" [class.pi-check-circle]="user.isActive !== false" [class.pi-times-circle]="user.isActive === false"></i>
+              <span
+                class="status-badge"
+                [class.active]="user.isActive !== false"
+              >
+                <i
+                  class="pi"
+                  [class.pi-check-circle]="user.isActive !== false"
+                  [class.pi-times-circle]="user.isActive === false"
+                ></i>
                 {{ user.isActive !== false ? 'Aktywny' : 'Nieaktywny' }}
               </span>
             </td>
             <td>
               <span class="date-text">
-                {{ user.createdAt ? (user.createdAt | date:'dd.MM.yyyy') : '-' }}
+                {{
+                  user.createdAt ? (user.createdAt | date : 'dd.MM.yyyy') : '-'
+                }}
               </span>
             </td>
             <td>
               <span class="date-text">
-                {{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : 'Nigdy' }}
+                {{
+                  user.lastLogin
+                    ? (user.lastLogin | date : 'dd.MM.yyyy HH:mm')
+                    : 'Nigdy'
+                }}
               </span>
             </td>
             <td>
@@ -264,7 +277,7 @@
                   class="mr-1"
                 >
                 </p-button>
-                
+
                 <p-button
                   icon="pi pi-trash"
                   [text]="true"
@@ -314,11 +327,15 @@
             formControlName="email"
             placeholder="user@example.com"
             class="w-full"
-            [class.ng-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+            [class.ng-invalid]="
+              userForm.get('email')?.invalid && userForm.get('email')?.touched
+            "
           />
           <small
             class="p-error"
-            *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+            *ngIf="
+              userForm.get('email')?.invalid && userForm.get('email')?.touched
+            "
           >
             Email jest wymagany i musi być poprawny
           </small>
@@ -333,11 +350,17 @@
             formControlName="password"
             placeholder="Minimum 6 znaków"
             class="w-full"
-            [class.ng-invalid]="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+            [class.ng-invalid]="
+              userForm.get('password')?.invalid &&
+              userForm.get('password')?.touched
+            "
           />
           <small
             class="p-error"
-            *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+            *ngIf="
+              userForm.get('password')?.invalid &&
+              userForm.get('password')?.touched
+            "
           >
             Hasło jest wymagane (minimum 6 znaków)
           </small>
@@ -366,12 +389,16 @@
             [options]="roleOptions"
             placeholder="Wybierz rolę"
             class="w-full"
-            [class.ng-invalid]="userForm.get('role')?.invalid && userForm.get('role')?.touched"
+            [class.ng-invalid]="
+              userForm.get('role')?.invalid && userForm.get('role')?.touched
+            "
           >
           </p-dropdown>
           <small
             class="p-error"
-            *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched"
+            *ngIf="
+              userForm.get('role')?.invalid && userForm.get('role')?.touched
+            "
           >
             Rola jest wymagana
           </small>
@@ -388,7 +415,7 @@
         class="mr-2"
       >
       </p-button>
-      
+
       <p-button
         [label]="isEditMode() ? 'Zaktualizuj' : 'Utwórz'"
         icon="pi pi-check"
@@ -404,4 +431,4 @@
 
   <!-- Confirmation Dialog -->
   <p-confirmDialog></p-confirmDialog>
-</div> 
+</div>

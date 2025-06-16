@@ -2,7 +2,13 @@
 import { ApiService, AuthService } from '../../core/services';
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
-import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Subject, forkJoin, takeUntil } from 'rxjs';
 
 import { BadgeModule } from 'primeng/badge';
@@ -67,11 +73,11 @@ interface UserStats {
     BadgeModule,
     DividerModule,
     SplitButtonModule,
-    MenuModule
+    MenuModule,
   ],
   providers: [ConfirmationService, MessageService],
   templateUrl: './admin.component.html',
-  styleUrl: './admin.component.scss'
+  styleUrl: './admin.component.scss',
 })
 export class AdminComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -86,7 +92,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     students: 0,
     teachers: 0,
     parents: 0,
-    admins: 0
+    admins: 0,
   });
 
   // Dialog states
@@ -102,7 +108,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     { label: 'Student', value: UserRole.STUDENT },
     { label: 'Nauczyciel', value: UserRole.TEACHER },
     { label: 'Rodzic', value: UserRole.PARENT },
-    { label: 'Administrator', value: UserRole.ADMIN }
+    { label: 'Administrator', value: UserRole.ADMIN },
   ];
 
   // Computed properties
@@ -125,20 +131,23 @@ export class AdminComponent implements OnInit, OnDestroy {
     // Sprawdź czy użytkownik jest zalogowany jako admin
     const currentUser = this.authService.getCurrentUser();
     console.log('Admin component - current user:', currentUser);
-    console.log('Admin component - is logged in:', this.authService.isLoggedIn());
+    console.log(
+      'Admin component - is logged in:',
+      this.authService.isLoggedIn()
+    );
     console.log('Admin component - token:', this.authService.getToken());
-    
+
     if (!currentUser || currentUser.role !== UserRole.ADMIN) {
       console.error('Unauthorized access to admin panel');
       this.messageService.add({
         severity: 'error',
         summary: 'Błąd dostępu',
-        detail: 'Nie masz uprawnień do tej sekcji'
+        detail: 'Nie masz uprawnień do tej sekcji',
       });
       this.router.navigate(['/dashboard']);
       return;
     }
-    
+
     this.loadUsers();
   }
 
@@ -151,7 +160,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.userForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
-      role: [UserRole.STUDENT, Validators.required]
+      role: [UserRole.STUDENT, Validators.required],
     });
   }
 
@@ -161,41 +170,41 @@ export class AdminComponent implements OnInit, OnDestroy {
 
   private loadUsers(): void {
     this.isLoading.set(true);
-    
+
     forkJoin({
       users: this.apiService.getAllUsers(),
       students: this.apiService.getAllStudents(),
-      teachers: this.apiService.getAllTeachers()
-    }).pipe(
-      takeUntil(this.destroy$)
-    ).subscribe({
-      next: (data) => {
-        this.users.set(data.users);
-        this.calculateStats(data.users);
-        this.isLoading.set(false);
-      },
-      error: (error) => {
-        console.error('Error loading users:', error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Błąd',
-          detail: 'Nie udało się załadować użytkowników'
-        });
-        this.isLoading.set(false);
-      }
-    });
+      teachers: this.apiService.getAllTeachers(),
+    })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.users.set(data.users);
+          this.calculateStats(data.users);
+          this.isLoading.set(false);
+        },
+        error: (error) => {
+          console.error('Error loading users:', error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Błąd',
+            detail: 'Nie udało się załadować użytkowników',
+          });
+          this.isLoading.set(false);
+        },
+      });
   }
 
   private calculateStats(users: User[]): void {
     const stats: UserStats = {
       totalUsers: users.length,
-      activeUsers: users.filter(u => u.isActive !== false).length,
-      students: users.filter(u => u.role === UserRole.STUDENT).length,
-      teachers: users.filter(u => u.role === UserRole.TEACHER).length,
-      parents: users.filter(u => u.role === UserRole.PARENT).length,
-      admins: users.filter(u => u.role === UserRole.ADMIN).length
+      activeUsers: users.filter((u) => u.isActive !== false).length,
+      students: users.filter((u) => u.role === UserRole.STUDENT).length,
+      teachers: users.filter((u) => u.role === UserRole.TEACHER).length,
+      parents: users.filter((u) => u.role === UserRole.PARENT).length,
+      admins: users.filter((u) => u.role === UserRole.ADMIN).length,
     };
-    
+
     this.userStats.set(stats);
   }
 
@@ -212,7 +221,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.currentUser.set(user);
     this.userForm.patchValue({
       email: user.email,
-      role: user.role
+      role: user.role,
     });
     // Don't show password in edit mode
     this.userForm.get('password')?.clearValidators();
@@ -228,27 +237,28 @@ export class AdminComponent implements OnInit, OnDestroy {
   saveUser(): void {
     if (this.userForm.valid) {
       const formValue = this.userForm.value;
-      
+
       if (this.isEditMode()) {
         const currentUser = this.currentUser();
         if (currentUser) {
           const updateData: any = {
             email: formValue.email,
-            role: formValue.role
+            role: formValue.role,
           };
-          
+
           if (formValue.password) {
             updateData.password = formValue.password;
           }
 
-                     this.apiService.updateUser(currentUser.id, updateData)
+          this.apiService
+            .updateUser(currentUser.id, updateData)
             .pipe(takeUntil(this.destroy$))
             .subscribe({
               next: () => {
                 this.messageService.add({
                   severity: 'success',
                   summary: 'Sukces',
-                  detail: 'Użytkownik został zaktualizowany'
+                  detail: 'Użytkownik został zaktualizowany',
                 });
                 this.loadUsers();
                 this.hideDialog();
@@ -258,20 +268,21 @@ export class AdminComponent implements OnInit, OnDestroy {
                 this.messageService.add({
                   severity: 'error',
                   summary: 'Błąd',
-                  detail: 'Nie udało się zaktualizować użytkownika'
+                  detail: 'Nie udało się zaktualizować użytkownika',
                 });
-              }
+              },
             });
         }
       } else {
-        this.apiService.registerUser(formValue)
+        this.apiService
+          .registerUser(formValue)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: () => {
               this.messageService.add({
                 severity: 'success',
                 summary: 'Sukces',
-                detail: 'Użytkownik został utworzony'
+                detail: 'Użytkownik został utworzony',
               });
               this.loadUsers();
               this.hideDialog();
@@ -281,9 +292,9 @@ export class AdminComponent implements OnInit, OnDestroy {
               this.messageService.add({
                 severity: 'error',
                 summary: 'Błąd',
-                detail: 'Nie udało się utworzyć użytkownika'
+                detail: 'Nie udało się utworzyć użytkownika',
               });
-            }
+            },
           });
       }
     }
@@ -295,14 +306,15 @@ export class AdminComponent implements OnInit, OnDestroy {
       header: 'Potwierdzenie usunięcia',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        this.apiService.delete(`/users/${user.id}`)
+        this.apiService
+          .delete(`/users/${user.id}`)
           .pipe(takeUntil(this.destroy$))
           .subscribe({
             next: () => {
               this.messageService.add({
                 severity: 'success',
                 summary: 'Sukces',
-                detail: 'Użytkownik został usunięty'
+                detail: 'Użytkownik został usunięty',
               });
               this.loadUsers();
             },
@@ -311,11 +323,11 @@ export class AdminComponent implements OnInit, OnDestroy {
               this.messageService.add({
                 severity: 'error',
                 summary: 'Błąd',
-                detail: 'Nie udało się usunąć użytkownika'
+                detail: 'Nie udało się usunąć użytkownika',
               });
-            }
+            },
           });
-      }
+      },
     });
   }
 
@@ -330,47 +342,59 @@ export class AdminComponent implements OnInit, OnDestroy {
       accept: () => {
         // Implement bulk delete
         // For now, delete one by one
-        const deletePromises = selected.map(user => 
+        const deletePromises = selected.map((user) =>
           this.apiService.delete(`/users/${user.id}`).toPromise()
         );
 
-        Promise.all(deletePromises).then(() => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Sukces',
-            detail: `Usunięto ${selected.length} użytkowników`
+        Promise.all(deletePromises)
+          .then(() => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sukces',
+              detail: `Usunięto ${selected.length} użytkowników`,
+            });
+            this.selectedUsers.set([]);
+            this.loadUsers();
+          })
+          .catch((error) => {
+            console.error('Error deleting users:', error);
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Błąd',
+              detail: 'Nie udało się usunąć wszystkich użytkowników',
+            });
           });
-          this.selectedUsers.set([]);
-          this.loadUsers();
-        }).catch(error => {
-          console.error('Error deleting users:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Błąd',
-            detail: 'Nie udało się usunąć wszystkich użytkowników'
-          });
-        });
-      }
+      },
     });
   }
 
   getRoleLabel(role: UserRole): string {
     switch (role) {
-      case UserRole.STUDENT: return 'Student';
-      case UserRole.TEACHER: return 'Nauczyciel';
-      case UserRole.PARENT: return 'Rodzic';
-      case UserRole.ADMIN: return 'Administrator';
-      default: return 'Nieznany';
+      case UserRole.STUDENT:
+        return 'Student';
+      case UserRole.TEACHER:
+        return 'Nauczyciel';
+      case UserRole.PARENT:
+        return 'Rodzic';
+      case UserRole.ADMIN:
+        return 'Administrator';
+      default:
+        return 'Nieznany';
     }
   }
 
   getRoleSeverity(role: UserRole): 'success' | 'info' | 'warn' | 'danger' {
     switch (role) {
-      case UserRole.STUDENT: return 'info';
-      case UserRole.TEACHER: return 'success';
-      case UserRole.PARENT: return 'warn';
-      case UserRole.ADMIN: return 'danger';
-      default: return 'info';
+      case UserRole.STUDENT:
+        return 'info';
+      case UserRole.TEACHER:
+        return 'success';
+      case UserRole.PARENT:
+        return 'warn';
+      case UserRole.ADMIN:
+        return 'danger';
+      default:
+        return 'info';
     }
   }
 
@@ -381,4 +405,4 @@ export class AdminComponent implements OnInit, OnDestroy {
   refreshData(): void {
     this.loadUsers();
   }
-} 
+}
