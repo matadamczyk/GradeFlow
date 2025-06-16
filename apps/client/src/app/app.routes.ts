@@ -1,3 +1,4 @@
+import { AdminGuard } from './core/guards/admin.guard';
 import { AuthGuard } from './core/guards/auth.guard';
 import { GuestGuard } from './core/guards/guest.guard';
 import { Routes } from '@angular/router';
@@ -29,6 +30,14 @@ export const routes: Routes = [
         (m) => m.DashboardComponent
       ),
     canActivate: [AuthGuard],
+  },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./modules/admin/admin.component').then(
+        (m) => m.AdminComponent
+      ),
+    canActivate: [AuthGuard, AdminGuard],
   },
   {
     path: 'timetable',

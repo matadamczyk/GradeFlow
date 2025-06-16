@@ -1,0 +1,407 @@
+<div class="admin-container">
+  <!-- Header Section -->
+  <div class="admin-header">
+    <div class="header-content">
+      <h1 class="page-title">
+        <i class="pi pi-cog"></i>
+        Panel Administratora
+      </h1>
+      <p class="page-subtitle">
+        Zarządzaj użytkownikami i systemem GradeFlow
+      </p>
+    </div>
+    
+    <div class="header-actions">
+      <p-button
+        label="Dashboard"
+        icon="pi pi-home"
+        [outlined]="true"
+        (onClick)="navigateToDashboard()"
+        class="mr-2"
+      >
+      </p-button>
+      
+      <p-button
+        icon="pi pi-refresh"
+        [text]="true"
+        [rounded]="true"
+        pTooltip="Odśwież dane"
+        (onClick)="refreshData()"
+      >
+      </p-button>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
+  <div class="grid statistics-section">
+    <div class="col-12 md:col-6 lg:col-2">
+      <p-card class="stat-card total-users">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-users"></i>
+          </div>
+          <div class="stat-details">
+            <h3>{{ userStats().totalUsers }}</h3>
+            <p>Wszyscy użytkownicy</p>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-6 lg:col-2">
+      <p-card class="stat-card active-users">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-check-circle"></i>
+          </div>
+          <div class="stat-details">
+            <h3>{{ userStats().activeUsers }}</h3>
+            <p>Aktywni</p>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-6 lg:col-2">
+      <p-card class="stat-card students">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-graduation-cap"></i>
+          </div>
+          <div class="stat-details">
+            <h3>{{ userStats().students }}</h3>
+            <p>Studenci</p>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-6 lg:col-2">
+      <p-card class="stat-card teachers">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-bookmark"></i>
+          </div>
+          <div class="stat-details">
+            <h3>{{ userStats().teachers }}</h3>
+            <p>Nauczyciele</p>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-6 lg:col-2">
+      <p-card class="stat-card parents">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-heart"></i>
+          </div>
+          <div class="stat-details">
+            <h3>{{ userStats().parents }}</h3>
+            <p>Rodzice</p>
+          </div>
+        </div>
+      </p-card>
+    </div>
+
+    <div class="col-12 md:col-6 lg:col-2">
+      <p-card class="stat-card admins">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="pi pi-shield"></i>
+          </div>
+          <div class="stat-details">
+            <h3>{{ userStats().admins }}</h3>
+            <p>Administratorzy</p>
+          </div>
+        </div>
+      </p-card>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="users-section">
+    <p-card>
+      <ng-template pTemplate="header">
+        <div class="card-header">
+          <h3><i class="pi pi-users"></i> Zarządzanie użytkownikami</h3>
+        </div>
+      </ng-template>
+
+      <!-- Toolbar -->
+      <p-toolbar>
+        <div class="p-toolbar-group-start">
+          <p-button
+            label="Nowy użytkownik"
+            icon="pi pi-plus"
+            severity="success"
+            (onClick)="openNewUserDialog()"
+            class="mr-2"
+          >
+          </p-button>
+          
+          <p-button
+            label="Usuń zaznaczone"
+            icon="pi pi-trash"
+            severity="danger"
+            [disabled]="selectedUsers().length === 0"
+            (onClick)="deleteSelectedUsers()"
+          >
+          </p-button>
+        </div>
+
+        <div class="p-toolbar-group-end">
+          <span class="selected-count" *ngIf="selectedUsers().length > 0">
+            Zaznaczono: {{ selectedUsers().length }}
+          </span>
+        </div>
+      </p-toolbar>
+
+      <!-- Loading state -->
+      <div *ngIf="isLoading()" class="loading-container">
+        <p-progressSpinner [style]="{ width: '50px', height: '50px' }"></p-progressSpinner>
+        <p>Ładowanie użytkowników...</p>
+      </div>
+
+      <!-- Users Table -->
+      <p-table
+        #dt
+        *ngIf="!isLoading()"
+        [value]="users()"
+        [(selection)]="selectedUsers"
+        dataKey="id"
+        [rows]="10"
+        [paginator]="true"
+        [globalFilterFields]="['email', 'role']"
+        [tableStyle]="{ 'min-width': '50rem' }"
+        [rowHover]="true"
+        [showCurrentPageReport]="true"
+        currentPageReportTemplate="Pokazuje {first} do {last} z {totalRecords} użytkowników"
+      >
+        <ng-template pTemplate="caption">
+          <div class="table-header">
+                         <span class="p-input-icon-left">
+               <i class="pi pi-search"></i>
+               <input
+                 pInputText
+                 type="text"
+                 placeholder="Szukaj użytkownika..."
+                 (input)="dt.filterGlobal($any($event.target).value, 'contains')"
+               />
+             </span>
+          </div>
+        </ng-template>
+
+        <ng-template pTemplate="header">
+          <tr>
+            <th style="width: 4rem">
+              <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+            </th>
+            <th pSortableColumn="id">
+              ID
+              <p-sortIcon field="id"></p-sortIcon>
+            </th>
+            <th pSortableColumn="email">
+              Email
+              <p-sortIcon field="email"></p-sortIcon>
+            </th>
+            <th pSortableColumn="role">
+              Rola
+              <p-sortIcon field="role"></p-sortIcon>
+            </th>
+            <th>Status</th>
+            <th>Data utworzenia</th>
+            <th>Ostatnie logowanie</th>
+            <th>Akcje</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-user>
+          <tr>
+            <td>
+              <p-tableCheckbox [value]="user"></p-tableCheckbox>
+            </td>
+            <td>
+              <span class="user-id">{{ user.id }}</span>
+            </td>
+            <td>
+              <div class="user-email">
+                <i class="pi pi-envelope mr-2"></i>
+                {{ user.email }}
+              </div>
+            </td>
+            <td>
+              <p-tag
+                [value]="getRoleLabel(user.role)"
+                [severity]="getRoleSeverity(user.role)"
+              ></p-tag>
+            </td>
+            <td>
+              <span class="status-badge" [class.active]="user.isActive !== false">
+                <i class="pi" [class.pi-check-circle]="user.isActive !== false" [class.pi-times-circle]="user.isActive === false"></i>
+                {{ user.isActive !== false ? 'Aktywny' : 'Nieaktywny' }}
+              </span>
+            </td>
+            <td>
+              <span class="date-text">
+                {{ user.createdAt ? (user.createdAt | date:'dd.MM.yyyy') : '-' }}
+              </span>
+            </td>
+            <td>
+              <span class="date-text">
+                {{ user.lastLogin ? (user.lastLogin | date:'dd.MM.yyyy HH:mm') : 'Nigdy' }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <p-button
+                  icon="pi pi-pencil"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="info"
+                  pTooltip="Edytuj"
+                  (onClick)="openEditUserDialog(user)"
+                  class="mr-1"
+                >
+                </p-button>
+                
+                <p-button
+                  icon="pi pi-trash"
+                  [text]="true"
+                  [rounded]="true"
+                  severity="danger"
+                  pTooltip="Usuń"
+                  (onClick)="deleteUser(user)"
+                >
+                </p-button>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="emptymessage">
+          <tr>
+            <td colspan="8" class="text-center">
+              <div class="empty-state">
+                <i class="pi pi-users"></i>
+                <p>Brak użytkowników do wyświetlenia</p>
+              </div>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-card>
+  </div>
+
+  <!-- User Dialog -->
+  <p-dialog
+    [header]="isEditMode() ? 'Edytuj użytkownika' : 'Nowy użytkownik'"
+    [(visible)]="userDialogVisible"
+    [modal]="true"
+    [style]="{ width: '450px' }"
+    [closable]="true"
+    [draggable]="false"
+    [resizable]="false"
+  >
+    <form [formGroup]="userForm" (ngSubmit)="saveUser()">
+      <div class="formgrid grid">
+        <div class="field col-12">
+          <label for="email">Email *</label>
+          <input
+            type="email"
+            id="email"
+            pInputText
+            formControlName="email"
+            placeholder="user@example.com"
+            class="w-full"
+            [class.ng-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+          />
+          <small
+            class="p-error"
+            *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched"
+          >
+            Email jest wymagany i musi być poprawny
+          </small>
+        </div>
+
+        <div class="field col-12" *ngIf="!isEditMode()">
+          <label for="password">Hasło *</label>
+          <input
+            type="password"
+            id="password"
+            pInputText
+            formControlName="password"
+            placeholder="Minimum 6 znaków"
+            class="w-full"
+            [class.ng-invalid]="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+          />
+          <small
+            class="p-error"
+            *ngIf="userForm.get('password')?.invalid && userForm.get('password')?.touched"
+          >
+            Hasło jest wymagane (minimum 6 znaków)
+          </small>
+        </div>
+
+        <div class="field col-12" *ngIf="isEditMode()">
+          <label for="newPassword">Nowe hasło (opcjonalne)</label>
+          <input
+            type="password"
+            id="newPassword"
+            pInputText
+            formControlName="password"
+            placeholder="Zostaw puste aby nie zmieniać"
+            class="w-full"
+          />
+          <small class="p-help">
+            Zostaw puste jeśli nie chcesz zmieniać hasła
+          </small>
+        </div>
+
+        <div class="field col-12">
+          <label for="role">Rola *</label>
+          <p-dropdown
+            id="role"
+            formControlName="role"
+            [options]="roleOptions"
+            placeholder="Wybierz rolę"
+            class="w-full"
+            [class.ng-invalid]="userForm.get('role')?.invalid && userForm.get('role')?.touched"
+          >
+          </p-dropdown>
+          <small
+            class="p-error"
+            *ngIf="userForm.get('role')?.invalid && userForm.get('role')?.touched"
+          >
+            Rola jest wymagana
+          </small>
+        </div>
+      </div>
+    </form>
+
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Anuluj"
+        icon="pi pi-times"
+        [text]="true"
+        (onClick)="hideDialog()"
+        class="mr-2"
+      >
+      </p-button>
+      
+      <p-button
+        [label]="isEditMode() ? 'Zaktualizuj' : 'Utwórz'"
+        icon="pi pi-check"
+        (onClick)="saveUser()"
+        [disabled]="userForm.invalid"
+      >
+      </p-button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Toast Messages -->
+  <p-toast></p-toast>
+
+  <!-- Confirmation Dialog -->
+  <p-confirmDialog></p-confirmDialog>
+</div> 
