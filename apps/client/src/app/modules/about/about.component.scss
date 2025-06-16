@@ -8,9 +8,9 @@
   background: linear-gradient(
     135deg,
     var(--primary-color) 0%,
-    var(--primary-color-text) 100%
+    var(--primary-600) 100%
   );
-  color: white;
+  color: var(--primary-color-text);
   padding: 4rem 2rem;
   text-align: center;
 
@@ -86,7 +86,7 @@
         var(--primary-color) 0%,
         var(--primary-color-text) 100%
       );
-      color: white;
+      color: var(--primary-color-text);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -166,7 +166,7 @@
     var(--primary-color) 0%,
     var(--primary-color-text) 100%
   );
-  color: white;
+  color: var(--primary-color-text);
 
   .p-card-body {
     text-align: center;
@@ -176,7 +176,7 @@
         font-size: 2rem;
         font-weight: 600;
         margin: 0 0 1rem 0;
-        color: white;
+        color: var(--primary-color-text);
       }
 
       p {

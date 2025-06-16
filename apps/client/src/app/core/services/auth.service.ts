@@ -71,19 +71,14 @@ export class AuthService {
   login(credentials: LoginRequest): Observable<AuthUser> {
     console.log('Próba logowania:', credentials.email);
 
-    // Najpierw spróbuj API
     return this.apiService.loginUser(credentials).pipe(
       map((response: any) => {
-        console.log('API response:', response);
-
         // Sprawdź czy dostaliśmy JWT token i dane użytkownika
         if (response && response.token && response.user) {
           const authUser: AuthUser = {
             id: response.user.id,
             email: response.user.email,
             role: response.user.role as UserRole,
-            name: response.user.name || 'User',
-            lastname: response.user.lastname || '',
           };
 
           console.log('Logowanie udane dla użytkownika:', authUser);
@@ -98,36 +93,29 @@ export class AuthService {
           return authUser;
         }
 
-        // Fallback dla starych odpowiedzi
-        if (
-          response === 'Login successful' ||
-          (typeof response === 'string' && response.includes('successful'))
-        ) {
-          throw new Error(
-            'Stary format odpowiedzi - wymagana aktualizacja backend'
-          );
-        }
-
         throw new Error(
           'Nieprawidłowa odpowiedź z API: ' + JSON.stringify(response)
         );
       }),
       catchError((error: any) => {
-        console.warn('API login failed, falling back to mock:', error);
+        console.error('Login failed:', error);
 
-        // Fallback na mock logowanie
-        const user = this.mockUsers.find((u) => u.email === credentials.email);
-        if (user && credentials.password === 'password') {
-          console.log('Fallback - logowanie mock udane:', user);
+        // Usuń ewentualne stare dane
+        localStorage.removeItem('currentUser');
+        localStorage.removeItem('token');
 
-          localStorage.setItem('currentUser', JSON.stringify(user));
-          localStorage.setItem('token', 'mock-jwt-token');
-          this.currentUserSubject.next(user);
-
-          return of(user);
+        if (error.status === 401) {
+          return throwError(() => new Error('Nieprawidłowy email lub hasło'));
         }
 
-        return throwError(() => new Error('Nieprawidłowe dane logowania'));
+        if (error.status === 0) {
+          return throwError(() => new Error('Brak połączenia z serwerem'));
+        }
+
+        return throwError(
+          () =>
+            new Error('Błąd logowania: ' + (error.message || 'Nieznany błąd'))
+        );
       })
     );
   }

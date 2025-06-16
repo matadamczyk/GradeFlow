@@ -864,48 +864,39 @@
           }
         }
 
-        &.danger-panel {
-          border-color: var(--red-200);
+        &.info-panel {
+          border-color: var(--blue-200);
 
-          .danger-content {
-            .danger-warning {
-              display: flex;
-              align-items: flex-start;
-              gap: 1rem;
-              padding: 1rem;
-              background: rgba(var(--red-500-rgb), 0.1);
-              border: 1px solid rgba(var(--red-500-rgb), 0.2);
-              border-radius: 8px;
-              margin-bottom: 1.5rem;
+          .info-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: rgba(var(--blue-500-rgb), 0.05);
+            border: 1px solid rgba(var(--blue-500-rgb), 0.15);
+            border-radius: 8px;
 
-              i {
-                color: var(--red-500);
-                font-size: 1.25rem;
-                flex-shrink: 0;
-                margin-top: 0.125rem;
-              }
-
-              p {
-                margin: 0;
-                font-size: 0.875rem;
-                color: var(--text-color);
-                line-height: 1.5;
-              }
+            > i {
+              color: var(--blue-500);
+              font-size: 1.25rem;
+              flex-shrink: 0;
+              margin-top: 0.125rem;
             }
 
-            .danger-actions {
-              text-align: center;
+            .info-text {
+              p {
+                margin: 0 0 1rem 0;
+                font-size: 0.875rem;
+                color: var(--text-color);
+                line-height: 1.6;
 
-              .delete-account-btn {
-                padding: 0.75rem 2rem !important;
-                font-size: 0.875rem !important;
-                font-weight: 600 !important;
-                border-radius: 8px !important;
-                transition: all 0.3s ease !important;
+                &:last-child {
+                  margin-bottom: 0;
+                }
 
-                &:hover {
-                  transform: translateY(-1px) !important;
-                  box-shadow: 0 4px 12px rgba(var(--red-500-rgb), 0.3) !important;
+                strong {
+                  color: var(--text-color-secondary);
+                  font-weight: 600;
                 }
               }
             }

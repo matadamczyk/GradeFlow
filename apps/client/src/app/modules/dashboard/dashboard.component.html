@@ -4,7 +4,7 @@
     <div class="welcome-section">
       <h1 class="page-title">
         <i class="pi pi-home"></i>
-        {{ roleGreeting() }}!
+        {{ nameGreeting() }}!
       </h1>
       <p class="page-subtitle" *ngIf="isStudent()">
         Witaj w swoim panelu GradeFlow
@@ -539,12 +539,18 @@
                     let activity of dashboardData()?.adminData?.recentActivity
                   "
                 >
-                  <div class="activity-time">{{ activity.time }}</div>
+                  <div
+                    class="activity-icon"
+                    [ngClass]="'severity-' + (activity.severity || 'info')"
+                  >
+                    <i class="pi" [ngClass]="activity.icon"></i>
+                  </div>
                   <div class="activity-details">
                     <div class="activity-action">{{ activity.action }}</div>
                     <div class="activity-description">
                       {{ activity.user || activity.details }}
                     </div>
+                    <div class="activity-time">{{ activity.time }}</div>
                   </div>
                 </div>
               </div>
@@ -993,6 +999,7 @@
                 icon="pi pi-cog"
                 [outlined]="true"
                 styleClass="w-full mb-2"
+                (onClick)="navigateToAdmin()"
               >
               </p-button>
 
@@ -1001,6 +1008,7 @@
                 icon="pi pi-users"
                 [outlined]="true"
                 styleClass="w-full mb-2"
+                (onClick)="navigateToAdmin()"
               >
               </p-button>
 

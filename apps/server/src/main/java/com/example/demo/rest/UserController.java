@@ -6,6 +6,7 @@ import com.example.demo.entity.User;
 import com.example.demo.security.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -71,6 +72,7 @@ public class UserController {
   }
 
   // CREATE
+  @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public User addUser(@RequestBody User user) {
     user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -78,12 +80,14 @@ public class UserController {
   }
 
   // READ ALL
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping
   public List<User> getAllUsers() {
     return userRepository.findAll();
   }
 
   // READ ONE
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/{id}")
   public ResponseEntity<User> getUserById(@PathVariable int id) {
     return userRepository.findById(id)
@@ -92,6 +96,7 @@ public class UserController {
   }
 
   // UPDATE
+  @PreAuthorize("hasRole('ADMIN')")
   @PutMapping("/{id}")
   public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User userDetails) {
     return userRepository.findById(id)
@@ -105,6 +110,7 @@ public class UserController {
   }
 
   // DELETE
+  @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteUser(@PathVariable int id) {
     if (!userRepository.existsById(id)) {
