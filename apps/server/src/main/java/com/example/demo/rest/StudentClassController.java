@@ -9,6 +9,7 @@ import com.example.demo.entity.*;
 import com.example.demo.entity.StudentClass;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -45,6 +46,7 @@ public class StudentClassController {
     return ResponseEntity.ok(studentClassRepository.findAll());
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/{classId}")
   public ResponseEntity<StudentClass> getStudentClass(@PathVariable Integer classId){
     StudentClass studentClass = studentClassRepository.findById(classId)
@@ -53,6 +55,7 @@ public class StudentClassController {
     return ResponseEntity.ok(studentClass);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/delete/{classId}")
   public ResponseEntity<?> deleteClass(@PathVariable Integer classId){
     StudentClass studentClass = studentClassRepository.findById(classId)
@@ -67,6 +70,7 @@ public class StudentClassController {
     return ResponseEntity.ok(studentClass);
   }
 
+  @PreAuthorize("hasRole('ADMIN')")
   @PutMapping("/update/{classId}")
   public ResponseEntity<?> updateClass(@PathVariable Integer classId, @RequestBody StudentClassRequest request){
     StudentClass studentClass = studentClassRepository.findById(classId)
