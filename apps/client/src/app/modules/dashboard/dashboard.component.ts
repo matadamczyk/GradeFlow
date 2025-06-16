@@ -6,6 +6,7 @@ import {
 } from '../../core/services';
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 import { Observable, Subject, forkJoin, of, takeUntil } from 'rxjs';
+import { catchError, delay, map } from 'rxjs/operators';
 
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
@@ -20,7 +21,6 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { UserRole } from '../../core/models/enums';
-import { delay } from 'rxjs/operators';
 
 interface DashboardData {
   recentGrades: any[];
@@ -175,6 +175,172 @@ export class DashboardComponent implements OnInit, OnDestroy {
         console.error('❌ API connection failed:', error);
       },
     });
+  }
+
+  private calculateSystemLoad(data: any): number {
+    // Oblicz obciążenie systemu na podstawie rzeczywistych danych
+    const totalUsers = data.users.length;
+    const activeUsers = data.users.filter((u: any) => u.isActive !== false).length;
+    const totalStudents = data.students.length;
+    const totalTeachers = data.teachers.length;
+    const totalGrades = data.grades?.length || 0;
+    
+    // Bazowe obciążenie na podstawie liczby użytkowników (0-40%)
+    const userLoad = Math.min((totalUsers / 100) * 40, 40);
+    
+    // Obciążenie na podstawie aktywności (stosunek aktywnych do wszystkich) (0-30%)
+    const activityLoad = totalUsers > 0 ? (activeUsers / totalUsers) * 30 : 0;
+    
+    // Obciążenie na podstawie ilości danych (ocen) (0-20%)
+    const dataLoad = Math.min((totalGrades / 1000) * 20, 20);
+    
+    // Losowy czynnik dla symulacji zmiennego obciążenia (0-10%)
+    const randomFactor = Math.random() * 10;
+    
+    const totalLoad = Math.round(userLoad + activityLoad + dataLoad + randomFactor);
+    return Math.min(totalLoad, 100);
+  }
+
+  private generateRecentActivity(data: any): any[] {
+    const activities: any[] = [];
+    const now = new Date();
+    
+    // Dodaj aktywność dla nowych użytkowników
+    const recentUsers = data.users
+      .filter((u: any) => {
+        if (!u.createdAt) return false;
+        const userDate = new Date(u.createdAt);
+        const threeDaysAgo = new Date(now.getTime() - (3 * 24 * 60 * 60 * 1000));
+        return userDate > threeDaysAgo;
+      })
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 3);
+
+    recentUsers.forEach((user: any) => {
+      const createdDate = new Date(user.createdAt);
+      activities.push({
+        action: 'Nowa rejestracja',
+        user: `${user.email} (${user.role})`,
+        time: this.formatActivityTime(createdDate),
+        icon: 'pi-user-plus',
+        severity: 'success'
+      });
+    });
+
+    // Dodaj aktywność dla ostatnich ocen
+    if (data.grades && data.grades.length > 0) {
+      const recentGrades = data.grades
+        .filter((g: any) => {
+          if (!g.date) return false;
+          const gradeDate = new Date(g.date);
+          const oneDayAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+          return gradeDate > oneDayAgo;
+        })
+        .slice(0, 2);
+
+      recentGrades.forEach((grade: any) => {
+        const gradeDate = new Date(grade.date);
+        activities.push({
+          action: 'Nowa ocena',
+          user: `Ocena ${grade.grade_value} dodana`,
+          time: this.formatActivityTime(gradeDate),
+          icon: 'pi-star',
+          severity: 'info'
+        });
+      });
+    }
+
+    // Aktywność systemowa
+    activities.push({
+      action: 'System aktywny',
+      user: `${data.users.filter((u: any) => u.isActive !== false).length} aktywnych użytkowników`,
+      time: this.formatActivityTime(now),
+      icon: 'pi-check-circle',
+      severity: 'info'
+    });
+
+    // Sortuj według czasu i zwróć maksymalnie 5 elementów
+    return activities
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+      .slice(0, 5);
+  }
+
+  private generateSystemAlerts(systemStats: any, data: any): any[] {
+    const alerts: any[] = [];
+
+    // Alert dotyczący obciążenia systemu
+    if (systemStats.systemLoad > 80) {
+      alerts.push({
+        type: 'error',
+        message: `Wysokie obciążenie systemu: ${systemStats.systemLoad}%`,
+        priority: 'high',
+        icon: 'pi-exclamation-triangle'
+      });
+    } else if (systemStats.systemLoad > 60) {
+      alerts.push({
+        type: 'warn',
+        message: `Średnie obciążenie systemu: ${systemStats.systemLoad}%`,
+        priority: 'medium',
+        icon: 'pi-info-circle'
+      });
+    }
+
+    // Alert dotyczący nowych rejestracji
+    if (systemStats.newRegistrations > 10) {
+      alerts.push({
+        type: 'success',
+        message: `${systemStats.newRegistrations} nowych rejestracji w tym tygodniu`,
+        priority: 'low',
+        icon: 'pi-users'
+      });
+    }
+
+    // Alert dotyczący nieaktywnych użytkowników
+    const inactiveUsers = systemStats.totalUsers - systemStats.activeUsers;
+    if (inactiveUsers > systemStats.totalUsers * 0.3) {
+      alerts.push({
+        type: 'warn',
+        message: `${inactiveUsers} nieaktywnych użytkowników w systemie`,
+        priority: 'medium',
+        icon: 'pi-user-minus'
+      });
+    }
+
+    // Podstawowy alert informacyjny
+    alerts.push({
+      type: 'info',
+      message: `System zarządza ${systemStats.totalUsers} użytkownikami`,
+      priority: 'low',
+      icon: 'pi-info'
+    });
+
+    return alerts.slice(0, 3); // Maksymalnie 3 alerty
+  }
+
+  private formatActivityTime(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffMins < 1) {
+      return 'Teraz';
+    } else if (diffMins < 60) {
+      return `${diffMins} min temu`;
+    } else if (diffHours < 24) {
+      return `${diffHours} godz. temu`;
+    } else if (diffDays < 7) {
+      return `${diffDays} dni temu`;
+    } else {
+      return date.toLocaleDateString('pl-PL', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    }
   }
 
   ngOnDestroy(): void {
@@ -468,6 +634,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/account']);
   }
 
+  navigateToAdmin(): void {
+    this.router.navigate(['/admin']);
+  }
+
   refreshDashboard(): void {
     const user = this.currentUser();
     if (user) {
@@ -529,26 +699,55 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadAdminData(userId: number): Observable<any> {
-    // Mock data for admin
-    return of({
-      systemStats: {
-        totalUsers: 1250,
-        activeUsers: 1100,
-        newRegistrations: 15,
-        systemLoad: 65,
-      },
-      recentActivity: [
-        { action: 'Nowy użytkownik', user: 'Jan Kowalski', time: '10:30' },
-        { action: 'Błąd systemu', details: 'Database timeout', time: '09:15' },
-      ],
-      alerts: [
-        {
-          type: 'warning',
-          message: 'Wysokie obciążenie serwera',
-          priority: 'medium',
-        },
-        { type: 'info', message: 'Zaplanowana konserwacja', priority: 'low' },
-      ],
-    }).pipe(delay(500));
+    // Pobierz rzeczywiste dane dla administratora
+    return forkJoin({
+      users: this.apiService.getAllUsers(),
+      students: this.apiService.getAllStudents(),
+      teachers: this.apiService.getAllTeachers(),
+      grades: this.apiService.getAllGrades()
+    }).pipe(
+      map((data: any) => {
+        const systemStats = {
+          totalUsers: data.users.length,
+          activeUsers: data.users.filter((u: any) => u.isActive !== false).length,
+          newRegistrations: data.users.filter((u: any) => {
+            if (!u.createdAt) return false;
+            const userDate = new Date(u.createdAt);
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            return userDate > weekAgo;
+          }).length,
+          systemLoad: this.calculateSystemLoad(data),
+        };
+
+        const recentActivity = this.generateRecentActivity(data);
+
+        const alerts = this.generateSystemAlerts(systemStats, data);
+
+        return { systemStats, recentActivity, alerts };
+      }),
+             catchError((error: any) => {
+        console.error('Error loading admin data:', error);
+        // Fallback na mock data w przypadku błędu
+        return of({
+          systemStats: {
+            totalUsers: 0,
+            activeUsers: 0,
+            newRegistrations: 0,
+            systemLoad: 0,
+          },
+          recentActivity: [
+            { action: 'Błąd ładowania', details: 'Problem z API', time: 'Teraz' },
+          ],
+          alerts: [
+            {
+              type: 'warning',
+              message: 'Problem z połączeniem API',
+              priority: 'high',
+            },
+          ],
+        });
+      })
+    );
   }
 }
