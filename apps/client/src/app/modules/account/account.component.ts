@@ -6,8 +6,6 @@ import {
   UserProfile,
 } from '../../core/services/account.service';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-// PrimeNG Services
-import { ConfirmationService, MessageService } from 'primeng/api';
 import {
   FormBuilder,
   FormGroup,
@@ -23,11 +21,12 @@ import { ButtonModule } from 'primeng/button';
 // PrimeNG Imports
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
-import { ConfirmDialogModule } from 'primeng/confirmdialog';
 import { DividerModule } from 'primeng/divider';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextarea } from 'primeng/inputtextarea';
+// PrimeNG Services
+import { MessageService } from 'primeng/api';
 import { PanelModule } from 'primeng/panel';
 import { PasswordModule } from 'primeng/password';
 import { ProgressBarModule } from 'primeng/progressbar';
@@ -56,7 +55,6 @@ import { UserRole } from '../../core/models/enums';
     DividerModule,
     SkeletonModule,
     TooltipModule,
-    ConfirmDialogModule,
     ToastModule,
     ProgressBarModule,
     TabViewModule,
@@ -64,7 +62,7 @@ import { UserRole } from '../../core/models/enums';
   ],
   templateUrl: './account.component.html',
   styleUrl: './account.component.scss',
-  providers: [ConfirmationService, MessageService],
+  providers: [MessageService],
 })
 export class AccountComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -84,7 +82,6 @@ export class AccountComponent implements OnInit, OnDestroy {
     private accountService: AccountService,
     private authService: AuthService,
     private fb: FormBuilder,
-    private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {
     this.profileForm = this.fb.group({
@@ -232,39 +229,6 @@ export class AccountComponent implements OnInit, OnDestroy {
     } else {
       this.markFormGroupTouched(this.passwordForm);
     }
-  }
-
-  onDeleteAccount(): void {
-    this.confirmationService.confirm({
-      message:
-        'Czy na pewno chcesz usunąć swoje konto? Ta operacja jest nieodwracalna.',
-      header: 'Potwierdzenie usunięcia konta',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Usuń',
-      rejectLabel: 'Anuluj',
-      accept: () => {
-        this.accountService
-          .deleteAccount()
-          .pipe(takeUntil(this.destroy$))
-          .subscribe({
-            next: () => {
-              this.messageService.add({
-                severity: 'success',
-                summary: 'Sukces',
-                detail: 'Konto zostało usunięte',
-              });
-              this.authService.logout();
-            },
-            error: (error) => {
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Błąd',
-                detail: 'Nie udało się usunąć konta',
-              });
-            },
-          });
-      },
-    });
   }
 
   onRefreshData(): void {

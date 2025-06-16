@@ -1,12 +1,11 @@
 import {
+  ApiService,
   AuthService,
   GradesService,
   TimetableService,
-  ApiService,
 } from '../../core/services';
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 import { Observable, Subject, forkJoin, of, takeUntil } from 'rxjs';
-import { delay } from 'rxjs/operators';
 
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
@@ -21,6 +20,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
 import { UserRole } from '../../core/models/enums';
+import { delay } from 'rxjs/operators';
 
 interface DashboardData {
   recentGrades: any[];
@@ -72,6 +72,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   isLoading = signal<boolean>(true);
   currentUser = signal<any>(null);
+  currentStudent = signal<any>(null);
   dashboardData = signal<DashboardData | null>(null);
 
   gradesTrendChart = signal<any>(null);
@@ -80,7 +81,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
   userRole = computed(() => this.currentUser()?.role);
   userName = computed(() => {
     const user = this.currentUser();
-    return user ? `${user.name} ${user.lastname}` : 'Użytkownik';
+    const student = this.currentStudent();
+    
+    if (user?.role === UserRole.STUDENT && student) {
+      return `${student.name} ${student.lastname}`;
+    }
+    
+    return user ? `${user.email}` : 'Użytkownik';
   });
 
   greeting = computed(() => {
@@ -90,34 +97,46 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return 'Dobry wieczór';
   });
 
-  // Role-specific computed properties
   isStudent = computed(() => this.userRole() === UserRole.STUDENT);
   isTeacher = computed(() => this.userRole() === UserRole.TEACHER);
   isParent = computed(() => this.userRole() === UserRole.PARENT);
   isAdmin = computed(() => this.userRole() === UserRole.ADMIN);
 
-  // Role-specific greetings
   roleGreeting = computed(() => {
     const role = this.userRole();
     const greeting = this.greeting();
+    const user = this.currentUser();
+    const student = this.currentStudent();
 
     switch (role) {
+      case UserRole.STUDENT:
+        if (student) {
+          return `${greeting}, ${student.name}`;
+        }
+        return `${greeting}, ${user?.email}`;
       case UserRole.TEACHER:
-        return `${greeting}, ${
-          this.currentUser()?.lastname
-            ? 'Pani/Panu ' + this.currentUser()?.lastname
-            : this.userName()
-        }`;
+        return `${greeting}, ${user?.email}`;
       case UserRole.PARENT:
-        return `${greeting}, ${this.userName()}`;
+        return `${greeting}, ${user?.email}`;
       case UserRole.ADMIN:
-        return `${greeting}, ${this.userName()}`;
+        return `${greeting}, ${user?.email}`;
       default:
-        return `${greeting}, ${this.userName()}`;
+        return `${greeting}, ${user?.email}`;
     }
   });
 
-  // Computed properties for template
+  nameGreeting = computed(() => {
+    const user = this.currentUser();
+    const student = this.currentStudent();
+    const greeting = this.greeting();
+    
+    if (user?.role === UserRole.STUDENT && student) {
+      return `${greeting}, ${student.name} ${student.lastname}`;
+    }
+    
+    return `${greeting}, ${user?.email}`;
+  });
+
   unreadMessagesCount = computed(() => {
     const messages = this.dashboardData()?.parentData?.messages || [];
     return messages.filter((m) => m.unread).length;
@@ -134,7 +153,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Test API communication
     this.testApiConnection();
 
     this.authService.currentUser$
@@ -168,11 +186,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     const userRole = this.userRole();
 
-    // For students, first get student data, then proceed
     if (userRole === UserRole.STUDENT) {
       this.apiService.getStudentByUserId(userId).subscribe({
         next: (student: any) => {
           console.log('Dashboard: Found student for user:', student);
+          this.currentStudent.set(student);
           this.loadStudentDashboardData(userId, student.id);
         },
         error: (error) => {

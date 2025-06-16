@@ -82,8 +82,6 @@ export class AuthService {
             id: response.user.id,
             email: response.user.email,
             role: response.user.role as UserRole,
-            name: response.user.name || 'User',
-            lastname: response.user.lastname || '',
           };
 
           console.log('Logowanie udane dla użytkownika:', authUser);

@@ -138,14 +138,14 @@ export class AccountService {
     }
 
     return this.apiService.getUserById(currentUser.id).pipe(
-      map((apiUser: any) => {
-        // Map API response to UserProfile
-        const profile: UserProfile = {
+      switchMap((apiUser: any) => {
+        // Podstawowe dane z User
+        const baseProfile: UserProfile = {
           id: apiUser.id,
           email: apiUser.email,
           role: apiUser.role as UserRole,
-          name: apiUser.name || '',
-          lastname: apiUser.lastname || '',
+          name: '', // Zostanie uzupełnione z odpowiedniej tabeli
+          lastname: '', // Zostanie uzupełnione z odpowiedniej tabeli
           phone: apiUser.phone || '',
           address: apiUser.address || '',
           dateOfBirth: apiUser.dateOfBirth || '',
@@ -156,7 +156,34 @@ export class AccountService {
             apiUser.avatar ||
             `https://ui-avatars.com/api/?name=${apiUser.email}&background=random`,
         };
-        return profile;
+
+        // Pobierz name i lastname z odpowiedniej tabeli w zależności od roli
+        if (apiUser.role === 'STUDENT') {
+          return this.apiService.getStudentByUserId(apiUser.id).pipe(
+            map((student: any) => ({
+              ...baseProfile,
+              name: student.name || '',
+              lastname: student.lastname || '',
+              studentClass: student.studentClass?.name || '',
+              studentNumber: student.id?.toString() || '',
+            })),
+            catchError((error) => {
+              console.warn('Error loading student data:', error);
+              return of(baseProfile);
+            })
+          );
+        }
+
+        // TODO: Dodaj podobną logikę dla TEACHER i PARENT gdy będą dostępne endpointy
+        // if (apiUser.role === 'TEACHER') {
+        //   return this.apiService.getTeacherByUserId(apiUser.id).pipe(...)
+        // }
+        // if (apiUser.role === 'PARENT') {
+        //   return this.apiService.getParentByUserId(apiUser.id).pipe(...)
+        // }
+
+        // Dla innych ról zwróć podstawowy profil
+        return of(baseProfile);
       }),
       catchError((error: any) => {
         console.warn('API error, falling back to mock data:', error);
