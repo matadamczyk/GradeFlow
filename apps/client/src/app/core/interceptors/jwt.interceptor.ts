@@ -20,30 +20,39 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
     req.url.includes('/api/users/login') ||
     req.url.includes('/api/users/register');
 
-  console.log('JWT Interceptor:', {
+  const token = authService.getToken();
+  
+  console.log('JWT Interceptor DEBUG:', {
     url: req.url,
     isAuthUrl,
     isLoggedIn: authService.isLoggedIn(),
-    hasToken: !!authService.getToken(),
+    hasToken: !!token,
+    tokenValue: token ? `${token.substring(0, 20)}...` : 'null',
+    tokenLength: token ? token.length : 0,
+    currentUser: authService.getCurrentUser()
   });
 
   if (!isAuthUrl && authService.isLoggedIn()) {
-    const token = authService.getToken();
-    console.log(
-      'Adding JWT token to request:',
-      token ? 'Token present' : 'No token'
-    );
+    console.log('Adding JWT token to request. Token details:', {
+      exists: !!token,
+      length: token ? token.length : 0,
+      firstPart: token ? token.substring(0, 50) : 'null'
+    });
+    
     if (token) {
       const authReq = req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('Authorization header added to request');
+      console.log('Authorization header set:', authReq.headers.get('Authorization')?.substring(0, 30) + '...');
       return next(authReq);
+    } else {
+      console.error('No token available despite being logged in!');
     }
   }
 
+  console.log('Request sent without token');
   return next(req);
 };
 
