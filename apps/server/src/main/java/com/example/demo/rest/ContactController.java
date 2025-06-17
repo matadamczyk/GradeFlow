@@ -2,6 +2,7 @@ package com.example.demo.rest;
 
 import com.example.demo.entity.Role;
 import com.example.demo.entity.User;
+import com.example.demo.dao.GradeRepository;
 import com.example.demo.dao.UserRepository;
 import com.example.demo.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,9 @@ import java.util.UUID;
 @RequestMapping("/api/contact")
 @RestController
 public class ContactController {
-
+    @Autowired
+    private UserRepository userRepository;
     private final EmailService emailService;
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -46,7 +47,12 @@ public class ContactController {
             user.setPassword(passwordEncoder.encode(generatedPassword));
             user.setRole(Role.STUDENT);
 
-            userRepository.save(user);
+            try {
+                userRepository.save(user);
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Failed to save user: " + e.getMessage());
+            }
 
             emailService.sendEmail(email, email, generatedPassword);
 
