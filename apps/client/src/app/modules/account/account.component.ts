@@ -30,6 +30,7 @@ import { MessageService } from 'primeng/api';
 import { PanelModule } from 'primeng/panel';
 import { PasswordModule } from 'primeng/password';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { RouterModule } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TabViewModule } from 'primeng/tabview';
 import { TagModule } from 'primeng/tag';
@@ -43,6 +44,7 @@ import { UserRole } from '../../core/models/enums';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterModule,
     CardModule,
     ButtonModule,
     InputTextModule,
@@ -68,7 +70,6 @@ export class AccountComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   userProfile: UserProfile | null = null;
-  statistics: any = null;
   isLoading = true;
   isUpdatingProfile = false;
   isChangingPassword = false;
@@ -132,19 +133,6 @@ export class AccountComponent implements OnInit, OnDestroy {
             summary: 'Błąd',
             detail: 'Nie udało się załadować profilu użytkownika',
           });
-        },
-      });
-
-    // Ładuj statystyki
-    this.accountService
-      .getAccountStatistics()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (stats) => {
-          this.statistics = stats;
-        },
-        error: (error) => {
-          console.error('Błąd ładowania statystyk:', error);
         },
       });
   }

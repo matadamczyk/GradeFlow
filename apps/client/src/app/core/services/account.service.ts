@@ -16,6 +16,7 @@ export interface UserProfile extends AuthUser {
   // Pola specyficzne dla różnych ról
   studentClass?: string;
   studentNumber?: string;
+  tutorName?: string;
   teacherSubjects?: string[];
   parentChildren?: string[];
   lastLogin?: string;
@@ -56,6 +57,7 @@ export class AccountService {
       bio: 'Uczeń klasy 3A, interesuje się matematyką i informatyką.',
       studentClass: '3A',
       studentNumber: '15',
+      tutorName: 'Jan Kowalski',
       lastLogin: '2024-01-15T10:30:00',
       accountCreated: '2023-09-01T08:00:00',
       avatar:
@@ -164,8 +166,10 @@ export class AccountService {
               ...baseProfile,
               name: student.name || '',
               lastname: student.lastname || '',
-              studentClass: student.studentClass?.name || '',
+              studentClass: student.studentClass?.className || '',
               studentNumber: student.id?.toString() || '',
+              tutorName: student.studentClass?.tutor ? 
+                `${student.studentClass.tutor.name} ${student.studentClass.tutor.lastname}` : '',
             })),
             catchError((error) => {
               console.warn('Error loading student data:', error);
