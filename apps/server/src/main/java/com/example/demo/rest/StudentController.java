@@ -48,7 +48,7 @@ public class StudentController {
     return ResponseEntity.ok(studentRepository.findAll());
   }
 
-  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER') or hasRole('STUDENT') or hasRole('PARENT')")
   @GetMapping("/studentClass/{studentClassId}")
   public ResponseEntity<List<Student>> getStudentsFromStudentClass(@PathVariable Integer studentClassId){
     StudentClass studentClass = studentClassRepository.findById(studentClassId)
@@ -62,8 +62,8 @@ public class StudentController {
   public ResponseEntity<Student> getStudentByUserId(@PathVariable Integer userId){
     User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    // STUDENT może zobaczyć tylko swoje dane
-    if (!(currentUser.getRole().name().equals("STUDENT") && currentUser.getId().equals(userId))) {
+    // STUDENT może zobaczyć tylko swoje dane, inne role mogą zobaczyć wszystkie
+    if (currentUser.getRole().name().equals("STUDENT") && !currentUser.getId().equals(userId)) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 

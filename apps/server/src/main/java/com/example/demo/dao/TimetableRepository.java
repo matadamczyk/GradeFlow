@@ -1,6 +1,7 @@
 package com.example.demo.dao;
 
 import com.example.demo.entity.StudentClass;
+import com.example.demo.entity.Teacher;
 import com.example.demo.entity.Timetable;
 import com.example.demo.entity.WorkDay;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,4 +16,6 @@ public interface TimetableRepository extends JpaRepository<Timetable, Integer> {
     
     @Query("SELECT t FROM Timetable t WHERE t.teacherSubject.teacher.id = :teacherId")
     List<Timetable> findByTeacherId(@Param("teacherId") Integer teacherId);
+    
+    List<Timetable> findByTeacherSubjectTeacher(Teacher teacher);
 }

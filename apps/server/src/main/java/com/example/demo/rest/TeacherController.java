@@ -4,12 +4,15 @@ import com.example.demo.dao.StudentClassRepository;
 import com.example.demo.dao.StudentRepository;
 import com.example.demo.dao.TeacherRepository;
 import com.example.demo.dao.TeacherSubjectRepository;
+import com.example.demo.dao.TimetableRepository;
 import com.example.demo.dto.StudentClassRequest;
 import com.example.demo.dto.StudentRequest;
 import com.example.demo.dto.TeacherRequest;
 import com.example.demo.entity.Student;
 import com.example.demo.entity.StudentClass;
 import com.example.demo.entity.Teacher;
+import com.example.demo.entity.TeacherSubject;
+import com.example.demo.entity.Timetable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/teachers")
@@ -29,6 +33,8 @@ public class TeacherController {
   private StudentClassRepository studentClassRepository;
   @Autowired
   private TeacherSubjectRepository teacherSubjectRepository;
+  @Autowired
+  private TimetableRepository timetableRepository;
 
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
@@ -52,6 +58,34 @@ public class TeacherController {
     List<Teacher> teachers = teacherRepository.findTeachersByClassId(studentClassId);
 
     return ResponseEntity.ok(teachers);
+  }
+
+  // Get classes taught by a teacher
+  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+  @GetMapping("/{teacherId}/classes")
+  public ResponseEntity<List<StudentClass>> getTeacherClasses(@PathVariable Integer teacherId) {
+    Teacher teacher = teacherRepository.findById(teacherId)
+        .orElseThrow(() -> new IllegalArgumentException("Invalid teacher ID"));
+
+    // Get classes from timetables where this teacher teaches
+    List<Timetable> timetables = timetableRepository.findByTeacherSubjectTeacher(teacher);
+    List<StudentClass> classes = timetables.stream()
+        .map(Timetable::getStudentClass)
+        .distinct()
+        .collect(Collectors.toList());
+
+    return ResponseEntity.ok(classes);
+  }
+
+  // Get subjects taught by a teacher
+  @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
+  @GetMapping("/{teacherId}/subjects")
+  public ResponseEntity<List<TeacherSubject>> getTeacherSubjects(@PathVariable Integer teacherId) {
+    Teacher teacher = teacherRepository.findById(teacherId)
+        .orElseThrow(() -> new IllegalArgumentException("Invalid teacher ID"));
+
+    List<TeacherSubject> teacherSubjects = teacherSubjectRepository.findByTeacher(teacher);
+    return ResponseEntity.ok(teacherSubjects);
   }
 
   //Usuwa nauczyciela pod warunkiem ze nie jest wychowawca klasy, jesli nei jest to usuwa takze polaczenia w teacherSubject
