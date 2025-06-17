@@ -53,12 +53,10 @@ export class AuthService {
   ];
 
   constructor(private apiService: ApiService) {
-    // Sprawdź czy użytkownik jest zalogowany (localStorage)
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
       try {
         const user = JSON.parse(savedUser);
-        console.log('Przywracam użytkownika z localStorage:', user);
         this.currentUserSubject.next(user);
       } catch (error) {
         console.error('Błąd parsowania użytkownika z localStorage:', error);
@@ -69,11 +67,8 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<AuthUser> {
-    console.log('Próba logowania:', credentials.email);
-
     return this.apiService.loginUser(credentials).pipe(
       map((response: any) => {
-        // Sprawdź czy dostaliśmy JWT token i dane użytkownika
         if (response && response.token && response.user) {
           const authUser: AuthUser = {
             id: response.user.id,
@@ -81,13 +76,9 @@ export class AuthService {
             role: response.user.role as UserRole,
           };
 
-          console.log('Logowanie udane dla użytkownika:', authUser);
-
-          // Zapisz token i dane użytkownika w localStorage
           localStorage.setItem('currentUser', JSON.stringify(authUser));
           localStorage.setItem('token', response.token);
 
-          // Aktualizuj stan
           this.currentUserSubject.next(authUser);
 
           return authUser;
@@ -100,7 +91,6 @@ export class AuthService {
       catchError((error: any) => {
         console.error('Login failed:', error);
 
-        // Usuń ewentualne stare dane
         localStorage.removeItem('currentUser');
         localStorage.removeItem('token');
 
@@ -121,11 +111,9 @@ export class AuthService {
   }
 
   logout(): void {
-    console.log('Wylogowywanie użytkownika');
     localStorage.removeItem('currentUser');
     localStorage.removeItem('token');
     this.currentUserSubject.next(null);
-    console.log('Stan po wylogowaniu - isLoggedIn:', this.isLoggedIn());
   }
 
   getCurrentUser(): AuthUser | null {
@@ -134,12 +122,6 @@ export class AuthService {
 
   isLoggedIn(): boolean {
     const isLoggedIn = this.currentUserSubject.value !== null;
-    console.log(
-      'Sprawdzanie stanu logowania:',
-      isLoggedIn,
-      'User:',
-      this.currentUserSubject.value
-    );
     return isLoggedIn;
   }
 
@@ -150,16 +132,10 @@ export class AuthService {
 
   getToken(): string | null {
     const token = localStorage.getItem('token');
-    console.log(
-      'getToken() called:',
-      token ? 'Token exists' : 'No token in localStorage'
-    );
     return token;
   }
 
-  // Mock registration (dla przyszłego użycia)
   register(userData: any): Observable<AuthUser> {
-    // Symulacja rejestracji
     return throwError(
       () => new Error('Rejestracja nie jest jeszcze dostępna')
     ).pipe(delay(1000));

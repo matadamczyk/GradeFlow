@@ -80,17 +80,21 @@
               </div>
               <div class="stat-content">
                 <span class="stat-label">Członek od</span>
-                <span class="stat-value">{{ formatDateOnly(userProfile.accountCreated!) }}</span>
+                <span class="stat-value">{{
+                  formatDateOnly(userProfile.accountCreated!)
+                }}</span>
               </div>
             </div>
-            
+
             <div class="stat-item" *ngIf="userProfile.lastLogin">
               <div class="stat-icon">
                 <i class="pi pi-clock"></i>
               </div>
               <div class="stat-content">
                 <span class="stat-label">Ostatnie logowanie</span>
-                <span class="stat-value">{{ formatDate(userProfile.lastLogin) }}</span>
+                <span class="stat-value">{{
+                  formatDate(userProfile.lastLogin)
+                }}</span>
               </div>
             </div>
           </div>
@@ -135,24 +139,37 @@
                           <h4>Dane kontaktowe</h4>
                         </div>
                       </ng-template>
-                      
+
                       <div class="info-items">
                         <div class="info-item" *ngIf="userProfile.phone">
                           <span class="info-label">Telefon</span>
-                          <span class="info-value">{{ userProfile.phone }}</span>
-                        </div>
-                        
-                        <div class="info-item" *ngIf="userProfile.address">
-                          <span class="info-label">Adres</span>
-                          <span class="info-value">{{ userProfile.address }}</span>
-                        </div>
-                        
-                        <div class="info-item" *ngIf="userProfile.dateOfBirth">
-                          <span class="info-label">Data urodzenia</span>
-                          <span class="info-value">{{ formatDateOnly(userProfile.dateOfBirth) }}</span>
+                          <span class="info-value">{{
+                            userProfile.phone
+                          }}</span>
                         </div>
 
-                        <div class="no-info" *ngIf="!userProfile.phone && !userProfile.address && !userProfile.dateOfBirth">
+                        <div class="info-item" *ngIf="userProfile.address">
+                          <span class="info-label">Adres</span>
+                          <span class="info-value">{{
+                            userProfile.address
+                          }}</span>
+                        </div>
+
+                        <div class="info-item" *ngIf="userProfile.dateOfBirth">
+                          <span class="info-label">Data urodzenia</span>
+                          <span class="info-value">{{
+                            formatDateOnly(userProfile.dateOfBirth)
+                          }}</span>
+                        </div>
+
+                        <div
+                          class="no-info"
+                          *ngIf="
+                            !userProfile.phone &&
+                            !userProfile.address &&
+                            !userProfile.dateOfBirth
+                          "
+                        >
                           <i class="pi pi-info-circle"></i>
                           <span>Brak dodatkowych danych kontaktowych</span>
                         </div>
@@ -171,13 +188,15 @@
                           <h4>Szczegóły konta</h4>
                         </div>
                       </ng-template>
-                      
+
                       <div class="info-items">
                         <div class="info-item">
                           <span class="info-label">Email</span>
-                          <span class="info-value">{{ userProfile.email }}</span>
+                          <span class="info-value">{{
+                            userProfile.email
+                          }}</span>
                         </div>
-                        
+
                         <div class="info-item">
                           <span class="info-label">Rola</span>
                           <p-tag
@@ -185,10 +204,12 @@
                             [styleClass]="getRoleBadgeClass(userProfile.role)"
                           ></p-tag>
                         </div>
-                        
+
                         <div class="info-item">
                           <span class="info-label">Data utworzenia</span>
-                          <span class="info-value">{{ formatDateOnly(userProfile.accountCreated!) }}</span>
+                          <span class="info-value">{{
+                            formatDateOnly(userProfile.accountCreated!)
+                          }}</span>
                         </div>
                       </div>
                     </p-card>
@@ -206,7 +227,7 @@
                         <h4>Szybkie akcje</h4>
                       </div>
                     </ng-template>
-                    
+
                     <div class="quick-actions-grid">
                       <p-button
                         label="Oceny"
@@ -216,7 +237,7 @@
                         *ngIf="userProfile.role === UserRole.STUDENT"
                         routerLink="/grades"
                       ></p-button>
-                      
+
                       <p-button
                         label="Plan zajęć"
                         icon="pi pi-calendar-clock"
@@ -224,7 +245,7 @@
                         styleClass="action-btn"
                         routerLink="/timetable"
                       ></p-button>
-                      
+
                       <p-button
                         label="Dashboard"
                         icon="pi pi-th-large"
@@ -247,7 +268,14 @@
             </p-tabPanel>
 
             <!-- Informacje specyficzne dla roli -->
-            <p-tabPanel header="Informacje roli" *ngIf="userProfile.role === UserRole.STUDENT || userProfile.role === UserRole.TEACHER || userProfile.role === UserRole.PARENT">
+            <p-tabPanel
+              header="Informacje roli"
+              *ngIf="
+                userProfile.role === UserRole.STUDENT ||
+                userProfile.role === UserRole.TEACHER ||
+                userProfile.role === UserRole.PARENT
+              "
+            >
               <ng-template pTemplate="header">
                 <div class="tab-header">
                   <i [class]="getRoleIcon(userProfile.role)"></i>
@@ -257,7 +285,10 @@
 
               <div class="tab-content-wrapper">
                 <!-- Student Information -->
-                <div *ngIf="userProfile.role === UserRole.STUDENT" class="role-content">
+                <div
+                  *ngIf="userProfile.role === UserRole.STUDENT"
+                  class="role-content"
+                >
                   <div class="grid">
                     <div class="col-12 md:col-6">
                       <p-card styleClass="role-info-card student-card">
@@ -269,23 +300,29 @@
                             <h4>Klasa</h4>
                           </div>
                         </ng-template>
-                        
+
                         <div class="role-info-content">
-                          <div class="info-display" *ngIf="userProfile.studentClass">
-                            <p-tag 
-                              [value]="userProfile.studentClass" 
-                              severity="info" 
+                          <div
+                            class="info-display"
+                            *ngIf="userProfile.studentClass"
+                          >
+                            <p-tag
+                              [value]="userProfile.studentClass"
+                              severity="info"
                               styleClass="large-tag"
                             ></p-tag>
                           </div>
-                          <div class="no-info" *ngIf="!userProfile.studentClass">
+                          <div
+                            class="no-info"
+                            *ngIf="!userProfile.studentClass"
+                          >
                             <i class="pi pi-info-circle"></i>
                             <span>Brak przypisanej klasy</span>
                           </div>
                         </div>
                       </p-card>
                     </div>
-                    
+
                     <div class="col-12 md:col-6">
                       <p-card styleClass="role-info-card student-card">
                         <ng-template pTemplate="header">
@@ -296,12 +333,17 @@
                             <h4>Wychowawca</h4>
                           </div>
                         </ng-template>
-                        
+
                         <div class="role-info-content">
-                          <div class="info-display" *ngIf="userProfile.tutorName">
+                          <div
+                            class="info-display"
+                            *ngIf="userProfile.tutorName"
+                          >
                             <div class="tutor-info">
                               <i class="pi pi-user tutor-icon"></i>
-                              <span class="tutor-name">{{ userProfile.tutorName }}</span>
+                              <span class="tutor-name">{{
+                                userProfile.tutorName
+                              }}</span>
                             </div>
                           </div>
                           <div class="no-info" *ngIf="!userProfile.tutorName">
@@ -312,7 +354,10 @@
                       </p-card>
                     </div>
 
-                    <div class="col-12 md:col-6" *ngIf="userProfile.studentNumber">
+                    <div
+                      class="col-12 md:col-6"
+                      *ngIf="userProfile.studentNumber"
+                    >
                       <p-card styleClass="role-info-card student-card">
                         <ng-template pTemplate="header">
                           <div class="card-header">
@@ -322,11 +367,11 @@
                             <h4>Numer w dzienniku</h4>
                           </div>
                         </ng-template>
-                        
+
                         <div class="role-info-content">
                           <div class="info-display">
-                            <p-badge 
-                              [value]="userProfile.studentNumber.toString()" 
+                            <p-badge
+                              [value]="userProfile.studentNumber.toString()"
                               styleClass="large-badge"
                             ></p-badge>
                           </div>
@@ -337,7 +382,10 @@
                 </div>
 
                 <!-- Teacher Information -->
-                <div *ngIf="userProfile.role === UserRole.TEACHER" class="role-content">
+                <div
+                  *ngIf="userProfile.role === UserRole.TEACHER"
+                  class="role-content"
+                >
                   <p-card styleClass="role-info-card teacher-card">
                     <ng-template pTemplate="header">
                       <div class="card-header">
@@ -347,12 +395,21 @@
                         <h4>Przedmioty nauczania</h4>
                       </div>
                     </ng-template>
-                    
+
                     <div class="role-info-content">
-                      <div class="subjects-container" *ngIf="userProfile.teacherSubjects && userProfile.teacherSubjects.length > 0">
+                      <div
+                        class="subjects-container"
+                        *ngIf="
+                          userProfile.teacherSubjects &&
+                          userProfile.teacherSubjects.length > 0
+                        "
+                      >
                         <div class="subjects-grid">
                           <p-tag
-                            *ngFor="let subject of userProfile.teacherSubjects; trackBy: trackBySubject"
+                            *ngFor="
+                              let subject of userProfile.teacherSubjects;
+                              trackBy: trackBySubject
+                            "
                             [value]="subject"
                             severity="success"
                             styleClass="subject-tag"
@@ -360,7 +417,13 @@
                           ></p-tag>
                         </div>
                       </div>
-                      <div class="no-info" *ngIf="!userProfile.teacherSubjects || userProfile.teacherSubjects.length === 0">
+                      <div
+                        class="no-info"
+                        *ngIf="
+                          !userProfile.teacherSubjects ||
+                          userProfile.teacherSubjects.length === 0
+                        "
+                      >
                         <i class="pi pi-info-circle"></i>
                         <span>Brak przypisanych przedmiotów</span>
                       </div>
@@ -369,7 +432,10 @@
                 </div>
 
                 <!-- Parent Information -->
-                <div *ngIf="userProfile.role === UserRole.PARENT" class="role-content">
+                <div
+                  *ngIf="userProfile.role === UserRole.PARENT"
+                  class="role-content"
+                >
                   <p-card styleClass="role-info-card parent-card">
                     <ng-template pTemplate="header">
                       <div class="card-header">
@@ -379,12 +445,21 @@
                         <h4>Dzieci</h4>
                       </div>
                     </ng-template>
-                    
+
                     <div class="role-info-content">
-                      <div class="children-container" *ngIf="userProfile.parentChildren && userProfile.parentChildren.length > 0">
+                      <div
+                        class="children-container"
+                        *ngIf="
+                          userProfile.parentChildren &&
+                          userProfile.parentChildren.length > 0
+                        "
+                      >
                         <div class="children-grid">
                           <p-tag
-                            *ngFor="let child of userProfile.parentChildren; trackBy: trackByChild"
+                            *ngFor="
+                              let child of userProfile.parentChildren;
+                              trackBy: trackByChild
+                            "
                             [value]="child"
                             severity="warn"
                             styleClass="child-tag"
@@ -392,7 +467,13 @@
                           ></p-tag>
                         </div>
                       </div>
-                      <div class="no-info" *ngIf="!userProfile.parentChildren || userProfile.parentChildren.length === 0">
+                      <div
+                        class="no-info"
+                        *ngIf="
+                          !userProfile.parentChildren ||
+                          userProfile.parentChildren.length === 0
+                        "
+                      >
                         <i class="pi pi-info-circle"></i>
                         <span>Brak przypisanych dzieci</span>
                       </div>
@@ -426,7 +507,9 @@
                             type="text"
                             pInputText
                             formControlName="name"
-                            [class.ng-invalid]="isFieldInvalid(profileForm, 'name')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(profileForm, 'name')
+                            "
                           />
                           <label for="name">Imię *</label>
                         </p-floatLabel>
@@ -445,7 +528,9 @@
                             type="text"
                             pInputText
                             formControlName="lastname"
-                            [class.ng-invalid]="isFieldInvalid(profileForm, 'lastname')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(profileForm, 'lastname')
+                            "
                           />
                           <label for="lastname">Nazwisko *</label>
                         </p-floatLabel>
@@ -466,7 +551,9 @@
                             type="tel"
                             pInputText
                             formControlName="phone"
-                            [class.ng-invalid]="isFieldInvalid(profileForm, 'phone')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(profileForm, 'phone')
+                            "
                           />
                           <label for="phone">Telefon</label>
                         </p-floatLabel>
@@ -499,7 +586,9 @@
                             pInputTextarea
                             formControlName="bio"
                             rows="4"
-                            [class.ng-invalid]="isFieldInvalid(profileForm, 'bio')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(profileForm, 'bio')
+                            "
                           ></textarea>
                           <label for="bio">O mnie</label>
                         </p-floatLabel>
@@ -551,12 +640,16 @@
                             formControlName="currentPassword"
                             [feedback]="false"
                             [toggleMask]="true"
-                            [class.ng-invalid]="isFieldInvalid(passwordForm, 'currentPassword')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(passwordForm, 'currentPassword')
+                            "
                           ></p-password>
                           <label for="currentPassword">Aktualne hasło *</label>
                         </p-floatLabel>
                         <small
-                          *ngIf="isFieldInvalid(passwordForm, 'currentPassword')"
+                          *ngIf="
+                            isFieldInvalid(passwordForm, 'currentPassword')
+                          "
                           class="p-error"
                         >
                           {{ getFieldError(passwordForm, 'currentPassword') }}
@@ -572,7 +665,9 @@
                             formControlName="newPassword"
                             [feedback]="true"
                             [toggleMask]="true"
-                            [class.ng-invalid]="isFieldInvalid(passwordForm, 'newPassword')"
+                            [class.ng-invalid]="
+                              isFieldInvalid(passwordForm, 'newPassword')
+                            "
                           ></p-password>
                           <label for="newPassword">Nowe hasło *</label>
                         </p-floatLabel>

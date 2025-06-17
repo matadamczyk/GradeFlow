@@ -142,7 +142,10 @@
                   </ng-template>
                   <p>Aktualna lekcja</p>
                   <small *ngIf="dashboardData()?.currentLesson">
-                    {{ dashboardData()?.currentLesson?.teacherSubject?.subject?.name || 'Nieznany przedmiot' }}
+                    {{
+                      dashboardData()?.currentLesson?.teacherSubject?.subject
+                        ?.name || 'Nieznany przedmiot'
+                    }}
                   </small>
                   <small *ngIf="!dashboardData()?.currentLesson">
                     Brak zajęć
@@ -168,7 +171,10 @@
                   </ng-template>
                   <p>Następna lekcja</p>
                   <small *ngIf="dashboardData()?.nextLesson">
-                    {{ dashboardData()?.nextLesson?.teacherSubject?.subject?.name || 'Nieznany przedmiot' }}
+                    {{
+                      dashboardData()?.nextLesson?.teacherSubject?.subject
+                        ?.name || 'Nieznany przedmiot'
+                    }}
                   </small>
                   <small *ngIf="!dashboardData()?.nextLesson">
                     Brak zajęć
@@ -549,8 +555,6 @@
           </div>
         </div>
 
-        
-
         <!-- Admin Charts Section -->
         <div class="grid charts-section" *ngIf="isAdmin()">
           <!-- System Activity -->
@@ -623,7 +627,6 @@
             </p-card>
           </div>
         </div>
-        
 
         <!-- Recent Grades - Student & Parent -->
         <div class="recent-grades-section" *ngIf="isStudent() || isParent()">
@@ -677,6 +680,103 @@
                 <i class="pi pi-star"></i>
                 <p>Brak ostatnich ocen</p>
                 <small>Oceny pojawią się tutaj po ich dodaniu</small>
+              </div>
+            </ng-template>
+          </p-card>
+        </div>
+
+        <!-- Upcoming Events - Student -->
+        <div class="upcoming-events-section" *ngIf="isStudent()">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="card-header">
+                <h3>
+                  <i class="pi pi-calendar-plus"></i> Nadchodzące wydarzenia
+                </h3>
+                <p-badge
+                  [value]="dashboardData()?.upcomingEvents?.length || 0"
+                  severity="info"
+                >
+                </p-badge>
+              </div>
+            </ng-template>
+
+            <div
+              class="upcoming-events-list"
+              *ngIf="
+                dashboardData()?.upcomingEvents?.length;
+                else noUpcomingEvents
+              "
+            >
+              <div
+                class="event-item"
+                *ngFor="let event of dashboardData()?.upcomingEvents"
+              >
+                <div class="event-icon">
+                  <i class="pi" [ngClass]="getEventIcon(event.type)"></i>
+                </div>
+                <div class="event-content">
+                  <div class="event-header">
+                    <div class="event-title">
+                      <strong>{{ event.title }}</strong>
+                      <p-tag
+                        [value]="getEventTypeLabel(event.type)"
+                        [severity]="event.severity"
+                        [rounded]="true"
+                        size="small"
+                      >
+                      </p-tag>
+                    </div>
+                    <div class="event-date">
+                      <span class="event-day">{{
+                        formatDate(event.date)
+                      }}</span>
+                      <small class="event-time">{{
+                        formatTime(event.time)
+                      }}</small>
+                    </div>
+                  </div>
+                  <div class="event-details">
+                    <div class="event-subject">
+                      <i class="pi pi-book"></i>
+                      {{ event.subject }}
+                    </div>
+                    <div class="event-teacher">
+                      <i class="pi pi-user"></i>
+                      {{ event.teacher }}
+                    </div>
+                  </div>
+                  <div class="event-description" *ngIf="event.description">
+                    <small>{{ event.description }}</small>
+                  </div>
+                  <div class="event-countdown">
+                    <small
+                      class="countdown-text"
+                      [class.urgent]="getDaysUntilEvent(event.date) <= 1"
+                      [class.soon]="getDaysUntilEvent(event.date) <= 3"
+                    >
+                      <ng-container *ngIf="getDaysUntilEvent(event.date) === 0"
+                        >Dziś</ng-container
+                      >
+                      <ng-container *ngIf="getDaysUntilEvent(event.date) === 1"
+                        >Jutro</ng-container
+                      >
+                      <ng-container *ngIf="getDaysUntilEvent(event.date) > 1">
+                        Za {{ getDaysUntilEvent(event.date) }} dni
+                      </ng-container>
+                    </small>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #noUpcomingEvents>
+              <div class="empty-state">
+                <i class="pi pi-calendar-plus"></i>
+                <p>Brak nadchodzących wydarzeń</p>
+                <small
+                  >Wydarzenia pojawią się tutaj gdy zostaną zaplanowane</small
+                >
               </div>
             </ng-template>
           </p-card>
@@ -818,8 +918,11 @@
                   </div>
                 </div>
               </div>
-              
-              <div *ngIf="!dashboardData()?.teacherData?.todaySchedule?.length" class="empty-state">
+
+              <div
+                *ngIf="!dashboardData()?.teacherData?.todaySchedule?.length"
+                class="empty-state"
+              >
                 <i class="pi pi-calendar"></i>
                 <p>Brak zajęć na dziś</p>
                 <small>Miłego dnia wolnego!</small>
@@ -863,8 +966,16 @@
                   <small>{{ formatTime(lesson.endTime) }}</small>
                 </div>
                 <div class="lesson-details">
-                  <h4>{{ lesson.teacherSubject?.subject?.name || 'Nieznany przedmiot' }}</h4>
-                  <p>{{ lesson.teacherSubject?.teacher?.name }} {{ lesson.teacherSubject?.teacher?.lastname }}</p>
+                  <h4>
+                    {{
+                      lesson.teacherSubject?.subject?.name ||
+                        'Nieznany przedmiot'
+                    }}
+                  </h4>
+                  <p>
+                    {{ lesson.teacherSubject?.teacher?.name }}
+                    {{ lesson.teacherSubject?.teacher?.lastname }}
+                  </p>
                   <small>Sala {{ lesson.room || 'Nieznana' }}</small>
                 </div>
               </div>

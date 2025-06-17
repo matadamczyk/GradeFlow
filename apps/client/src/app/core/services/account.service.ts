@@ -13,7 +13,6 @@ export interface UserProfile extends AuthUser {
   dateOfBirth?: string;
   avatar?: string;
   bio?: string;
-  // Pola specyficzne dla różnych ról
   studentClass?: string;
   studentNumber?: string;
   tutorName?: string;
@@ -116,7 +115,6 @@ export class AccountService {
     private apiService: ApiService,
     private gradesService: GradesService
   ) {
-    // Subskrybuj zmiany aktualnego użytkownika
     this.authService.currentUser$.subscribe((user) => {
       if (user) {
         this.loadUserProfile(user.id);
@@ -141,13 +139,12 @@ export class AccountService {
 
     return this.apiService.getUserById(currentUser.id).pipe(
       switchMap((apiUser: any) => {
-        // Podstawowe dane z User
         const baseProfile: UserProfile = {
           id: apiUser.id,
           email: apiUser.email,
           role: apiUser.role as UserRole,
-          name: '', // Zostanie uzupełnione z odpowiedniej tabeli
-          lastname: '', // Zostanie uzupełnione z odpowiedniej tabeli
+          name: '',
+          lastname: '',
           phone: apiUser.phone || '',
           address: apiUser.address || '',
           dateOfBirth: apiUser.dateOfBirth || '',
@@ -159,7 +156,6 @@ export class AccountService {
             `https://ui-avatars.com/api/?name=${apiUser.email}&background=random`,
         };
 
-        // Pobierz name i lastname z odpowiedniej tabeli w zależności od roli
         if (apiUser.role === 'STUDENT') {
           return this.apiService.getStudentByUserId(apiUser.id).pipe(
             map((student: any) => ({
@@ -168,8 +164,9 @@ export class AccountService {
               lastname: student.lastname || '',
               studentClass: student.studentClass?.className || '',
               studentNumber: student.id?.toString() || '',
-              tutorName: student.studentClass?.tutor ? 
-                `${student.studentClass.tutor.name} ${student.studentClass.tutor.lastname}` : '',
+              tutorName: student.studentClass?.tutor
+                ? `${student.studentClass.tutor.name} ${student.studentClass.tutor.lastname}`
+                : '',
             })),
             catchError((error) => {
               console.warn('Error loading student data:', error);
@@ -178,15 +175,6 @@ export class AccountService {
           );
         }
 
-        // TODO: Dodaj podobną logikę dla TEACHER i PARENT gdy będą dostępne endpointy
-        // if (apiUser.role === 'TEACHER') {
-        //   return this.apiService.getTeacherByUserId(apiUser.id).pipe(...)
-        // }
-        // if (apiUser.role === 'PARENT') {
-        //   return this.apiService.getParentByUserId(apiUser.id).pipe(...)
-        // }
-
-        // Dla innych ról zwróć podstawowy profil
         return of(baseProfile);
       }),
       catchError((error: any) => {
@@ -219,30 +207,25 @@ export class AccountService {
       );
     }
 
-    // Aktualizuj profil
     this.mockProfiles[profileIndex] = {
       ...this.mockProfiles[profileIndex],
       ...updateData,
     };
 
-    // Aktualizuj również dane w AuthService
     const updatedAuthUser: AuthUser = {
       ...currentUser,
       name: updateData.name || currentUser.name,
       lastname: updateData.lastname || currentUser.lastname,
     };
 
-    // Zaktualizuj localStorage
     localStorage.setItem('currentUser', JSON.stringify(updatedAuthUser));
 
-    // Emit nowy profil
     this.userProfileSubject.next(this.mockProfiles[profileIndex]);
 
     return of(this.mockProfiles[profileIndex]).pipe(delay(1000));
   }
 
   changePassword(passwordData: PasswordChangeRequest): Observable<boolean> {
-    // Symulacja zmiany hasła
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       return throwError(() => new Error('Nowe hasła nie są identyczne'));
     }
@@ -261,14 +244,12 @@ export class AccountService {
   }
 
   uploadAvatar(file: File): Observable<string> {
-    // Symulacja uploadu avatara
     return of(
       'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face'
     ).pipe(delay(2000));
   }
 
   deleteAccount(): Observable<boolean> {
-    // Symulacja usunięcia konta
     return of(true).pipe(delay(1500));
   }
 
@@ -280,7 +261,6 @@ export class AccountService {
 
     switch (currentUser.role) {
       case UserRole.STUDENT:
-        // For students, get real statistics from grades
         return this.apiService.getStudentByUserId(currentUser.id).pipe(
           switchMap((student: any) => {
             return this.gradesService.getGradeStatistics(student.id).pipe(
@@ -288,7 +268,7 @@ export class AccountService {
                 const stats = {
                   totalGrades: gradeStats.totalGrades || 0,
                   averageGrade: gradeStats.overallAverage || 0,
-                  attendanceRate: 95, // Still mock - no attendance API
+                  attendanceRate: 95,
                   completedAssignments: gradeStats.totalGrades || 0,
                   totalAssignments: gradeStats.totalGrades || 0,
                   favoriteSubject:
@@ -296,7 +276,6 @@ export class AccountService {
                       ? gradeStats.subjectGrades[0].subjectName
                       : 'Brak danych',
                 };
-                console.log('Real account statistics for student:', stats);
                 return stats;
               })
             );

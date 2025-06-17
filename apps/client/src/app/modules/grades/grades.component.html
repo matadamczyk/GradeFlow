@@ -8,7 +8,7 @@
             <i class="pi pi-chart-line"></i>
           </div>
           <span *ngIf="isStudent()">Moje Oceny</span>
-          <span *ngIf="isTeacher()">Oceny Uczniów</span>
+          <span *ngIf="isTeacher()">Zarządzanie Ocenami</span>
           <span *ngIf="isParent()">Oceny Dzieci</span>
           <span *ngIf="isAdmin()">Przegląd Ocen</span>
         </h1>
@@ -16,7 +16,7 @@
           Przegląd Twoich wyników w nauce
         </p>
         <p class="page-subtitle" *ngIf="isTeacher()">
-          Zarządzaj ocenami swoich uczniów
+          Zarządzaj ocenami swoich uczniów i klasowymi wydarzeniami
         </p>
         <p class="page-subtitle" *ngIf="isParent()">
           Śledź postępy swoich dzieci
@@ -67,8 +67,460 @@
     </div>
   </div>
 
-  <!-- Main Content -->
-  <div *ngIf="!isLoading" class="grades-content">
+  <!-- Teacher Content -->
+  <div *ngIf="!isLoading && isTeacher()" class="teacher-content">
+    <!-- Teacher Classes Selection -->
+    <div class="teacher-classes-section">
+      <div class="grid">
+        <div class="col-12">
+          <div class="section-card classes-selection-card">
+            <div class="section-header">
+              <div class="header-content">
+                <div class="header-icon">
+                  <i class="pi pi-users"></i>
+                </div>
+                <div class="header-text">
+                  <h3>Wybór Klasy</h3>
+                  <p>Wybierz klasę, aby zarządzać ocenami i wydarzeniami</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="section-content">
+              <div
+                class="class-selection-container"
+                *ngIf="teacherClasses().length > 0; else noClasses"
+              >
+                <!-- Class Dropdown Selection -->
+                <div class="class-dropdown-section">
+                  <div class="form-row">
+                    <label for="classSelect">Wybierz klasę:</label>
+                    <p-dropdown
+                      id="classSelect"
+                      [options]="teacherClasses()"
+                      [ngModel]="selectedClass()"
+                      (ngModelChange)="onClassSelect($event)"
+                      optionLabel="displayName"
+                      placeholder="Wybierz klasę z listy"
+                      [showClear]="true"
+                      [filter]="true"
+                      filterBy="displayName"
+                      [style]="{ width: '100%', 'max-width': '400px' }"
+                      styleClass="class-dropdown"
+                    >
+                      <ng-template pTemplate="selectedItem" let-selectedClass>
+                        <div class="selected-class-item" *ngIf="selectedClass">
+                          <div class="class-info">
+                            <span class="class-name"
+                              >{{ selectedClass.number
+                              }}{{ selectedClass.letter }}</span
+                            >
+                            <small class="class-details">
+                              <i class="pi pi-users"></i>
+                              {{ selectedClass.studentsCount || 0 }} uczniów
+                            </small>
+                          </div>
+                        </div>
+                      </ng-template>
+
+                      <ng-template pTemplate="item" let-classOption>
+                        <div class="class-option-item">
+                          <div class="class-info">
+                            <span class="class-name"
+                              >{{ classOption.number
+                              }}{{ classOption.letter }}</span
+                            >
+                            <small class="class-details">
+                              <i class="pi pi-users"></i>
+                              {{ classOption.studentsCount || 0 }} uczniów
+                            </small>
+                          </div>
+                          <div
+                            class="class-stats"
+                            *ngIf="classOption.averageGrade"
+                          >
+                            <span class="average-badge">
+                              Średnia:
+                              {{ classOption.averageGrade | number : '1.2-2' }}
+                            </span>
+                          </div>
+                        </div>
+                      </ng-template>
+                    </p-dropdown>
+                  </div>
+                </div>
+
+                <!-- Alternative: Compact Grid View for fewer classes (optional toggle) -->
+                <div
+                  class="grid-view-toggle"
+                  *ngIf="teacherClasses().length <= 6"
+                >
+                  <p-divider align="center">
+                    <span>lub</span>
+                  </p-divider>
+
+                  <div class="classes-compact-grid">
+                    <div
+                      class="compact-class-card"
+                      *ngFor="
+                        let classData of teacherClasses();
+                        trackBy: trackByClass
+                      "
+                      [ngClass]="{
+                        selected: selectedClass()?.id === classData.id
+                      }"
+                      (click)="onClassSelect(classData)"
+                    >
+                      <div class="compact-class-header">
+                        <h5>{{ classData.number }}{{ classData.letter }}</h5>
+                        <span class="students-count">
+                          <i class="pi pi-user"></i>
+                          {{ classData.studentsCount || 0 }}
+                        </span>
+                      </div>
+                      <div
+                        class="compact-class-stats"
+                        *ngIf="selectedClass()?.id === classData.id"
+                      >
+                        <span class="average-badge">
+                          {{
+                            classStatistics()?.classAverage || 0
+                              | number : '1.2-2'
+                          }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <ng-template #noClasses>
+                <div class="enhanced-empty-state">
+                  <div class="empty-icon">
+                    <i class="pi pi-users"></i>
+                  </div>
+                  <h4>Brak przypisanych klas</h4>
+                  <p>Skontaktuj się z administratorem, aby przypisać klasy</p>
+                </div>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Selected Class Content -->
+    <div *ngIf="selectedClass()" class="selected-class-content">
+      <p-tabView styleClass="teacher-tabs">
+        <!-- Students and Grades Tab -->
+        <p-tabPanel header="Uczniowie i Oceny" leftIcon="pi pi-users">
+          <div class="students-grades-section">
+            <!-- Class Statistics -->
+            <div class="class-stats-section" *ngIf="classStatistics() as stats">
+              <div class="grid">
+                <div class="col-12 md:col-3">
+                  <div class="stat-card">
+                    <div class="stat-icon">
+                      <i class="pi pi-users"></i>
+                    </div>
+                    <div class="stat-details">
+                      <h3>{{ stats.totalStudents }}</h3>
+                      <p>Uczniów w klasie</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 md:col-3">
+                  <div class="stat-card">
+                    <div class="stat-icon">
+                      <i class="pi pi-chart-line"></i>
+                    </div>
+                    <div class="stat-details">
+                      <h3>{{ stats.classAverage }}</h3>
+                      <p>Średnia klasy</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 md:col-3">
+                  <div class="stat-card">
+                    <div class="stat-icon">
+                      <i class="pi pi-list"></i>
+                    </div>
+                    <div class="stat-details">
+                      <h3>{{ stats.totalGrades }}</h3>
+                      <p>Wystawionych ocen</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 md:col-3">
+                  <div class="stat-card">
+                    <div class="stat-icon">
+                      <i class="pi pi-star"></i>
+                    </div>
+                    <div class="stat-details">
+                      <h3>{{ stats.gradeDistribution.excellent }}</h3>
+                      <p>Ocen bardzo dobrych</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Students List with Grades -->
+            <div class="students-list-section">
+              <div class="section-card">
+                <div class="section-header">
+                  <div class="header-content">
+                    <div class="header-icon">
+                      <i class="pi pi-list"></i>
+                    </div>
+                    <div class="header-text">
+                      <h3>Lista Uczniów</h3>
+                      <p>
+                        Klasa {{ selectedClass().number
+                        }}{{ selectedClass().letter }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="header-actions">
+                    <p-button
+                      icon="pi pi-plus"
+                      label="Dodaj Ocenę"
+                      (onClick)="openAddGradeDialog()"
+                      size="small"
+                    ></p-button>
+                  </div>
+                </div>
+
+                <div class="section-content">
+                  <p-table
+                    [value]="selectedClassStudentsWithGrades()"
+                    styleClass="teacher-students-table"
+                    [paginator]="selectedClassStudentsWithGrades().length > 10"
+                    [rows]="10"
+                    [responsive]="true"
+                    [showCurrentPageReport]="true"
+                    currentPageReportTemplate="Pokazano {first} - {last} z {totalRecords} uczniów"
+                  >
+                    <ng-template pTemplate="header">
+                      <tr>
+                        <th>Uczeń</th>
+                        <th>Średnia</th>
+                        <th>Liczba ocen</th>
+                        <th>Ostatnia ocena</th>
+                        <th>Akcje</th>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="body" let-student>
+                      <tr>
+                        <td>
+                          <div class="student-info">
+                            <div class="student-avatar">
+                              {{ student.name?.charAt(0)
+                              }}{{ student.lastname?.charAt(0) }}
+                            </div>
+                            <div class="student-details">
+                              <strong
+                                >{{ student.name }}
+                                {{ student.lastname }}</strong
+                              >
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div class="average-display">
+                            <span class="average-value">{{
+                              student.average || '0.00' | number : '1.2-2'
+                            }}</span>
+                            <div
+                              class="average-trend"
+                              [ngClass]="getGradeTrend(student).trend"
+                              *ngIf="getGradeTrend(student).value > 0"
+                            >
+                              <i
+                                class="pi"
+                                [ngClass]="{
+                                  'pi-arrow-up':
+                                    getGradeTrend(student).trend === 'positive',
+                                  'pi-arrow-down':
+                                    getGradeTrend(student).trend === 'negative'
+                                }"
+                              ></i>
+                              {{
+                                getGradeTrend(student).trend === 'positive'
+                                  ? '+'
+                                  : '-'
+                              }}{{ getGradeTrend(student).value }}
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <span class="grade-count">{{
+                            student.gradeCount || 0
+                          }}</span>
+                        </td>
+                        <td>
+                          <div
+                            class="last-grade"
+                            *ngIf="student.lastGrade; else noLastGrade"
+                          >
+                            <span
+                              class="grade-badge"
+                              [ngClass]="'grade-' + student.lastGrade"
+                            >
+                              {{ student.lastGrade }}
+                            </span>
+                            <small>{{
+                              formatDate(student.lastGradeDate)
+                            }}</small>
+                          </div>
+                          <ng-template #noLastGrade>
+                            <span class="no-grade">Brak ocen</span>
+                          </ng-template>
+                        </td>
+                        <td>
+                          <div class="student-actions">
+                            <p-button
+                              icon="pi pi-plus"
+                              (onClick)="openAddGradeDialog(student)"
+                              severity="secondary"
+                              size="small"
+                              [text]="true"
+                              pTooltip="Dodaj ocenę"
+                            ></p-button>
+                            <p-button
+                              icon="pi pi-eye"
+                              (onClick)="openStudentGradesDialog(student)"
+                              severity="info"
+                              size="small"
+                              [text]="true"
+                              pTooltip="Zobacz oceny"
+                            ></p-button>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+
+                    <ng-template pTemplate="emptymessage">
+                      <tr>
+                        <td colspan="5">
+                          <div class="table-empty-state">
+                            <i class="pi pi-users"></i>
+                            <p>Brak uczniów w tej klasie</p>
+                          </div>
+                        </td>
+                      </tr>
+                    </ng-template>
+                  </p-table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+
+        <!-- Events Tab -->
+        <p-tabPanel header="Wydarzenia" leftIcon="pi pi-calendar">
+          <div class="events-section">
+            <div class="section-card">
+              <div class="section-header">
+                <div class="header-content">
+                  <div class="header-icon">
+                    <i class="pi pi-calendar"></i>
+                  </div>
+                  <div class="header-text">
+                    <h3>Wydarzenia Klasowe</h3>
+                    <p>
+                      Zarządzaj sprawdzianami, kartkowkami i innymi wydarzeniami
+                    </p>
+                  </div>
+                </div>
+                <div class="header-actions">
+                  <p-button
+                    icon="pi pi-plus"
+                    label="Dodaj Wydarzenie"
+                    (onClick)="openAddEventDialog()"
+                    size="small"
+                  ></p-button>
+                </div>
+              </div>
+
+              <div class="section-content">
+                <div
+                  class="events-list"
+                  *ngIf="classEvents().length > 0; else noEvents"
+                >
+                  <div
+                    class="event-item"
+                    *ngFor="let event of classEvents(); trackBy: trackByEvent"
+                  >
+                    <div class="event-type-indicator">
+                      <p-tag
+                        [value]="getEventTypeLabel(event.type)"
+                        [severity]="getEventTypeSeverity(event.type)"
+                        styleClass="event-type-tag"
+                      ></p-tag>
+                    </div>
+
+                    <div class="event-content">
+                      <div class="event-header">
+                        <h4>{{ event.title }}</h4>
+                        <div class="event-date">
+                          <i class="pi pi-calendar"></i>
+                          {{ formatDate(event.date) }}
+                        </div>
+                      </div>
+                      <p *ngIf="event.description" class="event-description">
+                        {{ event.description }}
+                      </p>
+                    </div>
+
+                    <div class="event-actions">
+                      <p-button
+                        icon="pi pi-pencil"
+                        severity="secondary"
+                        size="small"
+                        [text]="true"
+                        pTooltip="Edytuj"
+                      ></p-button>
+                      <p-button
+                        icon="pi pi-trash"
+                        severity="danger"
+                        size="small"
+                        [text]="true"
+                        pTooltip="Usuń"
+                      ></p-button>
+                    </div>
+                  </div>
+                </div>
+
+                <ng-template #noEvents>
+                  <div class="enhanced-empty-state">
+                    <div class="empty-icon">
+                      <i class="pi pi-calendar"></i>
+                    </div>
+                    <h4>Brak zaplanowanych wydarzeń</h4>
+                    <p>
+                      Dodaj wydarzenie, aby powiadomić uczniów o sprawdzianach i
+                      innych ważnych datach
+                    </p>
+                    <p-button
+                      label="Dodaj pierwsze wydarzenie"
+                      icon="pi pi-plus"
+                      (onClick)="openAddEventDialog()"
+                      styleClass="mt-3"
+                    ></p-button>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </p-tabPanel>
+      </p-tabView>
+    </div>
+  </div>
+
+  <!-- Student/Parent/Admin Content (existing) -->
+  <div *ngIf="!isLoading && !isTeacher()" class="grades-content">
     <!-- Enhanced Statistics Cards -->
     <div class="stats-section" *ngIf="statistics$ | async as stats">
       <div class="grid">
@@ -140,7 +592,10 @@
     </div>
 
     <!-- Additional Academic Statistics -->
-    <div class="academic-stats-section" *ngIf="isStudent() && (statistics$ | async) as stats">
+    <div
+      class="academic-stats-section"
+      *ngIf="isStudent() && (statistics$ | async) as stats"
+    >
       <div class="grid">
         <div class="col-12 md:col-6 lg:col-3">
           <p-card class="stat-card attendance-card">
@@ -464,7 +919,7 @@
                                 Waga
                                 <p-sortIcon field="grade_weight"></p-sortIcon>
                               </th>
-                              <th >Komentarz</th>
+                              <th>Komentarz</th>
                             </tr>
                           </ng-template>
 
@@ -573,4 +1028,360 @@
       </div>
     </div>
   </div>
+
+  <!-- Toast for notifications -->
+  <p-toast position="top-right"></p-toast>
+
+  <!-- Add Grade Dialog -->
+  <p-dialog
+    header="Dodaj Ocenę"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '500px' }"
+    [(visible)]="showAddGradeDialog"
+    (onHide)="closeAddGradeDialog()"
+  >
+    <form [formGroup]="addGradeForm" (ngSubmit)="onSubmitGrade()">
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="student">Uczeń *</label>
+          <p-dropdown
+            id="student"
+            formControlName="student"
+            [options]="selectedClassStudents()"
+            optionLabel="name"
+            placeholder="Wybierz ucznia"
+            [showClear]="true"
+            styleClass="w-full"
+          >
+            <ng-template pTemplate="selectedItem" let-student>
+              <div *ngIf="student" class="selected-student">
+                {{ student.name }} {{ student.lastname }}
+              </div>
+            </ng-template>
+            <ng-template pTemplate="item" let-student>
+              <div class="student-option">
+                {{ student.name }} {{ student.lastname }}
+              </div>
+            </ng-template>
+          </p-dropdown>
+        </div>
+
+        <div class="form-row">
+          <label for="gradeValue">Ocena *</label>
+          <p-inputNumber
+            id="gradeValue"
+            formControlName="gradeValue"
+            [min]="1"
+            [max]="6"
+            [step]="0.5"
+            placeholder="Wprowadź ocenę"
+            styleClass="w-full"
+          ></p-inputNumber>
+        </div>
+
+        <div class="form-row">
+          <label for="gradeWeight">Waga *</label>
+          <p-inputNumber
+            id="gradeWeight"
+            formControlName="gradeWeight"
+            [min]="1"
+            [max]="5"
+            placeholder="Wprowadź wagę"
+            styleClass="w-full"
+          ></p-inputNumber>
+        </div>
+
+        <div class="form-row">
+          <label for="type">Typ oceny *</label>
+          <p-dropdown
+            id="type"
+            formControlName="type"
+            [options]="gradeTypes"
+            placeholder="Wybierz typ oceny"
+            styleClass="w-full"
+          ></p-dropdown>
+        </div>
+
+        <div class="form-row">
+          <label for="date">Data *</label>
+          <p-calendar
+            id="date"
+            formControlName="date"
+            placeholder="Wybierz datę"
+            [showIcon]="true"
+            dateFormat="dd.mm.yy"
+            styleClass="w-full"
+          ></p-calendar>
+        </div>
+
+        <div class="form-row">
+          <label for="comment">Komentarz</label>
+          <textarea
+            pInputTextarea
+            id="comment"
+            formControlName="comment"
+            placeholder="Dodatkowy komentarz (opcjonalnie)"
+            rows="3"
+            class="w-full"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <p-button
+          label="Anuluj"
+          icon="pi pi-times"
+          (onClick)="closeAddGradeDialog()"
+          severity="secondary"
+          styleClass="mr-2"
+        ></p-button>
+        <p-button
+          label="Dodaj Ocenę"
+          icon="pi pi-check"
+          type="submit"
+          [disabled]="addGradeForm.invalid"
+        ></p-button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <!-- Add Event Dialog -->
+  <p-dialog
+    header="Dodaj Wydarzenie"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '500px' }"
+    [(visible)]="showAddEventDialog"
+    (onHide)="closeAddEventDialog()"
+  >
+    <form [formGroup]="addEventForm" (ngSubmit)="onSubmitEvent()">
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="eventTitle">Tytuł *</label>
+          <input
+            pInputText
+            id="eventTitle"
+            formControlName="title"
+            placeholder="Nazwa wydarzenia"
+            class="w-full"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="eventType">Typ wydarzenia *</label>
+          <p-dropdown
+            id="eventType"
+            formControlName="type"
+            [options]="eventTypes"
+            placeholder="Wybierz typ wydarzenia"
+            styleClass="w-full"
+          ></p-dropdown>
+        </div>
+
+        <div class="form-row">
+          <label for="eventDate">Data *</label>
+          <p-calendar
+            id="eventDate"
+            formControlName="date"
+            placeholder="Wybierz datę"
+            [showIcon]="true"
+            dateFormat="dd.mm.yy"
+            styleClass="w-full"
+          ></p-calendar>
+        </div>
+
+        <div class="form-row">
+          <label for="eventDescription">Opis</label>
+          <textarea
+            pInputTextarea
+            id="eventDescription"
+            formControlName="description"
+            placeholder="Opis wydarzenia (opcjonalnie)"
+            rows="3"
+            class="w-full"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <p-button
+          label="Anuluj"
+          icon="pi pi-times"
+          (onClick)="closeAddEventDialog()"
+          severity="secondary"
+          styleClass="mr-2"
+        ></p-button>
+        <p-button
+          label="Dodaj Wydarzenie"
+          icon="pi pi-check"
+          type="submit"
+          [disabled]="addEventForm.invalid"
+        ></p-button>
+      </div>
+    </form>
+  </p-dialog>
+
+  <!-- Student Grades Dialog -->
+  <p-dialog
+    [header]="
+      'Oceny ucznia: ' +
+      (selectedStudent()?.name || '') +
+      ' ' +
+      (selectedStudent()?.lastname || '')
+    "
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '800px' }"
+    [(visible)]="showStudentGradesDialog"
+    (onHide)="closeStudentGradesDialog()"
+  >
+    <div class="student-grades-content" *ngIf="selectedStudent() as student">
+      <!-- Student Info Summary -->
+      <div class="student-summary">
+        <div class="student-details-expanded">
+          <div class="student-avatar-large">
+            {{ student.name?.charAt(0) }}{{ student.lastname?.charAt(0) }}
+          </div>
+          <div class="student-info-text">
+            <h3>{{ student.name }} {{ student.lastname }}</h3>
+            <p>
+              Klasa: {{ selectedClass()?.number }}{{ selectedClass()?.letter }}
+            </p>
+          </div>
+        </div>
+
+        <div class="grade-stats">
+          <div class="stat-item">
+            <span class="stat-label">Średnia</span>
+            <span class="stat-value">{{
+              student.average | number : '1.2-2'
+            }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Liczba ocen</span>
+            <span class="stat-value">{{ student.gradeCount }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Grades Table -->
+      <div class="grades-table-section">
+        <h4>Lista ocen</h4>
+        <p-table
+          [value]="selectedStudentGrades()"
+          styleClass="student-grades-table"
+          [paginator]="selectedStudentGrades().length > 10"
+          [rows]="10"
+          [responsive]="true"
+          [showCurrentPageReport]="true"
+          currentPageReportTemplate="Pokazano {first} - {last} z {totalRecords} ocen"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="grade_value">
+                Ocena
+                <p-sortIcon field="grade_value"></p-sortIcon>
+              </th>
+              <th pSortableColumn="date">
+                Data
+                <p-sortIcon field="date"></p-sortIcon>
+              </th>
+              <th pSortableColumn="grade_weight">
+                Waga
+                <p-sortIcon field="grade_weight"></p-sortIcon>
+              </th>
+              <th>Komentarz</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-grade let-rowIndex="rowIndex">
+            <tr [ngClass]="{ 'recent-grade': rowIndex < 3 }">
+              <td>
+                <div class="grade-cell">
+                  <div
+                    class="grade-badge-large"
+                    [ngClass]="'grade-' + grade.grade_value"
+                  >
+                    {{ grade.grade_value }}
+                  </div>
+                  <p-tag
+                    [value]="getGradeDescription(grade.grade_value)"
+                    [severity]="getGradeSeverity(grade.grade_value)"
+                    size="small"
+                  ></p-tag>
+                </div>
+              </td>
+              <td>
+                <div class="date-cell">
+                  <i class="pi pi-calendar"></i>
+                  <span>{{ formatDate(grade.date) }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="weight-cell">
+                  <div
+                    class="weight-indicator"
+                    [style.width.%]="(grade.grade_weight / 5) * 100"
+                  ></div>
+                  <span class="weight-value">{{ grade.grade_weight }}</span>
+                </div>
+              </td>
+              <td>
+                <div class="comment-cell" *ngIf="grade.comment; else noComment">
+                  <span
+                    [pTooltip]="grade.comment"
+                    tooltipPosition="top"
+                    class="comment-text"
+                  >
+                    <i class="pi pi-comment"></i>
+                    {{
+                      grade.comment.length > 25
+                        ? (grade.comment | slice : 0 : 25) + '...'
+                        : grade.comment
+                    }}
+                  </span>
+                </div>
+                <ng-template #noComment>
+                  <span class="no-comment">
+                    <i class="pi pi-minus"></i>
+                    Brak komentarza
+                  </span>
+                </ng-template>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="4">
+                <div class="table-empty-state">
+                  <i class="pi pi-info-circle"></i>
+                  <p>Brak ocen dla tego ucznia</p>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </div>
+    </div>
+
+    <div class="dialog-footer">
+      <p-button
+        label="Zamknij"
+        icon="pi pi-times"
+        (onClick)="closeStudentGradesDialog()"
+        severity="secondary"
+      ></p-button>
+      <p-button
+        label="Dodaj ocenę"
+        icon="pi pi-plus"
+        (onClick)="openAddGradeDialog(selectedStudent())"
+        severity="primary"
+      ></p-button>
+    </div>
+  </p-dialog>
 </div>

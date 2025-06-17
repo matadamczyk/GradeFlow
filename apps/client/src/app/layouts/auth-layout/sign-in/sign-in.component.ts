@@ -69,27 +69,22 @@ export class SignInComponent implements OnDestroy {
       this.errorMessage = '';
 
       const { email, password } = this.loginForm.value;
-      console.log('SignIn - próba logowania:', email);
 
       this.authService
         .login({ email, password })
         .pipe(takeUntil(this.destroy$))
         .subscribe({
           next: (user) => {
-            console.log('SignIn - logowanie udane:', user);
             this.isLoading = false;
-            console.log('SignIn - emitowanie loginSuccess');
             this.loginSuccess.emit();
           },
           error: (error) => {
-            console.log('SignIn - błąd logowania:', error);
             this.isLoading = false;
             this.errorMessage =
               error.message || 'Wystąpił błąd podczas logowania';
           },
         });
     } else {
-      console.log('SignIn - formularz nieprawidłowy');
       this.markFormGroupTouched();
     }
   }

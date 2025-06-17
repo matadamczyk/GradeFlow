@@ -243,7 +243,7 @@ export class TimetableComponent implements OnInit {
   getTooltipText(lesson: TimetableEntry): string {
     const time = `${lesson.startTime} - ${lesson.endTime}`;
     const room = lesson.room ? ` - Sala ${lesson.room}` : '';
-    
+
     if (this.isTeacher()) {
       // For teachers: show class instead of teacher name
       const className = `Klasa ${lesson.studentClass.number}${lesson.studentClass.letter}`;
@@ -253,9 +253,5 @@ export class TimetableComponent implements OnInit {
       const teacher = `${lesson.teacherSubject.teacher.name} ${lesson.teacherSubject.teacher.lastname}`;
       return `${lesson.teacherSubject.subject.name}\n${teacher}\n${time}${room}`;
     }
-  }
-
-  onLessonClick(lesson: TimetableEntry): void {
-    console.log('Clicked lesson:', lesson);
   }
 }

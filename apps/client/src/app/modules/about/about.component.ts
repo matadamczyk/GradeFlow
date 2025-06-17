@@ -1,11 +1,9 @@
-import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-
-// PrimeNG imports
-import { CardModule } from 'primeng/card';
-import { TagModule } from 'primeng/tag';
 import { ButtonModule } from 'primeng/button';
+import { CardModule } from 'primeng/card';
+import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
+import { TagModule } from 'primeng/tag';
 
 @Component({
   selector: 'app-about',

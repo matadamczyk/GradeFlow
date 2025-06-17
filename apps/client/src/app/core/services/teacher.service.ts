@@ -1,8 +1,9 @@
-import { Injectable } from '@angular/core';
 import { Observable, forkJoin, of } from 'rxjs';
-import { map, catchError, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
+
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,6 @@ export class TeacherService {
     private authService: AuthService
   ) {}
 
-  // Pobierz dane dashboard dla nauczyciela
   getTeacherDashboardData(teacherId: number): Observable<any> {
     return forkJoin({
       teachers: this.apiService.getAllTeachers(),
@@ -24,17 +24,17 @@ export class TeacherService {
       grades: this.apiService.getAllGrades(),
     }).pipe(
       map((data) => {
-        const currentTeacher = data.teachers.find((t: any) => t.id === teacherId);
+        const currentTeacher = data.teachers.find(
+          (t: any) => t.id === teacherId
+        );
         if (!currentTeacher) {
           throw new Error('Teacher not found');
         }
 
-        // Znajdź przedmioty które uczy dany nauczyciel
         const teacherSubjects = data.teacherSubjects.filter(
           (ts: any) => ts.teacher.id === teacherId
         );
 
-        // Znajdź klasy które uczy dany nauczyciel
         const teacherClasses = this.getTeacherClasses(
           teacherId,
           data.timetables,
@@ -42,13 +42,11 @@ export class TeacherService {
           teacherSubjects
         );
 
-        // Znajdź uczniów których uczy dany nauczyciel
         const teacherStudents = this.getTeacherStudents(
           teacherClasses,
           data.students
         );
 
-        // Plan zajęć na dziś dla nauczyciela
         const todaySchedule = this.getTodayScheduleForTeacher(
           teacherId,
           data.timetables,
@@ -56,7 +54,6 @@ export class TeacherService {
           data.classes
         );
 
-        // Statystyki postępu uczniów
         const studentProgress = this.calculateStudentProgress(
           teacherClasses,
           teacherStudents,
@@ -64,7 +61,6 @@ export class TeacherService {
           teacherSubjects
         );
 
-        // Oczekujące oceny (symulacja - w rzeczywistości byłyby w osobnej tabeli)
         const pendingGrades = this.getPendingGrades(teacherStudents);
 
         return {
@@ -85,7 +81,6 @@ export class TeacherService {
     );
   }
 
-  // Pobierz dane dashboard dla nauczyciela na podstawie userId
   getTeacherDashboardDataByUserId(userId: number): Observable<any> {
     return this.apiService.getTeacherByUserId(userId).pipe(
       switchMap((teacher: any) => {
@@ -98,7 +93,6 @@ export class TeacherService {
     );
   }
 
-  // Pobierz klasy które uczy dany nauczyciel
   private getTeacherClasses(
     teacherId: number,
     timetables: any[],
@@ -106,7 +100,7 @@ export class TeacherService {
     teacherSubjects: any[]
   ): any[] {
     const teacherSubjectIds = teacherSubjects.map((ts: any) => ts.id);
-    
+
     const classIds = new Set(
       timetables
         .filter((t: any) => teacherSubjectIds.includes(t.teacherSubject.id))
@@ -116,13 +110,11 @@ export class TeacherService {
     return classes.filter((c: any) => classIds.has(c.id));
   }
 
-  // Pobierz uczniów których uczy dany nauczyciel
   private getTeacherStudents(teacherClasses: any[], students: any[]): any[] {
     const classIds = teacherClasses.map((c: any) => c.id);
     return students.filter((s: any) => classIds.includes(s.studentClass.id));
   }
 
-  // Pobierz plan zajęć na dziś dla nauczyciela
   private getTodayScheduleForTeacher(
     teacherId: number,
     timetables: any[],
@@ -147,7 +139,6 @@ export class TeacherService {
       .sort((a: any, b: any) => a.lesson_number - b.lesson_number);
   }
 
-  // Oblicz postęp uczniów
   private calculateStudentProgress(
     teacherClasses: any[],
     teacherStudents: any[],
@@ -169,8 +160,10 @@ export class TeacherService {
 
       const average =
         classGrades.length > 0
-          ? classGrades.reduce((sum: number, grade: any) => sum + grade.grade_value, 0) /
-            classGrades.length
+          ? classGrades.reduce(
+              (sum: number, grade: any) => sum + grade.grade_value,
+              0
+            ) / classGrades.length
           : 0;
 
       return {
@@ -182,40 +175,43 @@ export class TeacherService {
     });
   }
 
-  // Symulacja oczekujących ocen
   private getPendingGrades(students: any[]): any[] {
-    // W rzeczywistej aplikacji to byłyby dane z backend-u
     return students.slice(0, 3).map((student: any, index: number) => ({
       studentName: `${student.name} ${student.lastname}`,
       assignment: ['Praca klasowa', 'Kartkówka', 'Projekt'][index],
-      date: new Date(Date.now() - index * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      date: new Date(Date.now() - index * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0],
       studentId: student.id,
     }));
   }
 
-  // Oblicz poprawę (symulacja)
   private calculateImprovement(grades: any[]): string {
     if (grades.length < 2) return '+0.0';
-    
+
     const recent = grades.slice(-5);
     const older = grades.slice(-10, -5);
-    
+
     if (older.length === 0) return '+0.0';
-    
-    const recentAvg = recent.reduce((sum: number, g: any) => sum + g.grade_value, 0) / recent.length;
-    const olderAvg = older.reduce((sum: number, g: any) => sum + g.grade_value, 0) / older.length;
-    
+
+    const recentAvg =
+      recent.reduce((sum: number, g: any) => sum + g.grade_value, 0) /
+      recent.length;
+    const olderAvg =
+      older.reduce((sum: number, g: any) => sum + g.grade_value, 0) /
+      older.length;
+
     const improvement = recentAvg - olderAvg;
-    return improvement >= 0 ? `+${improvement.toFixed(1)}` : improvement.toFixed(1);
+    return improvement >= 0
+      ? `+${improvement.toFixed(1)}`
+      : improvement.toFixed(1);
   }
 
-  // Pobierz aktualny dzień tygodnia
   private getCurrentDayCode(): string {
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
     return days[new Date().getDay()];
   }
 
-  // Pobierz czas lekcji na podstawie numeru
   private getLessonTime(lessonNumber: number): string {
     const times = [
       '08:00',
@@ -231,12 +227,10 @@ export class TeacherService {
     return times[lessonNumber - 1] || '08:00';
   }
 
-  // Pobierz uczniów z klasy
   getStudentsFromClass(classId: number): Observable<any[]> {
     return this.apiService.getStudentsByClass(classId);
   }
 
-  // Pobierz oceny ucznia dla przedmiotu nauczyciela
   getStudentGradesForTeacherSubject(
     studentId: number,
     teacherSubjectId: number
@@ -246,4 +240,4 @@ export class TeacherService {
       teacherSubjectId
     );
   }
-} 
+}
