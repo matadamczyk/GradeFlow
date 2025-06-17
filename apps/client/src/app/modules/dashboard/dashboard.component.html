@@ -142,7 +142,7 @@
                   </ng-template>
                   <p>Aktualna lekcja</p>
                   <small *ngIf="dashboardData()?.currentLesson">
-                    {{ dashboardData()?.currentLesson?.subjectName }}
+                    {{ dashboardData()?.currentLesson?.teacherSubject?.subject?.name || 'Nieznany przedmiot' }}
                   </small>
                   <small *ngIf="!dashboardData()?.currentLesson">
                     Brak zajęć
@@ -168,7 +168,7 @@
                   </ng-template>
                   <p>Następna lekcja</p>
                   <small *ngIf="dashboardData()?.nextLesson">
-                    {{ dashboardData()?.nextLesson?.subjectName }}
+                    {{ dashboardData()?.nextLesson?.teacherSubject?.subject?.name || 'Nieznany przedmiot' }}
                   </small>
                   <small *ngIf="!dashboardData()?.nextLesson">
                     Brak zajęć
@@ -847,9 +847,9 @@
                   <small>{{ formatTime(lesson.endTime) }}</small>
                 </div>
                 <div class="lesson-details">
-                  <h4>{{ lesson.subjectName }}</h4>
-                  <p>{{ lesson.teacherName }}</p>
-                  <small>Sala {{ lesson.room }}</small>
+                  <h4>{{ lesson.teacherSubject?.subject?.name || 'Nieznany przedmiot' }}</h4>
+                  <p>{{ lesson.teacherSubject?.teacher?.name }} {{ lesson.teacherSubject?.teacher?.lastname }}</p>
+                  <small>Sala {{ lesson.room || 'Nieznana' }}</small>
                 </div>
               </div>
             </div>

@@ -655,7 +655,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         id: 1,
         type: 'info',
         title: 'Trwa lekcja',
-        message: `${data.currentLesson.subjectName} w sali ${data.currentLesson.room}`,
+        message: `${data.currentLesson.teacherSubject?.subject?.name || 'Nieznany przedmiot'} w sali ${data.currentLesson.room || 'Nieznana sala'}`,
         time: 'teraz',
         icon: 'pi pi-clock',
       });
@@ -666,7 +666,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
         id: 2,
         type: 'warning',
         title: 'Następna lekcja',
-        message: `${data.nextLesson.subjectName} o ${data.nextLesson.startTime}`,
+        message: `${data.nextLesson.teacherSubject?.subject?.name || 'Nieznany przedmiot'} o ${data.nextLesson.startTime}`,
         time: 'wkrótce',
         icon: 'pi pi-calendar',
       });
