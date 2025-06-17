@@ -162,7 +162,7 @@ export class GradesComponent implements OnInit {
   private initializeForms(): void {
     // Get today's date in YYYY-MM-DD format for HTML date input
     const today = new Date().toISOString().split('T')[0];
-    
+
     this.addGradeForm = this.fb.group({
       student: ['', Validators.required],
       gradeValue: [
@@ -519,7 +519,7 @@ export class GradesComponent implements OnInit {
   openEditGradeDialog(grade: any): void {
     this.selectedGrade.set(grade);
     const gradeDate = new Date(grade.date).toISOString().split('T')[0];
-    
+
     this.editGradeForm.patchValue({
       gradeValue: grade.grade_value,
       gradeWeight: grade.grade_weight,
@@ -527,7 +527,7 @@ export class GradesComponent implements OnInit {
       type: grade.type || 'other',
       date: gradeDate,
     });
-    
+
     this.showEditGradeDialog = true;
   }
 
@@ -686,36 +686,39 @@ export class GradesComponent implements OnInit {
         type: formValue.type,
       };
 
-      this.gradesService.updateGrade(this.selectedGrade().id, gradeData).subscribe({
-        next: (result: any) => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Sukces',
-            detail: 'Ocena została zaktualizowana pomyślnie',
-          });
-          this.closeEditGradeDialog();
-          // Refresh data
-          this.loadClassStatistics(this.selectedClass().id);
-          this.refreshStudentData();
-          // Update the selected student grades if dialog is open
-          if (this.showStudentGradesDialog && this.selectedStudent()) {
-            const updatedStudent = this.selectedClassStudentsWithGrades().find(
-              s => s.id === this.selectedStudent().id
-            );
-            if (updatedStudent) {
-              this.selectedStudentGrades.set(updatedStudent.grades || []);
+      this.gradesService
+        .updateGrade(this.selectedGrade().id, gradeData)
+        .subscribe({
+          next: (result: any) => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Sukces',
+              detail: 'Ocena została zaktualizowana pomyślnie',
+            });
+            this.closeEditGradeDialog();
+            // Refresh data
+            this.loadClassStatistics(this.selectedClass().id);
+            this.refreshStudentData();
+            // Update the selected student grades if dialog is open
+            if (this.showStudentGradesDialog && this.selectedStudent()) {
+              const updatedStudent =
+                this.selectedClassStudentsWithGrades().find(
+                  (s) => s.id === this.selectedStudent().id
+                );
+              if (updatedStudent) {
+                this.selectedStudentGrades.set(updatedStudent.grades || []);
+              }
             }
-          }
-        },
-        error: (error: any) => {
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Błąd',
-            detail: 'Nie udało się zaktualizować oceny',
-          });
-          console.error('Error updating grade:', error);
-        },
-      });
+          },
+          error: (error: any) => {
+            this.messageService.add({
+              severity: 'error',
+              summary: 'Błąd',
+              detail: 'Nie udało się zaktualizować oceny',
+            });
+            console.error('Error updating grade:', error);
+          },
+        });
     }
   }
 
