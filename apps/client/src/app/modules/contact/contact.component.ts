@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { HttpHeaders } from '@angular/common/http';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';

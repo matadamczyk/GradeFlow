@@ -5,8 +5,8 @@ import com.example.demo.service.EmailService;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Map;
 import java.util.UUID;
@@ -24,6 +24,7 @@ public class ContactController {
         this.studentController = studentController;
     }
 
+    @PreAuthorize("permitAll()") // Umożliwia dostęp wszystkim użytkownikom
     @PostMapping("/send")
     public ResponseEntity<String> sendEmail(@RequestBody Map<String, String> request) {
         
