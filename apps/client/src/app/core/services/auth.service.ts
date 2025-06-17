@@ -18,6 +18,9 @@ export interface AuthUser {
   providedIn: 'root',
 })
 export class AuthService {
+  // Flag for enabling mock mode - change to true to enable mock login for e2e tests
+  private readonly MOCK_MODE = false;
+
   private currentUserSubject = new BehaviorSubject<AuthUser | null>(null);
   public currentUser$ = this.currentUserSubject.asObservable();
 
@@ -67,6 +70,14 @@ export class AuthService {
   }
 
   login(credentials: LoginRequest): Observable<AuthUser> {
+    // Mock mode for e2e tests - check both internal flag and window flag
+    const isMockMode =
+      this.MOCK_MODE || (window as any).__GRADEFLOW_MOCK_MODE__;
+    if (isMockMode) {
+      return this.mockLogin(credentials);
+    }
+
+    // Normal API login
     return this.apiService.loginUser(credentials).pipe(
       map((response: any) => {
         if (response && response.token && response.user) {
@@ -108,6 +119,50 @@ export class AuthService {
         );
       })
     );
+  }
+
+  private mockLogin(credentials: LoginRequest): Observable<AuthUser> {
+    // Simulate network delay
+    return of(null).pipe(
+      delay(500),
+      switchMap(() => {
+        // Check credentials
+        if (credentials.password !== 'password') {
+          return throwError(() => new Error('Nieprawidłowy email lub hasło'));
+        }
+
+        // Find user by email
+        const user = this.mockUsers.find((u) => u.email === credentials.email);
+
+        if (!user) {
+          return throwError(() => new Error('Nieprawidłowy email lub hasło'));
+        }
+
+        // Mock token
+        const mockToken = 'mock_jwt_token_' + Date.now();
+
+        localStorage.setItem('currentUser', JSON.stringify(user));
+        localStorage.setItem('token', mockToken);
+
+        this.currentUserSubject.next(user);
+
+        console.log('🎭 Mock login successful for:', credentials.email);
+
+        return of(user);
+      })
+    );
+  }
+
+  // Method to enable mock mode (for e2e tests)
+  enableMockMode(): void {
+    (this as any).MOCK_MODE = true;
+    console.log('🎭 Mock mode enabled for e2e tests');
+  }
+
+  // Method to disable mock mode
+  disableMockMode(): void {
+    (this as any).MOCK_MODE = false;
+    console.log('🎭 Mock mode disabled');
   }
 
   logout(): void {
