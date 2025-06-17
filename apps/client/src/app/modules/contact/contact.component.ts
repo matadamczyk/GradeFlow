@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { AccordionModule } from 'primeng/accordion';
 import { ButtonModule } from 'primeng/button';
 import { CardModule } from 'primeng/card';
@@ -31,6 +32,7 @@ import { ToastModule } from 'primeng/toast';
     CheckboxModule,
     AccordionModule,
     ToastModule,
+    HttpClientModule,
   ],
   providers: [MessageService],
   templateUrl: './contact.component.html',
@@ -52,6 +54,7 @@ export class ContactComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
+    private http: HttpClient,
     private messageService: MessageService
   ) {}
 
@@ -72,23 +75,36 @@ export class ContactComponent implements OnInit {
   onSubmit(): void {
     if (this.contactForm.valid) {
       this.isSubmitting.set(true);
-
-      setTimeout(() => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Wiadomość wysłana',
-          detail: 'Dziękujemy za kontakt! Odpowiemy w ciągu 24 godzin.',
-          life: 5000,
-        });
-
-        this.contactForm.reset();
-        this.isSubmitting.set(false);
-      }, 2000);
+      const formData = this.contactForm.value;
+  
+      this.http.post('http://localhost:8080/contact/send', formData).subscribe({
+        next: () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Wiadomość wysłana',
+            detail: 'Dziękujemy za kontakt! Odpowiemy w ciągu 24 godzin.',
+            life: 5000,
+          });
+  
+          this.contactForm.reset();
+          this.isSubmitting.set(false);
+        },
+        error: () => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Błąd',
+            detail: 'Nie udało się wysłać wiadomości. Spróbuj ponownie później.',
+            life: 5000,
+          });
+  
+          this.isSubmitting.set(false);
+        },
+      });
     } else {
       Object.keys(this.contactForm.controls).forEach((key) => {
         this.contactForm.get(key)?.markAsTouched();
       });
-
+  
       this.messageService.add({
         severity: 'error',
         summary: 'Błąd formularza',
