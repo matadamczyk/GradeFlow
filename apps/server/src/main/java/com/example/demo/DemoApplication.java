@@ -29,10 +29,14 @@ public class DemoApplication {
 
   public static void main(String[] args) {
     // UNCOMMENT IF LAUNCHING LOCALLY
-    // Dotenv dotenv = Dotenv.load();
+    Dotenv dotenv = Dotenv.load();
     // System.setProperty("SPRING_DATASOURCE_URL", dotenv.get("SPRING_DATASOURCE_URL"));
     // System.setProperty("SPRING_DATASOURCE_USERNAME", dotenv.get("SPRING_DATASOURCE_USERNAME"));
     // System.setProperty("SPRING_DATASOURCE_PASSWORD", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
+    System.setProperty("SPRING_MAIL_HOST", dotenv.get("SPRING_MAIL_HOST"));
+    System.setProperty("SPRING_MAIL_PORT", dotenv.get("SPRING_MAIL_PORT"));
+    System.setProperty("SPRING_MAIL_USERNAME", dotenv.get("SPRING_MAIL_USERNAME"));
+    System.setProperty("SPRING_MAIL_PASSWORD", dotenv.get("SPRING_MAIL_PASSWORD"));
     SpringApplication.run(DemoApplication.class, args);
   }
 
@@ -43,7 +47,7 @@ public class DemoApplication {
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/api/users/login", "/api/users/register").permitAll()
+        .requestMatchers("/api/users/login", "/api/users/register", "/api/contact/send").permitAll()
         .anyRequest().authenticated()
       )
       .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
