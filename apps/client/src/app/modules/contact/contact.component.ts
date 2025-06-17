@@ -79,7 +79,7 @@ export class ContactComponent implements OnInit {
       this.isSubmitting.set(true);
 
       const formData = this.contactForm.value;
-      
+
       if (formData.subject === 'account-creation') {
         this.createAccount(formData);
       } else {

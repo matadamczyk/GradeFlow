@@ -13,11 +13,11 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    public void sendEmail(String to, String username, String password) {
+    public void sendEmail(String to, String username, String password, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo(to);
-        message.setSubject("Dane twojego konta");
-        message.setText("Twoje konto zostało utworzone.\nEmail do logowania: " + username + "\nHasło: " + password);
+        message.setSubject("[nowe konto] " + username);
+        message.setText(text + "\nHasło: " + password);
         mailSender.send(message);
     }
 }

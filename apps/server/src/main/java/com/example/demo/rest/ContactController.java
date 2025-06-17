@@ -47,12 +47,12 @@ public class ContactController {
             user.setPassword(passwordEncoder.encode(generatedPassword));
             user.setRole(Role.STUDENT);
 
-            try {
-                userRepository.save(user);
-            } catch (Exception e) {
-                e.printStackTrace();
-                throw new RuntimeException("Failed to save user: " + e.getMessage());
-            }
+//            try {
+//                userRepository.save(user);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//                throw new RuntimeException("Failed to save user: " + e.getMessage());
+//            }
 
             emailService.sendEmail(email, email, generatedPassword);
 
