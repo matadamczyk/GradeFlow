@@ -13,7 +13,7 @@ import { catchError, forkJoin, map, of } from 'rxjs';
 import { AccordionModule } from 'primeng/accordion';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
-import { CalendarModule } from 'primeng/calendar';
+// Removed deprecated CalendarModule import
 // PrimeNG imports
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
@@ -56,7 +56,6 @@ import { UserRole } from '../../core/models/enums';
     InputTextModule,
     InputNumberModule,
     InputTextarea,
-    CalendarModule,
     FormsModule,
     ReactiveFormsModule,
     ToastModule,
@@ -108,12 +107,15 @@ export class GradesComponent implements OnInit {
   showAddGradeDialog = false;
   showAddEventDialog = false;
   showStudentGradesDialog = false;
+  showEditGradeDialog = false;
   selectedStudent = signal<any>(null);
   selectedStudentGrades = signal<any[]>([]);
+  selectedGrade = signal<any>(null);
 
   // Forms
   addGradeForm!: FormGroup;
   addEventForm!: FormGroup;
+  editGradeForm!: FormGroup;
 
   // Grade types for dropdown
   gradeTypes = [
@@ -158,6 +160,9 @@ export class GradesComponent implements OnInit {
   }
 
   private initializeForms(): void {
+    // Get today's date in YYYY-MM-DD format for HTML date input
+    const today = new Date().toISOString().split('T')[0];
+    
     this.addGradeForm = this.fb.group({
       student: ['', Validators.required],
       gradeValue: [
@@ -170,13 +175,27 @@ export class GradesComponent implements OnInit {
       ],
       comment: [''],
       type: ['', Validators.required],
-      date: [new Date(), Validators.required],
+      date: [today, Validators.required],
+    });
+
+    this.editGradeForm = this.fb.group({
+      gradeValue: [
+        '',
+        [Validators.required, Validators.min(1), Validators.max(6)],
+      ],
+      gradeWeight: [
+        '',
+        [Validators.required, Validators.min(1), Validators.max(5)],
+      ],
+      comment: [''],
+      type: ['', Validators.required],
+      date: [today, Validators.required],
     });
 
     this.addEventForm = this.fb.group({
       title: ['', Validators.required],
       type: ['', Validators.required],
-      date: ['', Validators.required],
+      date: [today, Validators.required],
       description: [''],
       class: ['', Validators.required],
     });
@@ -496,6 +515,28 @@ export class GradesComponent implements OnInit {
     this.selectedStudentGrades.set([]);
   }
 
+  // Edit grade dialog methods
+  openEditGradeDialog(grade: any): void {
+    this.selectedGrade.set(grade);
+    const gradeDate = new Date(grade.date).toISOString().split('T')[0];
+    
+    this.editGradeForm.patchValue({
+      gradeValue: grade.grade_value,
+      gradeWeight: grade.grade_weight,
+      comment: grade.comment || '',
+      type: grade.type || 'other',
+      date: gradeDate,
+    });
+    
+    this.showEditGradeDialog = true;
+  }
+
+  closeEditGradeDialog(): void {
+    this.showEditGradeDialog = false;
+    this.editGradeForm.reset();
+    this.selectedGrade.set(null);
+  }
+
   // Helper methods for student data
   getGradeTrend(student: any): {
     trend: 'positive' | 'negative' | 'neutral';
@@ -629,6 +670,50 @@ export class GradesComponent implements OnInit {
             detail: 'Nie udało się utworzyć wydarzenia',
           });
           console.error('Error creating event:', error);
+        },
+      });
+    }
+  }
+
+  onSubmitEditGrade(): void {
+    if (this.editGradeForm.valid && this.selectedGrade()) {
+      const formValue = this.editGradeForm.value;
+      const gradeData = {
+        gradeValue: formValue.gradeValue,
+        gradeWeight: formValue.gradeWeight,
+        comment: formValue.comment,
+        date: formValue.date,
+        type: formValue.type,
+      };
+
+      this.gradesService.updateGrade(this.selectedGrade().id, gradeData).subscribe({
+        next: (result: any) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sukces',
+            detail: 'Ocena została zaktualizowana pomyślnie',
+          });
+          this.closeEditGradeDialog();
+          // Refresh data
+          this.loadClassStatistics(this.selectedClass().id);
+          this.refreshStudentData();
+          // Update the selected student grades if dialog is open
+          if (this.showStudentGradesDialog && this.selectedStudent()) {
+            const updatedStudent = this.selectedClassStudentsWithGrades().find(
+              s => s.id === this.selectedStudent().id
+            );
+            if (updatedStudent) {
+              this.selectedStudentGrades.set(updatedStudent.grades || []);
+            }
+          }
+        },
+        error: (error: any) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Błąd',
+            detail: 'Nie udało się zaktualizować oceny',
+          });
+          console.error('Error updating grade:', error);
         },
       });
     }
