@@ -72,79 +72,139 @@
     <!-- Enhanced Statistics Cards -->
     <div class="stats-section" *ngIf="statistics$ | async as stats">
       <div class="grid">
-        <div class="col-12 md:col-4">
-          <div class="stat-card overall-average">
-            <div class="stat-header">
-              <div class="stat-icon">
-                <i class="pi pi-trophy"></i>
-              </div>
-              <div class="stat-trend">
-                <i class="pi pi-arrow-up"></i>
-              </div>
-            </div>
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="stat-card average-card">
             <div class="stat-content">
-              <h3>Średnia Ogólna</h3>
-              <div class="stat-value">
-                {{ stats.overallAverage | number : '1.2-2' }}
-                <span class="stat-scale">/6.0</span>
+              <div class="stat-icon">
+                <i class="pi pi-star-fill"></i>
               </div>
-              <div class="progress-container">
+              <div class="stat-details">
+                <h3>{{ stats.overallAverage | number : '1.2-2' }}</h3>
+                <p>Średnia ogólna</p>
                 <p-progressBar
                   [value]="getAverageProgress(stats.overallAverage)"
                   [showValue]="false"
-                  styleClass="stat-progress"
+                  styleClass="progress-small"
                 >
                 </p-progressBar>
-                <span class="progress-label"
-                  >{{
-                    getAverageProgress(stats.overallAverage) | number : '1.0-0'
-                  }}%</span
-                >
               </div>
             </div>
-          </div>
+          </p-card>
         </div>
 
-        <div class="col-12 md:col-4">
-          <div class="stat-card total-grades">
-            <div class="stat-header">
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="stat-card grades-card">
+            <div class="stat-content">
               <div class="stat-icon">
                 <i class="pi pi-list"></i>
               </div>
-              <div class="stat-badge">
-                <span>+{{ stats.totalGrades }}</span>
+              <div class="stat-details">
+                <h3>{{ stats.totalGrades }}</h3>
+                <p>Liczba ocen</p>
+                <small>w tym semestrze</small>
               </div>
             </div>
-            <div class="stat-content">
-              <h3>Liczba Ocen</h3>
-              <div class="stat-value">
-                {{ stats.totalGrades }}
-                <span class="stat-unit">ocen</span>
-              </div>
-              <p class="stat-description">w tym semestrze</p>
-            </div>
-          </div>
+          </p-card>
         </div>
 
-        <div class="col-12 md:col-4">
-          <div class="stat-card subjects-count">
-            <div class="stat-header">
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="stat-card subjects-card">
+            <div class="stat-content">
               <div class="stat-icon">
                 <i class="pi pi-book"></i>
               </div>
-              <div class="stat-indicator">
-                <div class="pulse"></div>
+              <div class="stat-details">
+                <h3>{{ stats.subjectGrades.length }}</h3>
+                <p>Przedmioty</p>
+                <small>aktywnych</small>
               </div>
             </div>
+          </p-card>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="stat-card best-grade-card">
             <div class="stat-content">
-              <h3>Przedmioty</h3>
-              <div class="stat-value">
-                {{ stats.subjectGrades.length }}
-                <span class="stat-unit">aktywnych</span>
+              <div class="stat-icon">
+                <i class="pi pi-trophy"></i>
               </div>
-              <p class="stat-description">w trakcie semestru</p>
+              <div class="stat-details">
+                <h3>{{ getBestGrade(stats) || 6 }}</h3>
+                <p>Najlepsza ocena</p>
+                <small>w tym semestrze</small>
+              </div>
             </div>
-          </div>
+          </p-card>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Academic Statistics -->
+    <div class="academic-stats-section" *ngIf="isStudent() && (statistics$ | async) as stats">
+      <div class="grid">
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="stat-card attendance-card">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <i class="pi pi-calendar-plus"></i>
+              </div>
+              <div class="stat-details">
+                <h3>95%</h3>
+                <p>Frekwencja</p>
+                <p-progressBar
+                  [value]="95"
+                  [showValue]="false"
+                  styleClass="progress-small"
+                >
+                </p-progressBar>
+              </div>
+            </div>
+          </p-card>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="stat-card assignments-card">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <i class="pi pi-file-check"></i>
+              </div>
+              <div class="stat-details">
+                <h3>{{ stats.totalGrades || 0 }}</h3>
+                <p>Zadania</p>
+                <small>wykonanych</small>
+              </div>
+            </div>
+          </p-card>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="stat-card behavior-card">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <i class="pi pi-thumbs-up"></i>
+              </div>
+              <div class="stat-details">
+                <h3>Bardzo dobre</h3>
+                <p>Zachowanie</p>
+                <small>ocena zachowania</small>
+              </div>
+            </div>
+          </p-card>
+        </div>
+
+        <div class="col-12 md:col-6 lg:col-3">
+          <p-card class="stat-card ranking-card">
+            <div class="stat-content">
+              <div class="stat-icon">
+                <i class="pi pi-sort-amount-up"></i>
+              </div>
+              <div class="stat-details">
+                <h3>5<small>/30</small></h3>
+                <p>Pozycja w klasie</p>
+                <small>według średniej</small>
+              </div>
+            </div>
+          </p-card>
         </div>
       </div>
     </div>

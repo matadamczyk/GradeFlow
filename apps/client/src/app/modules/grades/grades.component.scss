@@ -114,170 +114,79 @@
   margin-bottom: 2rem;
 
   .stat-card {
-    background: var(--surface-card);
-    border-radius: 16px;
-    padding: 1.5rem;
     height: 100%;
-    border: 1px solid var(--surface-border);
-    transition: all 0.3s ease;
-    position: relative;
-    overflow: hidden;
+    
+    ::ng-deep .p-card {
+      height: 100%;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid var(--surface-border);
 
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 4px;
-      background: linear-gradient(
-        90deg,
-        transparent,
-        var(--primary-color),
-        transparent
-      );
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-      border-color: var(--primary-color);
-
-      &::before {
-        opacity: 1;
-      }
-    }
-
-    .stat-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1rem;
-
-      .stat-icon {
-        width: 50px;
-        height: 50px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.25rem;
-        color: white;
-        position: relative;
-        overflow: hidden;
-
-        &::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: linear-gradient(
-            45deg,
-            transparent,
-            rgba(255, 255, 255, 0.2),
-            transparent
-          );
-          animation: shimmer 3s infinite;
-        }
-      }
-
-      .stat-trend {
-        background: rgba(34, 197, 94, 0.1);
-        color: var(--green-500);
-        border-radius: 8px;
-        padding: 0.25rem 0.5rem;
-        font-size: 0.75rem;
-      }
-
-      .stat-badge {
-        background: var(--primary-color);
-        color: white;
-        border-radius: 12px;
-        padding: 0.25rem 0.75rem;
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-
-      .stat-indicator {
-        position: relative;
-
-        .pulse {
-          width: 12px;
-          height: 12px;
-          background: var(--green-500);
-          border-radius: 50%;
-          animation: pulse 2s infinite;
-        }
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary-color);
       }
     }
 
     .stat-content {
-      h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 0.875rem;
-        font-weight: 600;
-        color: var(--text-color-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
+      display: flex;
+      align-items: center;
+      gap: 1rem;
 
-      .stat-value {
-        font-size: 2.25rem;
-        font-weight: 800;
-        color: var(--text-color);
-        margin: 0 0 1rem 0;
-        display: flex;
-        align-items: baseline;
-        gap: 0.5rem;
-
-        .stat-scale,
-        .stat-unit {
-          font-size: 1rem;
-          font-weight: 500;
-          color: var(--text-color-secondary);
-        }
-      }
-
-      .stat-description {
-        color: var(--text-color-secondary);
-        font-size: 0.875rem;
-        margin: 0;
-      }
-
-      .progress-container {
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
 
-        .stat-progress {
-          flex: 1;
-          height: 6px !important;
+        i {
+          font-size: 1.5rem;
+        }
+      }
+
+      .stat-details {
+        flex: 1;
+
+        h3 {
+          font-size: 1.75rem;
+          font-weight: 700;
+          margin: 0 0 0.25rem 0;
+          color: var(--text-color);
         }
 
-        .progress-label {
-          font-size: 0.75rem;
-          font-weight: 600;
+        p {
+          font-size: 0.875rem;
+          font-weight: 500;
           color: var(--text-color-secondary);
-          min-width: 35px;
-          text-align: right;
+          margin: 0 0 0.5rem 0;
+        }
+
+        small {
+          font-size: 0.75rem;
+          color: var(--text-color-secondary);
+          opacity: 0.8;
         }
       }
     }
 
-    &.overall-average .stat-icon {
-      background: linear-gradient(135deg, #f59e0b, #d97706);
+    &.average-card .stat-icon {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
 
-    &.total-grades .stat-icon {
-      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    &.grades-card .stat-icon {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
     }
 
-    &.subjects-count .stat-icon {
-      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    &.subjects-card .stat-icon {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    &.best-grade-card .stat-icon {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
     }
   }
 }
@@ -1063,3 +972,111 @@
     }
   }
 }
+
+// Additional Academic Statistics Section
+.academic-stats-section {
+  margin-bottom: 2rem;
+
+  .stat-card {
+    height: 100%;
+    
+    ::ng-deep .p-card {
+      height: 100%;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      border: 1px solid var(--surface-border);
+
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        border-color: var(--primary-color);
+      }
+    }
+
+    .stat-content {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: white;
+
+        i {
+          font-size: 1.5rem;
+        }
+      }
+
+      .stat-details {
+        flex: 1;
+
+        h3 {
+          font-size: 1.75rem;
+          font-weight: 700;
+          margin: 0 0 0.25rem 0;
+          color: var(--text-color);
+        }
+
+        p {
+          font-size: 0.875rem;
+          font-weight: 500;
+          color: var(--text-color-secondary);
+          margin: 0 0 0.5rem 0;
+        }
+
+        small {
+          font-size: 0.75rem;
+          color: var(--text-color-secondary);
+          opacity: 0.8;
+        }
+      }
+    }
+
+    &.attendance-card .stat-icon {
+      background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    &.assignments-card .stat-icon {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+    }
+
+    &.behavior-card .stat-icon {
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+    }
+
+    &.ranking-card .stat-icon {
+      background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .grid {
+      margin: 0;
+      
+      .col-12 {
+        padding: 0.5rem;
+      }
+    }
+  }
+}
+
+// Progress bar styles
+.progress-small {
+  height: 6px !important;
+  margin-top: 0.5rem;
+
+  ::ng-deep .p-progressbar {
+    height: 6px;
+  }
+
+  ::ng-deep .p-progressbar-value {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-600)) !important;
+  }
+}
+

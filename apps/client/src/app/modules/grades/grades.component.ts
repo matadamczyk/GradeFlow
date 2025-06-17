@@ -1,8 +1,7 @@
 // Core imports
-import { AuthService, GradesService, ApiService } from '../../core/services';
+import { ApiService, AuthService, GradesService } from '../../core/services';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { GradeStatistics, SubjectGrades } from '../../core/models';
-import { UserRole } from '../../core/models/enums';
 
 import { AccordionModule } from 'primeng/accordion';
 import { BadgeModule } from 'primeng/badge';
@@ -17,6 +16,7 @@ import { SkeletonModule } from 'primeng/skeleton';
 import { TableModule } from 'primeng/table';
 import { TagModule } from 'primeng/tag';
 import { TooltipModule } from 'primeng/tooltip';
+import { UserRole } from '../../core/models/enums';
 
 @Component({
   selector: 'app-grades',
@@ -182,6 +182,25 @@ export class GradesComponent implements OnInit {
 
   getAverageProgress(average: number): number {
     return (average / 6) * 100;
+  }
+
+  getBestGrade(stats: GradeStatistics): number | null {
+    if (!stats?.subjectGrades || stats.subjectGrades.length === 0) {
+      return null;
+    }
+    
+    let bestGrade = 0;
+    stats.subjectGrades.forEach((subject: SubjectGrades) => {
+      if (subject.grades && subject.grades.length > 0) {
+        subject.grades.forEach((grade: { grade_value: number }) => {
+          if (grade.grade_value > bestGrade) {
+            bestGrade = grade.grade_value;
+          }
+        });
+      }
+    });
+    
+    return bestGrade > 0 ? bestGrade : null;
   }
 
   formatDate(date: Date): string {
