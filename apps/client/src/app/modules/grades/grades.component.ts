@@ -1,4 +1,3 @@
-// Core imports
 import { ApiService, AuthService, GradesService } from '../../core/services';
 import { Component, OnInit, computed, signal } from '@angular/core';
 import {
@@ -14,10 +13,8 @@ import { AccordionModule } from 'primeng/accordion';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
 import { CalendarModule } from 'primeng/calendar';
-// PrimeNG imports
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
-// Additional PrimeNG imports for teacher functionality
 import { DialogModule } from 'primeng/dialog';
 import { DividerModule } from 'primeng/divider';
 import { DropdownModule } from 'primeng/dropdown';
@@ -50,7 +47,6 @@ import { UserRole } from '../../core/models/enums';
     BadgeModule,
     TooltipModule,
     DividerModule,
-    // Additional modules for teacher functionality
     DialogModule,
     DropdownModule,
     InputTextModule,
@@ -75,7 +71,6 @@ export class GradesComponent implements OnInit {
   isLoading = true;
   currentUser = signal<any>(null);
 
-  // Role-specific computed properties
   userRole = computed(() => this.currentUser()?.role);
   isStudent = computed(() => this.userRole() === UserRole.STUDENT);
   isTeacher = computed(() => this.userRole() === UserRole.TEACHER);
@@ -83,10 +78,8 @@ export class GradesComponent implements OnInit {
   isAdmin = computed(() => this.userRole() === UserRole.ADMIN);
 
   UserRole = UserRole;
-  // Expose Math to template
   Math = Math;
 
-  // Table columns
   gradeColumns = [
     { field: 'grade_value', header: 'Ocena' },
     { field: 'date', header: 'Data' },
@@ -94,7 +87,6 @@ export class GradesComponent implements OnInit {
     { field: 'comment', header: 'Komentarz' },
   ];
 
-  // Teacher-specific properties
   teacherData = signal<any>(null);
   teacherClasses = signal<any[]>([]);
   teacherSubjects = signal<any[]>([]);
@@ -104,18 +96,15 @@ export class GradesComponent implements OnInit {
   classStatistics = signal<any>(null);
   classEvents = signal<any[]>([]);
 
-  // Dialog states
   showAddGradeDialog = false;
   showAddEventDialog = false;
   showStudentGradesDialog = false;
   selectedStudent = signal<any>(null);
   selectedStudentGrades = signal<any[]>([]);
 
-  // Forms
   addGradeForm!: FormGroup;
   addEventForm!: FormGroup;
 
-  // Grade types for dropdown
   gradeTypes = [
     { label: 'Sprawdzian', value: 'test' },
     { label: 'Kartkówka', value: 'quiz' },
@@ -126,7 +115,6 @@ export class GradesComponent implements OnInit {
     { label: 'Inne', value: 'other' },
   ];
 
-  // Event types for dropdown
   eventTypes = [
     { label: 'Sprawdzian', value: 'test' },
     { label: 'Kartkówka', value: 'quiz' },
@@ -196,7 +184,6 @@ export class GradesComponent implements OnInit {
     if (this.isTeacher()) {
       this.loadTeacherData(userId);
     } else if (this.isStudent()) {
-      // For students, get student ID first, then load grades
       this.apiService.getStudentByUserId(userId).subscribe({
         next: (student: any) => {
           this.loadStudentGrades(student.id);
@@ -207,21 +194,17 @@ export class GradesComponent implements OnInit {
         },
       });
     } else {
-      // For other roles, use userId directly
       this.loadGradesByUserId(userId);
     }
   }
 
   private loadTeacherData(userId: number): void {
-    // Get teacher by user ID first
     this.apiService.getTeacherByUserId(userId).subscribe({
       next: (teacher: any) => {
         this.teacherData.set(teacher);
 
-        // Load teacher's classes and subjects
         this.gradesService.getTeacherClasses(teacher.id).subscribe({
           next: (classes: any[]) => {
-            // Load student count for each class
             this.loadClassesWithStudentCounts(classes);
           },
           error: (error) =>
@@ -246,7 +229,6 @@ export class GradesComponent implements OnInit {
   }
 
   private loadClassesWithStudentCounts(classes: any[]): void {
-    // Create an array of observables to load student counts for each class
     const classRequests = classes.map((classData) =>
       this.apiService.getStudentsByClass(classData.id).pipe(
         map((students) => ({
@@ -268,14 +250,12 @@ export class GradesComponent implements OnInit {
       )
     );
 
-    // Execute all requests and combine results
     forkJoin(classRequests).subscribe({
       next: (classesWithCounts) => {
         this.teacherClasses.set(classesWithCounts);
       },
       error: (error) => {
         console.error('Error loading classes with student counts:', error);
-        // Fallback to classes without student count data
         const fallbackClasses = classes.map((classData) => ({
           ...classData,
           studentsCount: 0,
@@ -287,34 +267,30 @@ export class GradesComponent implements OnInit {
   }
 
   private loadStudentGrades(studentId: number): void {
-    // Pobierz statystyki ocen
     this.statistics$ = this.gradesService.getGradeStatistics(studentId);
 
-    // Pobierz ostatnie oceny
     this.recentGrades$ = this.gradesService.getRecentGrades(studentId, 5);
 
-    // Pobierz oceny pogrupowane według przedmiotów
     this.subjectGrades$ = this.gradesService.getSubjectGrades(studentId);
 
-    // Finished loading
     this.isLoading = false;
   }
 
   private loadGradesByUserId(userId: number): void {
-    // Pobierz statystyki ocen
+ 
     this.statistics$ = this.gradesService.getGradeStatistics(userId);
 
-    // Pobierz ostatnie oceny
+ 
     this.recentGrades$ = this.gradesService.getRecentGrades(userId, 5);
 
-    // Pobierz oceny pogrupowane według przedmiotów
+ 
     this.subjectGrades$ = this.gradesService.getSubjectGrades(userId);
 
-    // Finished loading
+ 
     this.isLoading = false;
   }
 
-  // Teacher-specific methods
+ 
 
   onClassSelect(classData: any): void {
     this.selectedClass.set(classData);
@@ -328,7 +304,7 @@ export class GradesComponent implements OnInit {
       next: (students: any[]) => {
         this.selectedClassStudents.set(students);
 
-        // Load grade statistics for each student
+ 
         this.loadStudentsWithGrades(students);
       },
       error: (error) => console.error('Error loading class students:', error),
@@ -353,13 +329,13 @@ export class GradesComponent implements OnInit {
 
     const teacherSubjectId = subjects[0].id; // Use first subject for now
 
-    // Create an array of observables for each student's grades
+ 
     const gradeRequests = students.map((student) =>
       this.apiService
         .getGradesByStudentAndTeacherSubject(student.id, teacherSubjectId)
         .pipe(
           map((grades) => {
-            // Calculate weighted average instead of arithmetic average
+ 
             const totalWeightedScore = grades.reduce(
               (sum: number, grade: any) =>
                 sum + grade.grade_value * (grade.grade_weight || 1),
@@ -405,14 +381,14 @@ export class GradesComponent implements OnInit {
         )
     );
 
-    // Execute all requests and combine results
+ 
     forkJoin(gradeRequests).subscribe({
       next: (studentsWithGrades) => {
         this.selectedClassStudentsWithGrades.set(studentsWithGrades);
       },
       error: (error) => {
         console.error('Error loading students with grades:', error);
-        // Fallback to students without grade data
+ 
         this.selectedClassStudentsWithGrades.set(
           students.map((student) => ({
             ...student,
@@ -430,7 +406,7 @@ export class GradesComponent implements OnInit {
   private loadClassStatistics(classId: number): void {
     const subjects = this.teacherSubjects();
     if (subjects.length > 0) {
-      // Use first subject for now, in real app teacher would select
+ 
       const teacherSubjectId = subjects[0].id;
 
       this.gradesService
@@ -454,7 +430,7 @@ export class GradesComponent implements OnInit {
     });
   }
 
-  // Dialog methods
+ 
 
   openAddGradeDialog(student?: any): void {
     this.selectedStudent.set(student);
@@ -483,7 +459,7 @@ export class GradesComponent implements OnInit {
     this.addEventForm.reset();
   }
 
-  // Student grades dialog methods
+ 
   openStudentGradesDialog(student: any): void {
     this.selectedStudent.set(student);
     this.selectedStudentGrades.set(student.grades || []);
@@ -496,7 +472,7 @@ export class GradesComponent implements OnInit {
     this.selectedStudentGrades.set([]);
   }
 
-  // Helper methods for student data
+ 
   getGradeTrend(student: any): {
     trend: 'positive' | 'negative' | 'neutral';
     value: number;
@@ -517,7 +493,7 @@ export class GradesComponent implements OnInit {
       return { trend: 'neutral', value: 0 };
     }
 
-    // Calculate weighted averages instead of arithmetic averages
+ 
     const recentTotalWeightedScore = recentGrades.reduce(
       (sum: number, grade: any) =>
         sum + grade.grade_value * (grade.grade_weight || 1),
@@ -561,7 +537,7 @@ export class GradesComponent implements OnInit {
     }
   }
 
-  // Form submission methods
+ 
 
   onSubmitGrade(): void {
     if (this.addGradeForm.valid) {
@@ -584,7 +560,7 @@ export class GradesComponent implements OnInit {
             detail: 'Ocena została dodana pomyślnie',
           });
           this.closeAddGradeDialog();
-          // Refresh data
+ 
           this.loadClassStatistics(this.selectedClass().id);
           this.refreshStudentData(); // Refresh student data with new grades
         },
@@ -619,7 +595,7 @@ export class GradesComponent implements OnInit {
             detail: 'Wydarzenie zostało utworzone pomyślnie',
           });
           this.closeAddEventDialog();
-          // Refresh events
+ 
           this.loadClassEvents(this.selectedClass().id);
         },
         error: (error) => {
@@ -634,7 +610,7 @@ export class GradesComponent implements OnInit {
     }
   }
 
-  // Existing methods (keeping for student view)
+ 
 
   onSubjectSelect(subjectName: string): void {
     this.selectedSubject =
@@ -709,7 +685,7 @@ export class GradesComponent implements OnInit {
     this.loadGradesData();
   }
 
-  // Track functions for performance optimization
+ 
   trackByGrade(index: number, item: any): any {
     return item.id || index;
   }
@@ -730,7 +706,7 @@ export class GradesComponent implements OnInit {
     return item.id || index;
   }
 
-  // Helper methods for teacher view
+ 
 
   getEventTypeLabel(type: string): string {
     const eventType = this.eventTypes.find((et) => et.value === type);

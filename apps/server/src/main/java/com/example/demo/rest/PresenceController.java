@@ -35,15 +35,15 @@ public class PresenceController {
   @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
   @PostMapping
   public ResponseEntity<?> createPresence(@RequestBody PresenceRequest request) {
-    // Load Student
+
     Student student = studentRepository.findById(request.getStudentId())
             .orElseThrow(() -> new IllegalArgumentException("Invalid student ID"));
 
-    // Load Timetable (lesson)
+
     Timetable lesson = timetableRepository.findById(request.getLessonId())
             .orElseThrow(() -> new IllegalArgumentException("Invalid lesson ID"));
 
-    // Use provided date or today's date if null
+
     Date date = request.getDate();
     if (date == null) {
       date = Date.valueOf(LocalDate.now());  // current date

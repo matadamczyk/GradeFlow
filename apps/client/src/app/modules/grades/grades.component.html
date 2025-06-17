@@ -1,5 +1,4 @@
 <div class="grades-container">
-  <!-- Header Section with Enhanced Hero Design -->
   <div class="grades-header">
     <div class="header-content">
       <div class="title-section">
@@ -41,7 +40,6 @@
     </div>
   </div>
 
-  <!-- Loading Skeletons -->
   <div *ngIf="isLoading" class="loading-content">
     <div class="grid">
       <div class="col-12 md:col-4" *ngFor="let item of [1, 2, 3]">
@@ -67,9 +65,7 @@
     </div>
   </div>
 
-  <!-- Teacher Content -->
   <div *ngIf="!isLoading && isTeacher()" class="teacher-content">
-    <!-- Teacher Classes Selection -->
     <div class="teacher-classes-section">
       <div class="grid">
         <div class="col-12">
@@ -91,7 +87,6 @@
                 class="class-selection-container"
                 *ngIf="teacherClasses().length > 0; else noClasses"
               >
-                <!-- Class Dropdown Selection -->
                 <div class="class-dropdown-section">
                   <div class="form-row">
                     <label for="classSelect">Wybierz klasę:</label>
@@ -150,7 +145,6 @@
                   </div>
                 </div>
 
-                <!-- Alternative: Compact Grid View for fewer classes (optional toggle) -->
                 <div
                   class="grid-view-toggle"
                   *ngIf="teacherClasses().length <= 6"
@@ -209,13 +203,10 @@
       </div>
     </div>
 
-    <!-- Selected Class Content -->
     <div *ngIf="selectedClass()" class="selected-class-content">
       <p-tabView styleClass="teacher-tabs">
-        <!-- Students and Grades Tab -->
         <p-tabPanel header="Uczniowie i Oceny" leftIcon="pi pi-users">
           <div class="students-grades-section">
-            <!-- Class Statistics -->
             <div class="class-stats-section" *ngIf="classStatistics() as stats">
               <div class="grid">
                 <div class="col-12 md:col-3">
@@ -265,7 +256,6 @@
               </div>
             </div>
 
-            <!-- Students List with Grades -->
             <div class="students-list-section">
               <div class="section-card">
                 <div class="section-header">
@@ -418,7 +408,6 @@
           </div>
         </p-tabPanel>
 
-        <!-- Events Tab -->
         <p-tabPanel header="Wydarzenia" leftIcon="pi pi-calendar">
           <div class="events-section">
             <div class="section-card">
@@ -519,9 +508,7 @@
     </div>
   </div>
 
-  <!-- Student/Parent/Admin Content (existing) -->
   <div *ngIf="!isLoading && !isTeacher()" class="grades-content">
-    <!-- Enhanced Statistics Cards -->
     <div class="stats-section" *ngIf="statistics$ | async as stats">
       <div class="grid">
         <div class="col-12 md:col-6 lg:col-3">
@@ -591,7 +578,6 @@
       </div>
     </div>
 
-    <!-- Additional Academic Statistics -->
     <div
       class="academic-stats-section"
       *ngIf="isStudent() && (statistics$ | async) as stats"
@@ -664,7 +650,6 @@
       </div>
     </div>
 
-    <!-- Enhanced Recent Grades Section -->
     <div class="recent-grades-section">
       <div class="grid">
         <div class="col-12">
@@ -760,7 +745,6 @@
       </div>
     </div>
 
-    <!-- Enhanced Subject Grades Section -->
     <div class="subjects-section">
       <div class="grid">
         <div class="col-12">
@@ -852,9 +836,7 @@
                       </div>
                     </ng-template>
 
-                    <!-- Enhanced Subject Content -->
                     <div class="subject-content">
-                      <!-- Quick Stats -->
                       <div class="subject-quick-stats">
                         <div class="quick-stat-item">
                           <div class="stat-icon average">
@@ -895,7 +877,6 @@
 
                       <p-divider styleClass="custom-divider"></p-divider>
 
-                      <!-- Enhanced Grades Table -->
                       <div class="grades-table-container">
                         <p-table
                           [value]="subject.grades"
@@ -1029,10 +1010,8 @@
     </div>
   </div>
 
-  <!-- Toast for notifications -->
   <p-toast position="top-right"></p-toast>
 
-  <!-- Add Grade Dialog -->
   <p-dialog
     header="Dodaj Ocenę"
     [modal]="true"
@@ -1147,7 +1126,6 @@
     </form>
   </p-dialog>
 
-  <!-- Add Event Dialog -->
   <p-dialog
     header="Dodaj Wydarzenie"
     [modal]="true"
@@ -1224,7 +1202,6 @@
     </form>
   </p-dialog>
 
-  <!-- Student Grades Dialog -->
   <p-dialog
     [header]="
       'Oceny ucznia: ' +
@@ -1240,7 +1217,6 @@
     (onHide)="closeStudentGradesDialog()"
   >
     <div class="student-grades-content" *ngIf="selectedStudent() as student">
-      <!-- Student Info Summary -->
       <div class="student-summary">
         <div class="student-details-expanded">
           <div class="student-avatar-large">
@@ -1268,7 +1244,6 @@
         </div>
       </div>
 
-      <!-- Grades Table -->
       <div class="grades-table-section">
         <h4>Lista ocen</h4>
         <p-table

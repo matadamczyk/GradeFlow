@@ -43,7 +43,7 @@ export class TimetableComponent implements OnInit {
   currentDay = new Date().getDay();
   currentUser = signal<any>(null);
 
-  // Role-specific computed properties
+ 
   userRole = computed(() => this.currentUser()?.role);
   isStudent = computed(() => this.userRole() === UserRole.STUDENT);
   isTeacher = computed(() => this.userRole() === UserRole.TEACHER);
@@ -245,11 +245,11 @@ export class TimetableComponent implements OnInit {
     const room = lesson.room ? ` - Sala ${lesson.room}` : '';
 
     if (this.isTeacher()) {
-      // For teachers: show class instead of teacher name
+ 
       const className = `Klasa ${lesson.studentClass.number}${lesson.studentClass.letter}`;
       return `${lesson.teacherSubject.subject.name}\n${className}\n${time}${room}`;
     } else {
-      // For students, parents, admin: show teacher name
+ 
       const teacher = `${lesson.teacherSubject.teacher.name} ${lesson.teacherSubject.teacher.lastname}`;
       return `${lesson.teacherSubject.subject.name}\n${teacher}\n${time}${room}`;
     }

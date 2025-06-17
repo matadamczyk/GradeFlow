@@ -49,9 +49,9 @@ public class TimetableController {
   public ResponseEntity<List<Timetable>> getTimetableForStudentClass(@PathVariable Integer studentClassId){
     User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-    // Jeśli STUDENT — sprawdzamy, czy należy do tej klasy
+
     if (currentUser.getRole().name().equals("STUDENT")) {
-      // Znajdź ucznia powiązanego z aktualnym userem
+
 
       Student student = studentRepository.findByUserId(currentUser.getId())
         .orElseThrow(() -> new IllegalArgumentException("No student found for user"));
@@ -80,22 +80,22 @@ public class TimetableController {
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public ResponseEntity<?> createTimetable(@RequestBody TimetableRequest request) {
-    // Find Class entity by ID
+
     StudentClass studentClass = classRepository.findById(request.getClassId())
             .orElseThrow(() -> new IllegalArgumentException("Invalid class ID"));
 
-    // Find TeacherSubject entity by ID
+
     TeacherSubject teacherSubject = teacherSubjectRepository.findById(request.getTeacherSubjectId())
             .orElseThrow(() -> new IllegalArgumentException("Invalid teacherSubject ID"));
 
-    // Create new Timetable entity and set fields
+
     Timetable timetable = new Timetable();
     timetable.setStudentClass(studentClass);
     timetable.setTeacherSubject(teacherSubject);
     timetable.setLesson_number(request.getLessonNumber());
     timetable.setDay(request.getDay());
 
-    // Save to repository
+
     Timetable savedTimetable = timetableRepository.save(timetable);
 
     return ResponseEntity.ok(savedTimetable);

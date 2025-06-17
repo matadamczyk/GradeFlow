@@ -1,5 +1,5 @@
 <div class="account-container">
-  <!-- Enhanced Hero Header -->
+
   <div class="account-header">
     <div class="header-content">
       <div class="title-section">
@@ -26,7 +26,7 @@
     </div>
   </div>
 
-  <!-- Loading State -->
+
   <div *ngIf="isLoading" class="loading-content">
     <div class="grid">
       <div class="col-12">
@@ -38,13 +38,13 @@
     </div>
   </div>
 
-  <!-- Main Content -->
+
   <div *ngIf="!isLoading && userProfile" class="account-content">
     <div class="grid">
-      <!-- Profile Summary Card -->
+
       <div class="col-12 lg:col-4">
         <div class="profile-summary-card">
-          <!-- Profile Header -->
+  
           <div class="profile-header">
             <div class="avatar-section">
               <div class="avatar-container">
@@ -72,7 +72,7 @@
             </div>
           </div>
 
-          <!-- Quick Stats -->
+    
           <div class="quick-stats">
             <div class="stat-item">
               <div class="stat-icon">
@@ -99,7 +99,7 @@
             </div>
           </div>
 
-          <!-- Bio Section -->
+    
           <div *ngIf="userProfile.bio" class="bio-section">
             <p-divider styleClass="custom-divider"></p-divider>
             <div class="bio-header">
@@ -113,11 +113,10 @@
         </div>
       </div>
 
-      <!-- Main Content Area with Tabs -->
       <div class="col-12 lg:col-8">
         <div class="main-content-panel">
           <p-tabView styleClass="profile-tabs">
-            <!-- Informacje podstawowe -->
+   
             <p-tabPanel header="Informacje podstawowe">
               <ng-template pTemplate="header">
                 <div class="tab-header">
@@ -128,7 +127,7 @@
 
               <div class="tab-content-wrapper">
                 <div class="grid">
-                  <!-- Contact Information -->
+             
                   <div class="col-12 md:col-6">
                     <p-card styleClass="info-section-card">
                       <ng-template pTemplate="header">
@@ -177,7 +176,7 @@
                     </p-card>
                   </div>
 
-                  <!-- Account Details -->
+             
                   <div class="col-12 md:col-6">
                     <p-card styleClass="info-section-card">
                       <ng-template pTemplate="header">
@@ -216,7 +215,7 @@
                   </div>
                 </div>
 
-                <!-- Quick Actions -->
+         
                 <div class="col-12">
                   <p-card styleClass="info-section-card">
                     <ng-template pTemplate="header">
@@ -267,7 +266,6 @@
               </div>
             </p-tabPanel>
 
-            <!-- Informacje specyficzne dla roli -->
             <p-tabPanel
               header="Informacje roli"
               *ngIf="
@@ -284,7 +282,7 @@
               </ng-template>
 
               <div class="tab-content-wrapper">
-                <!-- Student Information -->
+          
                 <div
                   *ngIf="userProfile.role === UserRole.STUDENT"
                   class="role-content"
@@ -381,7 +379,6 @@
                   </div>
                 </div>
 
-                <!-- Teacher Information -->
                 <div
                   *ngIf="userProfile.role === UserRole.TEACHER"
                   class="role-content"
@@ -431,7 +428,7 @@
                   </p-card>
                 </div>
 
-                <!-- Parent Information -->
+
                 <div
                   *ngIf="userProfile.role === UserRole.PARENT"
                   class="role-content"
@@ -483,7 +480,7 @@
               </div>
             </p-tabPanel>
 
-            <!-- Edytuj profil -->
+
             <p-tabPanel header="Edytuj profil">
               <ng-template pTemplate="header">
                 <div class="tab-header">
@@ -616,7 +613,6 @@
               </div>
             </p-tabPanel>
 
-            <!-- Zmień hasło -->
             <p-tabPanel header="Zmień hasło">
               <ng-template pTemplate="header">
                 <div class="tab-header">
@@ -731,5 +727,4 @@
   </div>
 </div>
 
-<!-- Toast Messages -->
 <p-toast></p-toast>

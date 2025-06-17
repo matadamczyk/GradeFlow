@@ -34,13 +34,13 @@ public class UserController {
       return ResponseEntity.badRequest().body("Email already in use");
     }
 
-    // Hash password before saving
+
     user.setPassword(passwordEncoder.encode(user.getPassword()));
     userRepository.save(user);
     return ResponseEntity.ok("User registered");
   }
 
-  // Login: check credentials
+
   @PostMapping("/login")
   public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
     Optional<User> userOpt = userRepository.findByEmail(loginRequest.getEmail());
@@ -51,12 +51,12 @@ public class UserController {
 
     User user = userOpt.get();
 
-    // Check hashed password match
+
     if (passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-      // Generate JWT token
+
       String token = jwtUtil.generateToken(user.getEmail(), user.getRole().toString(), (long) user.getId());
 
-      // Return token and user info
+
       Map<String, Object> response = new HashMap<>();
       response.put("token", token);
       response.put("user", Map.of(
@@ -71,7 +71,7 @@ public class UserController {
     }
   }
 
-  // CREATE
+
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public User addUser(@RequestBody User user) {
@@ -79,14 +79,14 @@ public class UserController {
     return userRepository.save(user);
   }
 
-  // READ ALL
+
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping
   public List<User> getAllUsers() {
     return userRepository.findAll();
   }
 
-  // READ ONE
+
   @PreAuthorize("hasRole('ADMIN')")
   @GetMapping("/{id}")
   public ResponseEntity<User> getUserById(@PathVariable int id) {
@@ -95,7 +95,7 @@ public class UserController {
       .orElse(ResponseEntity.notFound().build());
   }
 
-  // UPDATE
+
   @PreAuthorize("hasRole('ADMIN')")
   @PutMapping("/{id}")
   public ResponseEntity<User> updateUser(@PathVariable int id, @RequestBody User userDetails) {
@@ -109,7 +109,7 @@ public class UserController {
       .orElse(ResponseEntity.notFound().build());
   }
 
-  // DELETE
+
   @PreAuthorize("hasRole('ADMIN')")
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> deleteUser(@PathVariable int id) {

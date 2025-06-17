@@ -34,17 +34,15 @@ public class EventController {
     @Autowired
     private TeacherRepository teacherRepository;
 
-    // Map events to schedules for frontend compatibility
     @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN') or hasRole('STUDENT') or hasRole('PARENT')")
     @GetMapping("/class/{classId}")
     public ResponseEntity<List<Schedule>> getEventsByClass(@PathVariable Integer classId) {
         StudentClass studentClass = studentClassRepository.findById(classId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid class ID"));
 
-        // Get all timetables for this class, then find schedules for those timetables
         List<Timetable> classTimetables = timetableRepository.findByStudentClass(studentClass);
         List<Schedule> events = scheduleRepository.findByLessonIn(classTimetables);
-        
+
         return ResponseEntity.ok(events);
     }
 
@@ -58,25 +56,24 @@ public class EventController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
     @PostMapping("/create")
     public ResponseEntity<Schedule> createEvent(@RequestBody Map<String, Object> eventData) {
-        // Extract data from the request
+
         String title = (String) eventData.get("title");
         String description = (String) eventData.get("description");
         Integer classId = (Integer) eventData.get("classId");
         String dateStr = (String) eventData.get("date");
 
-        // Find the class
+
         StudentClass studentClass = studentClassRepository.findById(classId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid class ID"));
 
-        // For now, find any timetable for this class to link the schedule
-        // In a real scenario, you'd want to select a specific lesson
+
         List<Timetable> classTimetables = timetableRepository.findByStudentClass(studentClass);
         if (classTimetables.isEmpty()) {
             throw new IllegalArgumentException("No timetables found for class");
         }
-        Timetable lesson = classTimetables.get(0); // Take first available
+        Timetable lesson = classTimetables.get(0);
 
-        // Parse date
+
         Date date;
         try {
             date = Date.valueOf(LocalDate.parse(dateStr));
@@ -84,7 +81,7 @@ public class EventController {
             date = Date.valueOf(LocalDate.now());
         }
 
-        // Create and save schedule
+
         Schedule schedule = new Schedule(null, lesson, date, title, description);
         Schedule saved = scheduleRepository.save(schedule);
 
@@ -97,7 +94,7 @@ public class EventController {
         Schedule schedule = scheduleRepository.findById(eventId)
             .orElseThrow(() -> new IllegalArgumentException("Invalid event ID"));
 
-        // Update fields
+
         String title = (String) eventData.get("title");
         String description = (String) eventData.get("description");
         String dateStr = (String) eventData.get("date");
@@ -113,7 +110,7 @@ public class EventController {
                 Date date = Date.valueOf(LocalDate.parse(dateStr));
                 schedule.setDate(date);
             } catch (Exception e) {
-                // Keep existing date if parsing fails
+
             }
         }
 
@@ -130,4 +127,4 @@ public class EventController {
         scheduleRepository.delete(schedule);
         return ResponseEntity.ok(schedule);
     }
-} 
+}

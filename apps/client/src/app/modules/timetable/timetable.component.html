@@ -1,5 +1,5 @@
 <div class="timetable-container">
-  <!-- Header Section -->
+ 
   <div class="timetable-header">
     <div class="header-content">
       <h1 class="page-title">
@@ -35,10 +35,10 @@
     </div>
   </div>
 
-  <!-- Current and Next Lesson Widget (Header) -->
+ 
   <div *ngIf="!isLoading" class="lesson-widget-header">
     <div class="lesson-widget-container">
-      <!-- Current Lesson -->
+ 
       <div
         class="lesson-widget current"
         *ngIf="currentLesson$ | async as currentLesson; else noCurrentLesson"
@@ -89,7 +89,7 @@
         </div>
       </ng-template>
 
-      <!-- Next Lesson -->
+ 
       <div
         class="lesson-widget next"
         *ngIf="nextLesson$ | async as nextLesson; else noNextLesson"
@@ -142,16 +142,16 @@
     </div>
   </div>
 
-  <!-- Loading State -->
+ 
   <div *ngIf="isLoading" class="loading-content">
     <p-card>
       <p-skeleton height="400px"></p-skeleton>
     </p-card>
   </div>
 
-  <!-- Main Timetable Content (Hidden on Mobile) -->
+ 
   <div *ngIf="!isLoading" class="timetable-content desktop-only">
-    <!-- Current Week Info -->
+ 
     <div class="week-info">
       <div class="week-display">
         <i class="pi pi-calendar-times"></i>
@@ -159,10 +159,10 @@
       </div>
     </div>
 
-    <!-- Calendar Layout -->
+ 
     <div class="calendar-container">
       <p-card styleClass="calendar-card">
-        <!-- Week Header with Days -->
+ 
         <div class="calendar-header">
           <div class="time-column-header">
             <span>Godzina</span>
@@ -179,7 +179,7 @@
           </div>
         </div>
 
-        <!-- Time Slots and Lessons -->
+ 
         <div
           class="calendar-body"
           *ngIf="weeklyTimetable$ | async as weeklyTimetable"
@@ -189,7 +189,7 @@
             class="time-row"
             [class.current-time]="isCurrentTimeSlot(slot.period)"
           >
-            <!-- Time Column -->
+ 
             <div class="time-cell">
               <div class="time-info">
                 <span class="period-number">{{ slot.period }}</span>
@@ -198,7 +198,7 @@
               </div>
             </div>
 
-            <!-- Day Columns -->
+ 
             <div
               *ngFor="let day of weekDays"
               class="lesson-cell"
@@ -207,7 +207,7 @@
                 isCurrentTimeSlot(slot.period) && isToday(day.key)
               "
             >
-              <!-- Lesson Block -->
+ 
               <div
                 *ngIf="
                   getLessonForDayAndPeriod(
@@ -247,7 +247,7 @@
                 </div>
               </div>
 
-              <!-- Empty Slot -->
+ 
               <ng-template #emptySlot>
                 <div class="empty-slot">
                   <span class="empty-text">—</span>
@@ -259,7 +259,7 @@
       </p-card>
     </div>
 
-    <!-- Legend -->
+ 
     <div class="legend-section">
       <p-card styleClass="legend-card">
         <ng-template pTemplate="header">
@@ -287,9 +287,9 @@
     </div>
   </div>
 
-  <!-- Mobile-only Section - Shows only Current Week Info -->
+ 
   <div *ngIf="!isLoading" class="mobile-only">
-    <!-- Current Week Info -->
+ 
     <div class="week-info">
       <div class="week-display">
         <i class="pi pi-calendar-times"></i>
@@ -297,7 +297,7 @@
       </div>
     </div>
 
-    <!-- Mobile Message -->
+ 
     <p-card styleClass="mobile-info-card">
       <div class="mobile-info">
         <i class="pi pi-mobile"></i>

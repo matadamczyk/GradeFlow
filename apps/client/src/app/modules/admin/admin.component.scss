@@ -306,7 +306,7 @@
     }
   }
 
-  // Dialog styling
+
   ::ng-deep .p-dialog {
     .p-dialog-header {
       background: var(--primary-color);
@@ -376,7 +376,7 @@
     }
   }
 
-  // Toast styling
+
   ::ng-deep .p-toast {
     .p-toast-message {
       border-radius: 8px;
@@ -384,7 +384,7 @@
     }
   }
 
-  // Responsive design
+ 
   @media (max-width: 768px) {
     padding: 0.5rem;
 

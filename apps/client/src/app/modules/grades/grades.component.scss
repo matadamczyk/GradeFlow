@@ -1066,7 +1066,6 @@
   }
 }
 
-// Progress bar styles
 .progress-small {
   height: 6px !important;
   margin-top: 0.5rem;
@@ -1084,14 +1083,12 @@
   }
 }
 
-// Teacher-specific styles
 
 .teacher-content {
   .teacher-classes-section {
     margin-bottom: 2rem;
 
     .classes-selection-card {
-      // Class Selection Container Styles
       .class-selection-container {
         .class-dropdown-section {
           margin-bottom: 2rem;
@@ -1129,7 +1126,6 @@
           }
         }
 
-        // Selected and Item Templates
         .selected-class-item,
         .class-option-item {
           display: flex;
@@ -1173,7 +1169,6 @@
           }
         }
 
-        // Selected Class Overview
         .selected-class-overview {
           margin-top: 2rem;
 
@@ -1263,7 +1258,6 @@
           }
         }
 
-        // Compact Grid for Fewer Classes
         .grid-view-toggle {
           margin-top: 2rem;
 
@@ -1337,7 +1331,6 @@
         }
       }
 
-      // Legacy styles for old grid (kept for reference, can be removed)
       .classes-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1747,7 +1740,6 @@
   border-top: 1px solid var(--surface-border);
 }
 
-// Responsive adjustments for teacher section
 @media (max-width: 1024px) {
   .teacher-content {
     .teacher-classes-section {
@@ -1815,7 +1807,6 @@
         }
       }
 
-      // Legacy grid responsive adjustments
       .classes-grid {
         grid-template-columns: 1fr !important;
       }
@@ -1880,7 +1871,6 @@
   }
 }
 
-// Student Grades Dialog Styles
 .student-grades-content {
   .student-summary {
     display: flex;
@@ -1970,7 +1960,6 @@
   }
 }
 
-// Enhanced student table styles
 ::ng-deep .teacher-students-table {
   .student-info {
     display: flex;

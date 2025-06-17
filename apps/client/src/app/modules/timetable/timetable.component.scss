@@ -4,7 +4,7 @@
   background: var(--surface-ground);
 }
 
-// Header Section
+ 
 .timetable-header {
   display: flex;
   justify-content: space-between;
@@ -47,7 +47,7 @@
   }
 }
 
-// Lesson Widget Header
+ 
 .lesson-widget-header {
   margin-bottom: 2rem;
 
@@ -223,7 +223,7 @@
   }
 }
 
-// Responsive Visibility Controls
+ 
 .desktop-only {
   display: block;
 }
@@ -232,7 +232,7 @@
   display: none;
 }
 
-// Mobile Info Card
+ 
 .mobile-info {
   text-align: center;
   padding: 2rem 1rem;
@@ -262,7 +262,7 @@
   }
 }
 
-// Week Info
+ 
 .week-info {
   margin-bottom: 1.5rem;
 
@@ -285,7 +285,7 @@
   }
 }
 
-// Calendar Layout
+ 
 .calendar-container {
   margin-bottom: 2rem;
 
@@ -544,7 +544,7 @@
   }
 }
 
-// Lesson Summary
+ 
 .lesson-summary {
   margin-bottom: 2rem;
 }
@@ -617,7 +617,7 @@
   }
 }
 
-// Legend
+ 
 .legend-section {
   .legend-card h4 {
     margin: 0;
@@ -677,14 +677,14 @@
   }
 }
 
-// Loading State
+ 
 .loading-content {
   .p-card {
     min-height: 400px;
   }
 }
 
-// Responsive Design
+ 
 @media (max-width: 1024px) {
   .calendar-header,
   .calendar-body .time-row {
@@ -754,12 +754,12 @@
     }
   }
 
-  // Hide desktop content on mobile
+ 
   .desktop-only {
     display: none !important;
   }
 
-  // Show mobile content
+ 
   .mobile-only {
     display: block !important;
   }
@@ -894,7 +894,7 @@
   }
 }
 
-// PrimeNG Overrides
+ 
 :host ::ng-deep {
   .calendar-card.p-card {
     border-radius: 12px;

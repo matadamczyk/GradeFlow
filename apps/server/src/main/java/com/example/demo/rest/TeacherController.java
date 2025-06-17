@@ -60,14 +60,14 @@ public class TeacherController {
     return ResponseEntity.ok(teachers);
   }
 
-  // Get classes taught by a teacher
+
   @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
   @GetMapping("/{teacherId}/classes")
   public ResponseEntity<List<StudentClass>> getTeacherClasses(@PathVariable Integer teacherId) {
     Teacher teacher = teacherRepository.findById(teacherId)
         .orElseThrow(() -> new IllegalArgumentException("Invalid teacher ID"));
 
-    // Get classes from timetables where this teacher teaches
+
     List<Timetable> timetables = timetableRepository.findByTeacherSubjectTeacher(teacher);
     List<StudentClass> classes = timetables.stream()
         .map(Timetable::getStudentClass)
@@ -77,7 +77,7 @@ public class TeacherController {
     return ResponseEntity.ok(classes);
   }
 
-  // Get subjects taught by a teacher
+
   @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
   @GetMapping("/{teacherId}/subjects")
   public ResponseEntity<List<TeacherSubject>> getTeacherSubjects(@PathVariable Integer teacherId) {

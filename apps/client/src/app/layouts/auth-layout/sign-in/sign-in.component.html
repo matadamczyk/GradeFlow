@@ -1,5 +1,5 @@
 <div class="surface-card p-4 shadow-2 border-round w-full relative">
-  <!-- Close button -->
+  
   <button
     pButton
     icon="pi pi-times"
@@ -25,7 +25,7 @@
   </div>
 
   <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-    <!-- Komunikat błędu -->
+
     <p-message
       *ngIf="errorMessage"
       severity="error"
@@ -34,7 +34,7 @@
     >
     </p-message>
 
-    <!-- Email -->
+   
     <p-floatLabel variant="on" class="mb-3 w-full">
       <label for="email">Email</label>
       <input
@@ -52,7 +52,7 @@
       {{ getFieldError('email') }}
     </small>
 
-    <!-- Hasło -->
+  
     <p-floatLabel variant="on" class="mb-3 w-full">
       <label for="password">Hasło</label>
       <input
@@ -109,7 +109,7 @@
       <span *ngIf="isLoading">Logowanie...</span>
     </button>
 
-    <!-- Demo credentials info -->
+ 
     <div class="mt-4 p-3 surface-100 border-round">
       <div class="text-sm text-600 mb-2">
         <strong>Demo konta:</strong>

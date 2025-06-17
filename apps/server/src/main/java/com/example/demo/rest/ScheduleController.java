@@ -38,17 +38,17 @@ public class ScheduleController {
     return ResponseEntity.ok(schedules);
   }
 
-  // New endpoint for getting schedules by class (used by frontend as events)
+
   @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN') or hasRole('STUDENT') or hasRole('PARENT')")
   @GetMapping("/class/{classId}")
   public ResponseEntity<List<Schedule>> getSchedulesByClass(@PathVariable Integer classId) {
     StudentClass studentClass = studentClassRepository.findById(classId)
       .orElseThrow(() -> new IllegalArgumentException("Invalid class ID"));
 
-    // Get all timetables for this class, then find schedules for those timetables
+
     List<Timetable> classTimetables = timetableRepository.findByStudentClass(studentClass);
     List<Schedule> schedules = scheduleRepository.findByLessonIn(classTimetables);
-    
+
     return ResponseEntity.ok(schedules);
   }
 

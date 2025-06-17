@@ -1,4 +1,4 @@
-// Services
+
 import { ApiService, AuthService } from '../../core/services';
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -13,7 +13,7 @@ import { Subject, forkJoin, takeUntil } from 'rxjs';
 
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
-// PrimeNG Imports
+
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -82,7 +82,7 @@ interface UserStats {
 export class AdminComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
-  // Signals
+
   isLoading = signal<boolean>(true);
   users = signal<User[]>([]);
   selectedUsers = signal<User[]>([]);
@@ -95,15 +95,15 @@ export class AdminComponent implements OnInit, OnDestroy {
     admins: 0,
   });
 
-  // Dialog states
+
   userDialogVisible = signal<boolean>(false);
   isEditMode = signal<boolean>(false);
   currentUser = signal<User | null>(null);
 
-  // Form
+
   userForm!: FormGroup;
 
-  // Dropdown options
+
   roleOptions = [
     { label: 'Student', value: UserRole.STUDENT },
     { label: 'Nauczyciel', value: UserRole.TEACHER },
@@ -111,7 +111,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     { label: 'Administrator', value: UserRole.ADMIN },
   ];
 
-  // Computed properties
+
   UserRole = UserRole;
 
   constructor(
@@ -128,7 +128,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    // Sprawdź czy użytkownik jest zalogowany jako admin
+
     const currentUser = this.authService.getCurrentUser();
 
     if (!currentUser || currentUser.role !== UserRole.ADMIN) {
@@ -217,7 +217,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       email: user.email,
       role: user.role,
     });
-    // Don't show password in edit mode
+
     this.userForm.get('password')?.clearValidators();
     this.userForm.get('password')?.updateValueAndValidity();
     this.userDialogVisible.set(true);
@@ -334,8 +334,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       header: 'Potwierdzenie usunięcia',
       icon: 'pi pi-exclamation-triangle',
       accept: () => {
-        // Implement bulk delete
-        // For now, delete one by one
+
         const deletePromises = selected.map((user) =>
           this.apiService.delete(`/users/${user.id}`).toPromise()
         );

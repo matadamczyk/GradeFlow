@@ -31,11 +31,11 @@ public class StudentController {
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public ResponseEntity<?> createStudent(@RequestBody StudentRequest request) {
-    // Find class by ID
+
     StudentClass studentClass = studentClassRepository.findById(request.getClassId())
       .orElseThrow(() -> new IllegalArgumentException("Invalid class ID"));
 
-    // Create and save student
+
     Student student = new Student(null, request.getName(), request.getLastname(), studentClass, request.getUserId());
     Student saved = studentRepository.save(student);
 

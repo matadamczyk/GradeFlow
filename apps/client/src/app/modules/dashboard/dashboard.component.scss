@@ -4,7 +4,6 @@
   background: var(--surface-ground);
 }
 
-// Header Section
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -41,14 +40,13 @@
   }
 }
 
-// Loading Content
+
 .loading-content {
   .grid {
     margin: 0;
   }
 }
 
-// Quick Stats
 .quick-stats {
   margin-bottom: 2rem;
 
@@ -141,7 +139,6 @@
   }
 }
 
-// Charts Section
 .charts-section {
   margin-bottom: 2rem;
 
@@ -153,7 +150,6 @@
   }
 }
 
-// Recent Grades Section
 .recent-grades-section {
   margin-bottom: 2rem;
 
@@ -215,7 +211,6 @@
   }
 }
 
-// Upcoming Events Section
 .upcoming-events-section {
   margin-bottom: 2rem;
 
@@ -365,7 +360,6 @@
   }
 }
 
-// Notifications Section
 .notifications-section {
   margin-bottom: 1.5rem;
 
@@ -426,7 +420,6 @@
   }
 }
 
-// Today's Timetable Section
 .today-timetable-section {
   margin-bottom: 1.5rem;
 
@@ -494,7 +487,6 @@
   }
 }
 
-// Quick Actions Section
 .quick-actions-section {
   .quick-actions {
     display: flex;
@@ -503,7 +495,6 @@
   }
 }
 
-// Card Headers
 .card-header {
   display: flex;
   justify-content: space-between;
@@ -524,7 +515,6 @@
   }
 }
 
-// Empty States
 .empty-state {
   text-align: center;
   padding: 2rem 1rem;
@@ -556,12 +546,10 @@
   }
 }
 
-// Error State
 .error-state {
   margin-top: 2rem;
 }
 
-// Progress Bar Customization
 :host ::ng-deep {
   .progress-small {
     height: 4px;
@@ -608,7 +596,6 @@
   }
 }
 
-// Role-specific styles
 .teacher-chart-content {
   .class-progress-list {
     .progress-item {
@@ -851,7 +838,6 @@
   }
 }
 
-// Activity item styles
 .activity-content {
   .activity-item {
     display: flex;
@@ -917,7 +903,6 @@
   }
 }
 
-// Additional stat card styles for different roles
 .stat-card {
   &.teacher-card .stat-icon {
     background: linear-gradient(135deg, #10b981, #059669);
@@ -964,7 +949,7 @@
   }
 }
 
-// Responsive Design
+
 @media (max-width: 768px) {
   .dashboard-container {
     padding: 1rem;

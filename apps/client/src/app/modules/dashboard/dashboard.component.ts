@@ -31,7 +31,6 @@ interface DashboardData {
   todayTimetable: any[];
   notifications: any[];
   upcomingEvents?: any[];
-  // Role-specific data
   teacherData?: {
     classes: any[];
     pendingGrades: any[];
@@ -177,7 +176,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private calculateSystemLoad(data: any): number {
-    // Oblicz obciążenie systemu na podstawie rzeczywistych danych
+
     const totalUsers = data.users.length;
     const activeUsers = data.users.filter(
       (u: any) => u.isActive !== false
@@ -186,16 +185,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const totalTeachers = data.teachers.length;
     const totalGrades = data.grades?.length || 0;
 
-    // Bazowe obciążenie na podstawie liczby użytkowników (0-40%)
+  
     const userLoad = Math.min((totalUsers / 100) * 40, 40);
 
-    // Obciążenie na podstawie aktywności (stosunek aktywnych do wszystkich) (0-30%)
+
     const activityLoad = totalUsers > 0 ? (activeUsers / totalUsers) * 30 : 0;
 
-    // Obciążenie na podstawie ilości danych (ocen) (0-20%)
     const dataLoad = Math.min((totalGrades / 1000) * 20, 20);
 
-    // Losowy czynnik dla symulacji zmiennego obciążenia (0-10%)
     const randomFactor = Math.random() * 10;
 
     const totalLoad = Math.round(
@@ -208,7 +205,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const activities: any[] = [];
     const now = new Date();
 
-    // Dodaj aktywność dla nowych użytkowników
+
     const recentUsers = data.users
       .filter((u: any) => {
         if (!u.createdAt) return false;
@@ -233,7 +230,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     });
 
-    // Dodaj aktywność dla ostatnich ocen
     if (data.grades && data.grades.length > 0) {
       const recentGrades = data.grades
         .filter((g: any) => {
@@ -256,7 +252,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Aktywność systemowa
     activities.push({
       action: 'System aktywny',
       user: `${
@@ -267,7 +262,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       severity: 'info',
     });
 
-    // Sortuj według czasu i zwróć maksymalnie 5 elementów
     return activities
       .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
       .slice(0, 5);
@@ -276,7 +270,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private generateSystemAlerts(systemStats: any, data: any): any[] {
     const alerts: any[] = [];
 
-    // Alert dotyczący obciążenia systemu
     if (systemStats.systemLoad > 80) {
       alerts.push({
         type: 'error',
@@ -293,7 +286,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Alert dotyczący nowych rejestracji
     if (systemStats.newRegistrations > 10) {
       alerts.push({
         type: 'success',
@@ -303,7 +295,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Alert dotyczący nieaktywnych użytkowników
     const inactiveUsers = systemStats.totalUsers - systemStats.activeUsers;
     if (inactiveUsers > systemStats.totalUsers * 0.3) {
       alerts.push({
@@ -314,7 +305,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       });
     }
 
-    // Podstawowy alert informacyjny
     alerts.push({
       type: 'info',
       message: `System zarządza ${systemStats.totalUsers} użytkownikami`,
@@ -322,7 +312,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       icon: 'pi-info',
     });
 
-    return alerts.slice(0, 3); // Maksymalnie 3 alerty
+    return alerts.slice(0, 3);
   }
 
   private formatActivityTime(date: Date): string {
@@ -372,13 +362,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
         },
       });
     } else {
-      // For other roles, load data directly with userId
       this.loadGeneralDashboardData(userId, userRole);
     }
   }
 
   private loadStudentDashboardData(userId: number, studentId: number): void {
-    // Base data for student role
     const baseData = {
       currentLesson: this.timetableService.getCurrentLesson(userId),
       nextLesson: this.timetableService.getNextLesson(userId),
@@ -419,7 +407,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadGeneralDashboardData(userId: number, userRole: string): void {
-    // Base data for all roles
     const baseData = {
       currentLesson: this.timetableService.getCurrentLesson(userId),
       nextLesson: this.timetableService.getNextLesson(userId),
@@ -429,7 +416,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       ),
     };
 
-    // Role-specific data requests
     const requests: Record<string, Observable<any>> = { ...baseData };
 
     switch (userRole) {
@@ -481,7 +467,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private setupCharts(statistics: any): void {
-    // Prepare trend data with better fallbacks
     const trendLabels = statistics.monthlyTrends?.map(
       (trend: any) => trend.month
     ) || ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze'];
@@ -489,13 +474,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     const trendValues =
       statistics.monthlyTrends?.map((trend: any) => trend.average) || [];
 
-    // If no trend values, create a simple line based on overall average
     if (
       trendValues.length === 0 ||
       trendValues.every((val: number) => val === 0)
     ) {
       const baseAverage = statistics.overallAverage || 3.5;
-      // Create a slight upward trend from the base average
       const adjustedValues = trendLabels.map((_: string, index: number) => {
         return Math.round((baseAverage + index * 0.1) * 100) / 100;
       });
@@ -584,7 +567,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       },
     });
 
-    // Setup subject averages chart
     const subjectData = {
       labels: statistics.subjectGrades?.map((sg: any) => sg.subjectName) || [],
       datasets: [
@@ -804,7 +786,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       map((teacherData: any) => {
         if (!teacherData) {
           console.warn('No teacher data found for userId:', userId);
-          // Fallback do mock danych jeśli nie znaleziono nauczyciela
           return {
             classes: [
               { name: '3A', studentsCount: 25, subject: 'Matematyka' },
@@ -834,7 +815,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
           };
         }
 
-        // Mapuj dane z TeacherService do formatu oczekiwanego przez dashboard
         return {
           classes: teacherData.classes.map((cls: any) => ({
             name: `${cls.number}${cls.letter}`,
@@ -856,7 +836,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }),
       catchError((error: any) => {
         console.error('Error loading teacher data:', error);
-        // Fallback do mock danych w przypadku błędu
         return of({
           classes: [
             { name: '3A', studentsCount: 25, subject: 'Matematyka' },
@@ -877,7 +856,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadParentData(userId: number): Observable<any> {
-    // Mock data for parent
     return of({
       children: [
         { name: 'Adam Nowicki', class: '3A', average: 4.2, attendance: 95 },
@@ -899,7 +877,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadAdminData(userId: number): Observable<any> {
-    // Pobierz rzeczywiste dane dla administratora
     return forkJoin({
       users: this.apiService.getAllUsers(),
       students: this.apiService.getAllStudents(),
@@ -929,7 +906,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
       }),
       catchError((error: any) => {
         console.error('Error loading admin data:', error);
-        // Fallback na mock data w przypadku błędu
         return of({
           systemStats: {
             totalUsers: 0,
@@ -957,7 +933,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadStudentEvents(studentId: number): Observable<any[]> {
-    // Get the student's class ID and fetch events for that class
     const student = this.currentStudent();
 
     if (!student || !student.studentClass?.id) {
@@ -968,7 +943,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     return this.gradesService.getEventsByClass(classId).pipe(
       map((events: any[]) => {
-        // Show all events for now (we'll fix filtering later)
         return events
           .map((event) => ({
             id: event.id,
@@ -1010,7 +984,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     ];
 
     if (!lessonNumber || lessonNumber < 1 || lessonNumber > timeSlots.length) {
-      return '08:00'; // Default to first lesson time
+      return '08:00'; 
     }
 
     return timeSlots[lessonNumber - 1].start;
