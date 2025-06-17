@@ -68,7 +68,19 @@ export class ApiService {
   }
 
   registerUser(userData: any): Observable<any> {
-    return this.post<any>('/users/register', userData);
+    return this.http.post(`${this.apiUrl}/users/register`, userData, {
+      headers: this.getHeaders(),
+      responseType: 'text' as 'json'
+    }).pipe(
+      map(response => {
+        try {
+          return response ? JSON.parse(response as string) : {};
+        } catch (e) {
+          // If response is not JSON, return the text response
+          return { message: response || 'User created successfully' };
+        }
+      })
+    );
   }
 
   getAllGrades(): Observable<any[]> {

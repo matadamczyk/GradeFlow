@@ -920,6 +920,7 @@
                                 <p-sortIcon field="grade_weight"></p-sortIcon>
                               </th>
                               <th>Komentarz</th>
+                              <th *ngIf="isTeacher()">Akcje</th>
                             </tr>
                           </ng-template>
 
@@ -993,12 +994,24 @@
                                   </span>
                                 </ng-template>
                               </td>
+                              <td *ngIf="isTeacher()">
+                                <div class="grade-actions">
+                                  <p-button
+                                    icon="pi pi-pencil"
+                                    (onClick)="openEditGradeDialog(grade)"
+                                    severity="secondary"
+                                    size="small"
+                                    [text]="true"
+                                    pTooltip="Edytuj ocenę"
+                                  ></p-button>
+                                </div>
+                              </td>
                             </tr>
                           </ng-template>
 
                           <ng-template pTemplate="emptymessage">
                             <tr>
-                              <td colspan="5">
+                              <td [attr.colspan]="isTeacher() ? 5 : 4">
                                 <div class="table-empty-state">
                                   <i class="pi pi-info-circle"></i>
                                   <p>Brak ocen z tego przedmiotu</p>
@@ -1106,14 +1119,12 @@
 
         <div class="form-row">
           <label for="date">Data *</label>
-          <p-calendar
+          <input
             id="date"
+            type="date"
             formControlName="date"
-            placeholder="Wybierz datę"
-            [showIcon]="true"
-            dateFormat="dd.mm.yy"
-            styleClass="w-full"
-          ></p-calendar>
+            class="w-full p-inputtext"
+          />
         </div>
 
         <div class="form-row">
@@ -1183,14 +1194,12 @@
 
         <div class="form-row">
           <label for="eventDate">Data *</label>
-          <p-calendar
+          <input
             id="eventDate"
+            type="date"
             formControlName="date"
-            placeholder="Wybierz datę"
-            [showIcon]="true"
-            dateFormat="dd.mm.yy"
-            styleClass="w-full"
-          ></p-calendar>
+            class="w-full p-inputtext"
+          />
         </div>
 
         <div class="form-row">
@@ -1295,6 +1304,7 @@
                 <p-sortIcon field="grade_weight"></p-sortIcon>
               </th>
               <th>Komentarz</th>
+              <th *ngIf="isTeacher()">Akcje</th>
             </tr>
           </ng-template>
 
@@ -1352,12 +1362,24 @@
                   </span>
                 </ng-template>
               </td>
+              <td *ngIf="isTeacher()">
+                <div class="grade-actions">
+                  <p-button
+                    icon="pi pi-pencil"
+                    (onClick)="openEditGradeDialog(grade)"
+                    severity="secondary"
+                    size="small"
+                    [text]="true"
+                    pTooltip="Edytuj ocenę"
+                  ></p-button>
+                </div>
+              </td>
             </tr>
           </ng-template>
 
           <ng-template pTemplate="emptymessage">
             <tr>
-              <td colspan="4">
+              <td [attr.colspan]="isTeacher() ? 5 : 4">
                 <div class="table-empty-state">
                   <i class="pi pi-info-circle"></i>
                   <p>Brak ocen dla tego ucznia</p>
@@ -1383,5 +1405,94 @@
         severity="primary"
       ></p-button>
     </div>
+  </p-dialog>
+
+  <!-- Edit Grade Dialog -->
+  <p-dialog
+    header="Edytuj Ocenę"
+    [modal]="true"
+    [draggable]="false"
+    [resizable]="false"
+    [style]="{ width: '500px' }"
+    [(visible)]="showEditGradeDialog"
+    (onHide)="closeEditGradeDialog()"
+  >
+    <form [formGroup]="editGradeForm" (ngSubmit)="onSubmitEditGrade()">
+      <div class="form-grid">
+        <div class="form-row">
+          <label for="editGradeValue">Ocena *</label>
+          <p-inputNumber
+            id="editGradeValue"
+            formControlName="gradeValue"
+            [min]="1"
+            [max]="6"
+            [step]="0.5"
+            placeholder="Wprowadź ocenę"
+            styleClass="w-full"
+          ></p-inputNumber>
+        </div>
+
+        <div class="form-row">
+          <label for="editGradeWeight">Waga *</label>
+          <p-inputNumber
+            id="editGradeWeight"
+            formControlName="gradeWeight"
+            [min]="1"
+            [max]="5"
+            placeholder="Wprowadź wagę"
+            styleClass="w-full"
+          ></p-inputNumber>
+        </div>
+
+        <div class="form-row">
+          <label for="editType">Typ oceny *</label>
+          <p-dropdown
+            id="editType"
+            formControlName="type"
+            [options]="gradeTypes"
+            placeholder="Wybierz typ oceny"
+            styleClass="w-full"
+          ></p-dropdown>
+        </div>
+
+        <div class="form-row">
+          <label for="editDate">Data *</label>
+          <input
+            id="editDate"
+            type="date"
+            formControlName="date"
+            class="w-full p-inputtext"
+          />
+        </div>
+
+        <div class="form-row">
+          <label for="editComment">Komentarz</label>
+          <textarea
+            pInputTextarea
+            id="editComment"
+            formControlName="comment"
+            placeholder="Dodatkowy komentarz (opcjonalnie)"
+            rows="3"
+            class="w-full"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="dialog-footer">
+        <p-button
+          label="Anuluj"
+          icon="pi pi-times"
+          (onClick)="closeEditGradeDialog()"
+          severity="secondary"
+          styleClass="mr-2"
+        ></p-button>
+        <p-button
+          label="Zapisz Zmiany"
+          icon="pi pi-check"
+          type="submit"
+          [disabled]="editGradeForm.invalid"
+        ></p-button>
+      </div>
+    </form>
   </p-dialog>
 </div>

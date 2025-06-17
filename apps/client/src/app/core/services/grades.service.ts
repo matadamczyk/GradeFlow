@@ -383,6 +383,15 @@ export class GradesService {
     );
   }
 
+  updateGrade(gradeId: number, gradeData: any): Observable<any> {
+    return this.apiService.updateGrade(gradeId, gradeData).pipe(
+      catchError((error: any) => {
+        console.error('Error updating grade:', error);
+        throw error;
+      })
+    );
+  }
+
   getGradesByTeacher(teacherId: number): Observable<any[]> {
     return this.apiService.getGradesByTeacher(teacherId).pipe(
       map((grades: any[]) => {
