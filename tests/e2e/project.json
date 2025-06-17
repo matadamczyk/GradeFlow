@@ -2,8 +2,30 @@
   "name": "client-e2e",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
-  "sourceRoot": "apps/client-e2e/src",
+  "sourceRoot": "tests/e2e/src",
   "implicitDependencies": ["client"],
   "// targets": "to see all targets run: nx show project client-e2e --web",
-  "targets": {}
+  "targets": {
+    "e2e": {
+      "executor": "@nx/playwright:playwright",
+      "outputs": ["{workspaceRoot}/dist/.playwright"],
+      "options": {
+        "config": "{projectRoot}/playwright.config.ts"
+      }
+    },
+    "e2e-ci": {
+      "executor": "@nx/playwright:playwright",
+      "outputs": ["{workspaceRoot}/dist/.playwright"],
+      "options": {
+        "config": "{projectRoot}/playwright.config.ts",
+        "headed": false
+      }
+    },
+    "show-report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npx playwright show-report"
+      }
+    }
+  }
 }

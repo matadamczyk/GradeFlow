@@ -5,7 +5,7 @@
   "scripts": {
     "start:client": "nx serve client",
     "build:client": "nx build client",
-    "test:client": "nx test client",
+    "test:client": "nx e2e client-e2e",
     "lint:client": "nx lint client",
     "start:server": "cd apps/server && ./mvnw spring-boot:run",
     "start:all": "concurrently \"npm run start:server\" \"npm run start:client\""
