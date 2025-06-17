@@ -75,7 +75,7 @@ public class GradeController {
     User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
     if (currentUser.getRole().name().equals("STUDENT") &&
-      (student.getUserId() == null || currentUser.getId().equals(student.getUserId()))) {
+      (student.getUserId() == null || !currentUser.getId().equals(student.getUserId()))) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
