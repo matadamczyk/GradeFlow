@@ -104,18 +104,28 @@ jobs:
       - name: Run DTO Request Tests
         run: npm run test:server:dto
         continue-on-error: true
+        env:
+          SPRING_PROFILES_ACTIVE: test
         
       - name: Run Entity Tests  
         run: npm run test:server:entity
         continue-on-error: true
+        env:
+          SPRING_PROFILES_ACTIVE: test
         
       - name: Run Unit/DTO Tests
         run: npm run test:server:unit
         continue-on-error: true
+        env:
+          SPRING_PROFILES_ACTIVE: test
         
       - name: Run REST Controller Tests
         run: npm run test:server:rest
         continue-on-error: true
+        env:
+          SPRING_PROFILES_ACTIVE: test
         
       - name: Run All Server Tests
         run: npm run test:server
+        env:
+          SPRING_PROFILES_ACTIVE: test
