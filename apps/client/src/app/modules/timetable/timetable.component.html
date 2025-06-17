@@ -60,8 +60,12 @@
               <i class="pi pi-map-marker"></i>
               {{ currentLesson.room }}
             </span>
+            <span class="class-info" *ngIf="isTeacher()">
+              <i class="pi pi-users"></i>
+              Klasa {{ currentLesson.studentClass.number }}{{ currentLesson.studentClass.letter }}
+            </span>
           </div>
-          <div class="teacher">
+          <div class="teacher" *ngIf="!isTeacher()">
             <i class="pi pi-user"></i>
             {{ currentLesson.teacherSubject.teacher.name }}
             {{ currentLesson.teacherSubject.teacher.lastname }}
@@ -106,8 +110,12 @@
               <i class="pi pi-map-marker"></i>
               {{ nextLesson.room }}
             </span>
+            <span class="class-info" *ngIf="isTeacher()">
+              <i class="pi pi-users"></i>
+              Klasa {{ nextLesson.studentClass.number }}{{ nextLesson.studentClass.letter }}
+            </span>
           </div>
-          <div class="teacher">
+          <div class="teacher" *ngIf="!isTeacher()">
             <i class="pi pi-user"></i>
             {{ nextLesson.teacherSubject.teacher.name }}
             {{ nextLesson.teacherSubject.teacher.lastname }}
@@ -222,7 +230,11 @@
                   <div class="lesson-time">
                     {{ lesson.startTime }} - {{ lesson.endTime }}
                   </div>
-                  <div class="teacher-info">
+                  <div class="class-info" *ngIf="isTeacher()">
+                    <i class="pi pi-users"></i>
+                    {{ lesson.studentClass.number }}{{ lesson.studentClass.letter }}
+                  </div>
+                  <div class="teacher-info" *ngIf="!isTeacher()">
                     <i class="pi pi-user"></i>
                     {{ lesson.teacherSubject.teacher.lastname }}
                   </div>

@@ -159,6 +159,10 @@ export class ApiService {
     return this.get<any[]>(`/timetables/studentClass/${classId}`);
   }
 
+  getTimetableByTeacher(teacherId: number): Observable<any[]> {
+    return this.get<any[]>(`/timetables/teacher/${teacherId}`);
+  }
+
   getTimetableByStudent(studentId: number): Observable<any[]> {
     // For now, we'll use all timetables and filter client-side
     // TODO: Backend should provide endpoint for student-specific timetable

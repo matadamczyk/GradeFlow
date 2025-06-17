@@ -183,6 +183,21 @@
           }
         }
 
+        .class-info {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-size: 0.9rem;
+          font-weight: 500;
+          color: var(--text-color);
+
+          i {
+            color: var(--primary-color);
+            width: 1rem;
+            font-size: 0.8rem;
+          }
+        }
+
         .no-lesson {
           font-size: 0.9rem;
           color: var(--text-color-secondary);
@@ -475,6 +490,20 @@
             display: flex;
             align-items: center;
             gap: 0.25rem;
+
+            i {
+              font-size: 0.7rem;
+            }
+          }
+
+          .class-info {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-weight: 600;
 
             i {
               font-size: 0.7rem;

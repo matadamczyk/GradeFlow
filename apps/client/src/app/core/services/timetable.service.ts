@@ -5,6 +5,8 @@ import { catchError, delay, map, switchMap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { Injectable } from '@angular/core';
 import { MockDataService } from './mock-data.service';
+import { AuthService } from './auth.service';
+import { UserRole } from '../models/enums';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +14,8 @@ import { MockDataService } from './mock-data.service';
 export class TimetableService {
   constructor(
     private mockDataService: MockDataService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private authService: AuthService
   ) {}
 
   getStudentTimetable(studentId: number): Observable<TimetableEntry[]> {
@@ -52,9 +55,49 @@ export class TimetableService {
     );
   }
 
-  getWeeklyTimetable(studentId: number): Observable<WeeklyTimetable> {
-    // Use getStudentTimetable which now uses API data
-    return this.getStudentTimetable(studentId).pipe(
+  getTeacherTimetable(teacherId: number): Observable<TimetableEntry[]> {
+    // First, get teacher by user ID
+    return this.apiService.getTeacherByUserId(teacherId).pipe(
+      switchMap((teacher: any) => {
+        console.log('Found teacher for timetable:', teacher);
+        // Get timetable for teacher
+        return this.apiService.getTimetableByTeacher(teacher.id);
+      }),
+      map((timetables: any[]) => {
+        console.log('Received timetables for teacher:', timetables);
+        const mappedTimetable = timetables.map((entry) =>
+          this.mapApiToTimetableEntry(entry)
+        );
+        return mappedTimetable;
+      }),
+      catchError((error: any) => {
+        console.warn('API error for teacher timetable, falling back to mock data:', error);
+        // Fallback to mock data - use the teacher service mock functionality
+        return of([]);
+      }),
+      delay(300)
+    );
+  }
+
+  getWeeklyTimetable(userId: number): Observable<WeeklyTimetable> {
+    const currentUser = this.authService.getCurrentUser();
+    
+    if (!currentUser) {
+      console.warn('No current user found');
+      return of({});
+    }
+
+    // Choose the appropriate method based on user role
+    let timetableObservable: Observable<TimetableEntry[]>;
+    
+    if (currentUser.role === UserRole.TEACHER) {
+      timetableObservable = this.getTeacherTimetable(userId);
+    } else {
+      // Default to student timetable for STUDENT, PARENT, and ADMIN roles
+      timetableObservable = this.getStudentTimetable(userId);
+    }
+
+    return timetableObservable.pipe(
       map((timetableEntries: TimetableEntry[]) => {
         const weeklyTimetable: WeeklyTimetable = {};
 
@@ -99,12 +142,26 @@ export class TimetableService {
     return of(dayTimetable).pipe(delay(500));
   }
 
-  getCurrentLesson(studentId: number): Observable<TimetableEntry | null> {
+  getCurrentLesson(userId: number): Observable<TimetableEntry | null> {
     const now = new Date();
     const currentDay = this.getCurrentDayCode();
     const currentTime = now.getHours() * 60 + now.getMinutes(); // minuty od północy
+    const currentUser = this.authService.getCurrentUser();
 
-    return this.getStudentTimetable(studentId).pipe(
+    if (!currentUser) {
+      return of(null);
+    }
+
+    // Choose the appropriate method based on user role
+    let timetableObservable: Observable<TimetableEntry[]>;
+    
+    if (currentUser.role === UserRole.TEACHER) {
+      timetableObservable = this.getTeacherTimetable(userId);
+    } else {
+      timetableObservable = this.getStudentTimetable(userId);
+    }
+
+    return timetableObservable.pipe(
       map((timetableEntries: TimetableEntry[]) => {
         const todayLessons = timetableEntries.filter(
           (entry) => entry.day === currentDay
@@ -122,12 +179,26 @@ export class TimetableService {
     );
   }
 
-  getNextLesson(studentId: number): Observable<TimetableEntry | null> {
+  getNextLesson(userId: number): Observable<TimetableEntry | null> {
     const now = new Date();
     const currentDay = this.getCurrentDayCode();
     const currentTime = now.getHours() * 60 + now.getMinutes();
+    const currentUser = this.authService.getCurrentUser();
 
-    return this.getStudentTimetable(studentId).pipe(
+    if (!currentUser) {
+      return of(null);
+    }
+
+    // Choose the appropriate method based on user role
+    let timetableObservable: Observable<TimetableEntry[]>;
+    
+    if (currentUser.role === UserRole.TEACHER) {
+      timetableObservable = this.getTeacherTimetable(userId);
+    } else {
+      timetableObservable = this.getStudentTimetable(userId);
+    }
+
+    return timetableObservable.pipe(
       map((timetableEntries: TimetableEntry[]) => {
         const todayLessons = timetableEntries
           .filter((entry) => entry.day === currentDay)

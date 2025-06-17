@@ -68,6 +68,15 @@ public class TimetableController {
     return  ResponseEntity.ok(timetables);
   }
 
+
+
+  @PreAuthorize("hasRole('TEACHER') or hasRole('ADMIN')")
+  @GetMapping("/teacher/{teacherId}")
+  public ResponseEntity<List<Timetable>> getTimetableByTeacher(@PathVariable Integer teacherId) {
+    List<Timetable> timetable = timetableRepository.findByTeacherId(teacherId);
+    return ResponseEntity.ok(timetable);
+  }
+
   @PreAuthorize("hasRole('ADMIN')")
   @PostMapping
   public ResponseEntity<?> createTimetable(@RequestBody TimetableRequest request) {
