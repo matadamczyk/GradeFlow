@@ -169,3 +169,80 @@ test.describe('Przykładowa funkcjonalność', () => {
 2. Używaj opisowych nazw testów w języku polskim
 3. Dodaj komentarze wyjaśniające złożone interakcje
 4. Aktualizuj ten README przy dodawaniu nowych funkcjonalności 
+
+## Mock Authentication for Testing
+
+This project includes a mock authentication system specifically designed for e2e tests. This allows you to test the application without needing a real backend connection.
+
+### Available Test Users
+
+The following test users are available with password `password`:
+
+- **Student**: `student@gradeflow.com`
+- **Teacher**: `teacher@gradeflow.com` 
+- **Parent**: `parent@gradeflow.com`
+- **Admin**: `admin@gradeflow.com`
+
+### Using Mock Authentication
+
+#### Enabling Mock Mode
+
+```typescript
+import { enableMockMode, TEST_USERS, loginAsUser } from './utils/test-helpers';
+
+// Enable mock mode for your test
+await enableMockMode(page);
+
+// Login as student
+await loginAsUser(page, TEST_USERS.STUDENT.email, TEST_USERS.STUDENT.password);
+
+// Login as teacher  
+await loginAsUser(page, TEST_USERS.TEACHER.email, TEST_USERS.TEACHER.password);
+```
+
+#### Example Test
+
+```typescript
+test('should login as student', async ({ page }) => {
+  await enableMockMode(page);
+  await loginAsUser(page, TEST_USERS.STUDENT.email, TEST_USERS.STUDENT.password);
+  
+  // Verify login success
+  await expect(page).toHaveURL(/.*dashboard/);
+  await expect(page.locator('text=Adam Nowicki')).toBeVisible();
+});
+```
+
+### How It Works
+
+1. **Mock Mode Flag**: The system uses a `MOCK_MODE` flag in the AuthService that can be enabled programmatically
+2. **Window Flag Fallback**: If Angular service is not accessible, it falls back to a window-level flag
+3. **No Server Required**: All authentication happens client-side with predefined users
+4. **Password Validation**: Only accepts `password` as the password for any test user
+5. **Role-based Access**: Each user has appropriate role permissions (STUDENT, TEACHER, PARENT, ADMIN)
+
+### Test Users Details
+
+| Email | Role | Name | Password |
+|-------|------|------|----------|
+| student@gradeflow.com | STUDENT | Adam Nowicki | password |
+| teacher@gradeflow.com | TEACHER | Anna Kowalska | password |
+| parent@gradeflow.com | PARENT | Jan Nowicki | password |
+| admin@gradeflow.com | ADMIN | Admin System | password |
+
+### Security Notes
+
+⚠️ **Important**: This mock system is ONLY for testing purposes. The mock mode flag is disabled by default in production builds. The real authentication still requires a valid backend connection.
+
+### Running Tests
+
+```bash
+# Run all e2e tests
+npm run e2e
+
+# Run only mock login tests
+npx playwright test mock-login.spec.ts
+
+# Run tests in headed mode (see browser)
+npx playwright test --headed
+``` 

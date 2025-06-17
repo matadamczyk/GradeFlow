@@ -29,19 +29,110 @@ export async function waitForPageLoad(page: Page, timeout = 10000) {
   }
 }
 
+interface LoginCredentials {
+  email: string;
+  password: string;
+}
+
+// Test users for mock authentication
+export const TEST_USERS = {
+  STUDENT: {
+    email: 'student@gradeflow.com',
+    password: 'password'
+  },
+  TEACHER: {
+    email: 'teacher@gradeflow.com', 
+    password: 'password'
+  },
+  PARENT: {
+    email: 'parent@gradeflow.com',
+    password: 'password'
+  },
+  ADMIN: {
+    email: 'admin@gradeflow.com',
+    password: 'password'
+  }
+};
+
 /**
- * Symuluje logowanie użytkownika (szablon do dostosowania)
+ * Helper function to enable mock mode in the application
+ */
+export async function enableMockMode(page: Page): Promise<void> {
+  await page.addInitScript(() => {
+    // Set mock mode flag before app loads
+    (window as any).__GRADEFLOW_MOCK_MODE__ = true;
+  });
+  
+  await page.evaluate(() => {
+    // Also set it at runtime for current page
+    (window as any).__GRADEFLOW_MOCK_MODE__ = true;
+    
+    // Try to access the AuthService if already loaded
+    try {
+      const authService = (window as any).ng?.getInjector()?.get('AuthService');
+      if (authService && typeof authService.enableMockMode === 'function') {
+        authService.enableMockMode();
+        console.log('🎭 Mock mode enabled via AuthService');
+      } else {
+        console.log('🎭 Mock mode enabled via window flag');
+      }
+    } catch (error) {
+      console.log('🎭 Mock mode set via window flag (Angular not ready)');
+    }
+  });
+}
+
+/**
+ * Helper function to disable mock mode in the application
+ */
+export async function disableMockMode(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    const authService = (window as any).ng?.getInjector()?.get('AuthService');
+    if (authService && typeof authService.disableMockMode === 'function') {
+      authService.disableMockMode();
+    } else {
+      (window as any).__GRADEFLOW_MOCK_MODE__ = false;
+    }
+  });
+}
+
+/**
+ * Symuluje logowanie użytkownika (zaktualizowane dla aplikacji z dialogiem logowania)
  */
 export async function loginAsUser(page: Page, email: string, password: string) {
-  // Dostosuj selektory do swojej aplikacji
-  await page.goto('/login');
+  // Enable mock mode before attempting login
+  await enableMockMode(page);
   
-  await page.fill('[data-testid="email"], input[type="email"]', email);
-  await page.fill('[data-testid="password"], input[type="password"]', password);
-  await page.click('[data-testid="login-submit"], button[type="submit"]');
+  // Go to main page (not /login since there's no such route)
+  await page.goto('/');
   
-  // Poczekaj na przekierowanie
-  await page.waitForURL(/.*dashboard|.*home/, { timeout: 10000 });
+  // Wait for page to load
+  await page.waitForLoadState('networkidle');
+  
+  // Look for and click login button to open dialog
+  // Try multiple selectors: navbar "Zaloguj się" or welcome page "Sprawdź demo" 
+  const loginButton = page.locator('button:has-text("Zaloguj się"), button:has-text("Sprawdź demo"), .p-button:has-text("Zaloguj się"), .p-button:has-text("Sprawdź demo")');
+  await loginButton.first().click();
+  
+  // Wait for dialog to appear and form to be ready
+  // Use a more reliable selector - check for the app-sign-in component which is inside the dialog
+  await page.waitForSelector('app-sign-in', { timeout: 10000 });
+  await page.waitForSelector('#email', { timeout: 10000 });
+  
+  // Fill email field using specific ID
+  await page.fill('#email', email);
+  
+  // Fill password field using specific ID  
+  await page.fill('#password', password);
+  
+  // Click submit button
+  await page.click('button[type="submit"]');
+  
+  // Wait for login to complete - either redirect to dashboard or error message
+  await Promise.race([
+    page.waitForURL(/.*dashboard/, { timeout: 10000 }),
+    page.waitForSelector('p-message[severity="error"], .p-message-error', { timeout: 5000 })
+  ]);
 }
 
 /**
