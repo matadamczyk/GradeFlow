@@ -1,4 +1,3 @@
-// Services
 import {
   AccountService,
   PasswordChangeRequest,
@@ -18,18 +17,17 @@ import { AuthService } from '../../core/services/auth.service';
 import { AvatarModule } from 'primeng/avatar';
 import { BadgeModule } from 'primeng/badge';
 import { ButtonModule } from 'primeng/button';
-// PrimeNG Imports
 import { CardModule } from 'primeng/card';
 import { CommonModule } from '@angular/common';
 import { DividerModule } from 'primeng/divider';
 import { FloatLabelModule } from 'primeng/floatlabel';
 import { InputTextModule } from 'primeng/inputtext';
 import { InputTextarea } from 'primeng/inputtextarea';
-// PrimeNG Services
 import { MessageService } from 'primeng/api';
 import { PanelModule } from 'primeng/panel';
 import { PasswordModule } from 'primeng/password';
 import { ProgressBarModule } from 'primeng/progressbar';
+import { RouterModule } from '@angular/router';
 import { SkeletonModule } from 'primeng/skeleton';
 import { TabViewModule } from 'primeng/tabview';
 import { TagModule } from 'primeng/tag';
@@ -43,6 +41,7 @@ import { UserRole } from '../../core/models/enums';
   imports: [
     CommonModule,
     ReactiveFormsModule,
+    RouterModule,
     CardModule,
     ButtonModule,
     InputTextModule,
@@ -68,7 +67,6 @@ export class AccountComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
 
   userProfile: UserProfile | null = null;
-  statistics: any = null;
   isLoading = true;
   isUpdatingProfile = false;
   isChangingPassword = false;
@@ -114,7 +112,6 @@ export class AccountComponent implements OnInit, OnDestroy {
   private loadData(): void {
     this.isLoading = true;
 
-    // Ładuj profil użytkownika
     this.accountService
       .getUserProfile()
       .pipe(
@@ -132,19 +129,6 @@ export class AccountComponent implements OnInit, OnDestroy {
             summary: 'Błąd',
             detail: 'Nie udało się załadować profilu użytkownika',
           });
-        },
-      });
-
-    // Ładuj statystyki
-    this.accountService
-      .getAccountStatistics()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (stats) => {
-          this.statistics = stats;
-        },
-        error: (error) => {
-          console.error('Błąd ładowania statystyk:', error);
         },
       });
   }
@@ -325,7 +309,6 @@ export class AccountComponent implements OnInit, OnDestroy {
     }).format(date);
   }
 
-  // Track functions for performance optimization
   trackBySubject(index: number, item: string): string {
     return item;
   }

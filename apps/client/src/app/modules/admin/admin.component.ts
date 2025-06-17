@@ -130,12 +130,6 @@ export class AdminComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     // Sprawdź czy użytkownik jest zalogowany jako admin
     const currentUser = this.authService.getCurrentUser();
-    console.log('Admin component - current user:', currentUser);
-    console.log(
-      'Admin component - is logged in:',
-      this.authService.isLoggedIn()
-    );
-    console.log('Admin component - token:', this.authService.getToken());
 
     if (!currentUser || currentUser.role !== UserRole.ADMIN) {
       console.error('Unauthorized access to admin panel');

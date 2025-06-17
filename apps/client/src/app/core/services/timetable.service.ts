@@ -3,8 +3,10 @@ import { TimetableEntry, WeeklyTimetable } from '../models';
 import { catchError, delay, map, switchMap } from 'rxjs/operators';
 
 import { ApiService } from './api.service';
+import { AuthService } from './auth.service';
 import { Injectable } from '@angular/core';
 import { MockDataService } from './mock-data.service';
+import { UserRole } from '../models/enums';
 
 @Injectable({
   providedIn: 'root',
@@ -12,21 +14,18 @@ import { MockDataService } from './mock-data.service';
 export class TimetableService {
   constructor(
     private mockDataService: MockDataService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private authService: AuthService
   ) {}
 
   getStudentTimetable(studentId: number): Observable<TimetableEntry[]> {
-    // First, get student by user ID to find their class
     return this.apiService.getStudentByUserId(studentId).pipe(
       switchMap((student: any) => {
-        console.log('Found student for timetable:', student);
-        // Get timetable for student's class
         return this.apiService.getTimetableByStudentClass(
           student.studentClass.id
         );
       }),
       map((timetables: any[]) => {
-        console.log('Received timetables for class:', timetables);
         const mappedTimetable = timetables.map((entry) =>
           this.mapApiToTimetableEntry(entry)
         );
@@ -52,13 +51,48 @@ export class TimetableService {
     );
   }
 
-  getWeeklyTimetable(studentId: number): Observable<WeeklyTimetable> {
-    // Use getStudentTimetable which now uses API data
-    return this.getStudentTimetable(studentId).pipe(
+  getTeacherTimetable(teacherId: number): Observable<TimetableEntry[]> {
+    return this.apiService.getTeacherByUserId(teacherId).pipe(
+      switchMap((teacher: any) => {
+        return this.apiService.getTimetableByTeacher(teacher.id);
+      }),
+      map((timetables: any[]) => {
+        const mappedTimetable = timetables.map((entry) =>
+          this.mapApiToTimetableEntry(entry)
+        );
+        return mappedTimetable;
+      }),
+      catchError((error: any) => {
+        console.warn(
+          'API error for teacher timetable, falling back to mock data:',
+          error
+        );
+        return of([]);
+      }),
+      delay(300)
+    );
+  }
+
+  getWeeklyTimetable(userId: number): Observable<WeeklyTimetable> {
+    const currentUser = this.authService.getCurrentUser();
+
+    if (!currentUser) {
+      console.warn('No current user found');
+      return of({});
+    }
+
+    let timetableObservable: Observable<TimetableEntry[]>;
+
+    if (currentUser.role === UserRole.TEACHER) {
+      timetableObservable = this.getTeacherTimetable(userId);
+    } else {
+      timetableObservable = this.getStudentTimetable(userId);
+    }
+
+    return timetableObservable.pipe(
       map((timetableEntries: TimetableEntry[]) => {
         const weeklyTimetable: WeeklyTimetable = {};
 
-        // Grupuj lekcje według dni
         timetableEntries.forEach((entry) => {
           if (!weeklyTimetable[entry.day]) {
             weeklyTimetable[entry.day] = [];
@@ -66,14 +100,12 @@ export class TimetableService {
           weeklyTimetable[entry.day].push(entry);
         });
 
-        // Sortuj lekcje w każdym dniu według numeru lekcji
         Object.keys(weeklyTimetable).forEach((day) => {
           weeklyTimetable[day].sort(
             (a, b) => a.lesson_number - b.lesson_number
           );
         });
 
-        console.log('Generated weekly timetable:', weeklyTimetable);
         return weeklyTimetable;
       })
     );
@@ -99,12 +131,25 @@ export class TimetableService {
     return of(dayTimetable).pipe(delay(500));
   }
 
-  getCurrentLesson(studentId: number): Observable<TimetableEntry | null> {
+  getCurrentLesson(userId: number): Observable<TimetableEntry | null> {
     const now = new Date();
     const currentDay = this.getCurrentDayCode();
-    const currentTime = now.getHours() * 60 + now.getMinutes(); // minuty od północy
+    const currentTime = now.getHours() * 60 + now.getMinutes();
+    const currentUser = this.authService.getCurrentUser();
 
-    return this.getStudentTimetable(studentId).pipe(
+    if (!currentUser) {
+      return of(null);
+    }
+
+    let timetableObservable: Observable<TimetableEntry[]>;
+
+    if (currentUser.role === UserRole.TEACHER) {
+      timetableObservable = this.getTeacherTimetable(userId);
+    } else {
+      timetableObservable = this.getStudentTimetable(userId);
+    }
+
+    return timetableObservable.pipe(
       map((timetableEntries: TimetableEntry[]) => {
         const todayLessons = timetableEntries.filter(
           (entry) => entry.day === currentDay
@@ -116,18 +161,30 @@ export class TimetableService {
           return currentTime >= startTime && currentTime <= endTime;
         });
 
-        console.log('Current lesson:', currentLesson);
         return currentLesson || null;
       })
     );
   }
 
-  getNextLesson(studentId: number): Observable<TimetableEntry | null> {
+  getNextLesson(userId: number): Observable<TimetableEntry | null> {
     const now = new Date();
     const currentDay = this.getCurrentDayCode();
     const currentTime = now.getHours() * 60 + now.getMinutes();
+    const currentUser = this.authService.getCurrentUser();
 
-    return this.getStudentTimetable(studentId).pipe(
+    if (!currentUser) {
+      return of(null);
+    }
+
+    let timetableObservable: Observable<TimetableEntry[]>;
+
+    if (currentUser.role === UserRole.TEACHER) {
+      timetableObservable = this.getTeacherTimetable(userId);
+    } else {
+      timetableObservable = this.getStudentTimetable(userId);
+    }
+
+    return timetableObservable.pipe(
       map((timetableEntries: TimetableEntry[]) => {
         const todayLessons = timetableEntries
           .filter((entry) => entry.day === currentDay)
@@ -138,15 +195,12 @@ export class TimetableService {
           return currentTime < startTime;
         });
 
-        console.log('Next lesson:', nextLesson);
         return nextLesson || null;
       })
     );
   }
 
-  // Metoda pomocnicza do mapowania API data na TimetableEntry
   private mapApiToTimetableEntry(apiEntry: any): TimetableEntry {
-    // Generate time slots based on lesson number (since API doesn't provide startTime/endTime)
     const timeSlots = [
       { start: '08:00', end: '08:45' },
       { start: '08:55', end: '09:40' },
@@ -184,13 +238,12 @@ export class TimetableService {
     };
   }
 
-  // Metoda pomocnicza do mapowania mock data na TimetableEntry
   private mapToTimetableEntry(mockEntry: any): TimetableEntry {
     return {
       lesson_id: mockEntry.lesson_id,
       studentClass: mockEntry.studentClass,
       teacherSubject: {
-        id: mockEntry.lesson_id, // używamy lesson_id jako id teacher-subject
+        id: mockEntry.lesson_id,
         subject: {
           id: mockEntry.lesson_id,
           name: mockEntry.subjectName,
@@ -202,14 +255,13 @@ export class TimetableService {
         },
       },
       lesson_number: mockEntry.lesson_number,
-      day: mockEntry.day as any, // cast to WorkDay enum
+      day: mockEntry.day as any,
       startTime: mockEntry.startTime,
       endTime: mockEntry.endTime,
       room: mockEntry.room,
     };
   }
 
-  // Metody pomocnicze
   private getCurrentDayCode(): string {
     const days = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
     const today = new Date().getDay();

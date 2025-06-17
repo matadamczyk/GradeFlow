@@ -38,20 +38,15 @@ export class NavbarComponent implements OnInit {
   private destroyRef = inject(DestroyRef);
   private windowWidth = signal<number>(window.innerWidth);
 
-  // Signal dla użytkownika - będzie zainicjalizowany w ngOnInit
   currentUser = signal<any>(null);
 
-  // Computed properties based on auth state
   isLoggedIn = computed(() => {
     const user = this.currentUser();
-    console.log('Navbar - sprawdzanie stanu logowania:', !!user, user);
     return !!user;
   });
 
-  // Wybór odpowiedniego menu na podstawie stanu logowania i roli
   menuKey = computed(() => {
     const user = this.currentUser();
-    console.log('Navbar - obliczanie menuKey dla użytkownika:', user);
 
     if (!user) {
       return 'notLoggedIn';
@@ -61,7 +56,6 @@ export class NavbarComponent implements OnInit {
 
   items = computed(() => {
     const key = this.menuKey();
-    console.log('Navbar - wybieranie menu dla klucza:', key);
     return navbarItems[key as keyof typeof navbarItems];
   });
 
@@ -79,11 +73,9 @@ export class NavbarComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Subskrybuj zmiany użytkownika
     this.authService.currentUser$
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((user) => {
-        console.log('Navbar - otrzymano nowego użytkownika:', user);
         this.currentUser.set(user);
       });
 
@@ -104,12 +96,9 @@ export class NavbarComponent implements OnInit {
   }
 
   onLoginSuccess() {
-    console.log('Navbar - onLoginSuccess wywołane');
     this.displayDialog.set(false);
 
-    // Dodaj małe opóźnienie, żeby stan się zaktualizował
     setTimeout(() => {
-      console.log('Navbar - przekierowanie na dashboard');
       this.router.navigate(['/dashboard']);
     }, 100);
   }

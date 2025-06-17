@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 
-// Podstawowe interfejsy dla mock data
 interface MockSubject {
   id: number;
   name: string;
@@ -53,7 +52,6 @@ interface MockTimetableEntry {
   providedIn: 'root',
 })
 export class MockDataService {
-  // Mock Subjects
   private mockSubjects: MockSubject[] = [
     { id: 1, name: 'Matematyka' },
     { id: 2, name: 'Język Polski' },
@@ -67,7 +65,6 @@ export class MockDataService {
     { id: 10, name: 'Wychowanie Fizyczne' },
   ];
 
-  // Mock Teachers
   private mockTeachers: MockTeacher[] = [
     { id: 1, name: 'Anna', lastname: 'Kowalska' },
     { id: 2, name: 'Jan', lastname: 'Nowak' },
@@ -81,7 +78,6 @@ export class MockDataService {
     { id: 10, name: 'Robert', lastname: 'Woźniak' },
   ];
 
-  // Mock Classes
   private mockClasses: MockClass[] = [
     { id: 1, letter: 'A', number: 1, tutor: this.mockTeachers[0] },
     { id: 2, letter: 'B', number: 1, tutor: this.mockTeachers[1] },
@@ -91,7 +87,6 @@ export class MockDataService {
     { id: 6, letter: 'B', number: 3, tutor: this.mockTeachers[5] },
   ];
 
-  // Mock Students
   private mockStudents: MockStudent[] = [
     {
       id: 1,
@@ -125,7 +120,6 @@ export class MockDataService {
     },
   ];
 
-  // Mock Grades
   private mockGrades: MockGrade[] = [
     {
       id: 1,
@@ -199,9 +193,7 @@ export class MockDataService {
     },
   ];
 
-  // Mock Timetable
   private mockTimetable: MockTimetableEntry[] = [
-    // MONDAY
     {
       lesson_id: 1,
       studentClass: this.mockClasses[0],
@@ -269,7 +261,6 @@ export class MockDataService {
       room: 'Sala gimnastyczna',
     },
 
-    // TUESDAY
     {
       lesson_id: 7,
       studentClass: this.mockClasses[0],
@@ -337,7 +328,6 @@ export class MockDataService {
       room: '102',
     },
 
-    // WEDNESDAY
     {
       lesson_id: 13,
       studentClass: this.mockClasses[0],
@@ -416,7 +406,6 @@ export class MockDataService {
       room: 'Sala gimnastyczna',
     },
 
-    // THURSDAY
     {
       lesson_id: 20,
       studentClass: this.mockClasses[0],
@@ -484,7 +473,6 @@ export class MockDataService {
       room: '104',
     },
 
-    // FRIDAY
     {
       lesson_id: 26,
       studentClass: this.mockClasses[0],
@@ -542,7 +530,6 @@ export class MockDataService {
     },
   ];
 
-  // Getters for mock data
   getSubjects(): MockSubject[] {
     return [...this.mockSubjects];
   }
@@ -567,7 +554,6 @@ export class MockDataService {
     return [...this.mockTimetable];
   }
 
-  // Helper methods
   getStudentById(id: number): MockStudent | undefined {
     return this.mockStudents.find((student) => student.id === id);
   }
@@ -586,7 +572,6 @@ export class MockDataService {
     const studentGrades = this.getGradesByStudent(studentId);
     const subjectMap = new Map<string, MockGrade[]>();
 
-    // Group grades by subject
     studentGrades.forEach((grade) => {
       if (!subjectMap.has(grade.subjectName)) {
         subjectMap.set(grade.subjectName, []);
@@ -594,7 +579,6 @@ export class MockDataService {
       subjectMap.get(grade.subjectName)!.push(grade);
     });
 
-    // Calculate averages for each subject
     return Array.from(subjectMap.entries()).map(([subjectName, grades]) => {
       const average =
         grades.reduce((sum, grade) => sum + grade.grade_value, 0) /
@@ -619,7 +603,7 @@ export class MockDataService {
   }
 
   getCurrentStudent(): MockStudent {
-    return this.mockStudents[0]; // Domyślnie zwracamy pierwszego ucznia
+    return this.mockStudents[0];
   }
 
   getOverallAverage(studentId: number): number {

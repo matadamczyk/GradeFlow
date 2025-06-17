@@ -2,6 +2,7 @@ import {
   ApiService,
   AuthService,
   GradesService,
+  TeacherService,
   TimetableService,
 } from '../../core/services';
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
@@ -29,6 +30,7 @@ interface DashboardData {
   nextLesson: any;
   todayTimetable: any[];
   notifications: any[];
+  upcomingEvents?: any[];
   // Role-specific data
   teacherData?: {
     classes: any[];
@@ -149,7 +151,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private gradesService: GradesService,
     private timetableService: TimetableService,
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private teacherService: TeacherService
   ) {}
 
   ngOnInit(): void {
@@ -166,11 +169,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private testApiConnection(): void {
-    console.log('Testing API connection...');
     this.apiService.getAllUsers().subscribe({
-      next: (users) => {
-        console.log('✅ API connection successful! Users:', users);
-      },
       error: (error) => {
         console.error('❌ API connection failed:', error);
       },
@@ -364,7 +363,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     if (userRole === UserRole.STUDENT) {
       this.apiService.getStudentByUserId(userId).subscribe({
         next: (student: any) => {
-          console.log('Dashboard: Found student for user:', student);
           this.currentStudent.set(student);
           this.loadStudentDashboardData(userId, student.id);
         },
@@ -390,6 +388,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
       ),
       recentGrades: this.gradesService.getRecentGrades(studentId, 5),
       gradeStatistics: this.gradesService.getGradeStatistics(studentId),
+      upcomingEvents: this.loadStudentEvents(studentId),
     };
 
     forkJoin(baseData)
@@ -403,9 +402,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
             notifications: this.generateNotifications(data),
             recentGrades: data.recentGrades || [],
             gradeStatistics: data.gradeStatistics || {},
+            upcomingEvents: data.upcomingEvents || [],
           };
 
-          console.log('Dashboard data loaded:', dashboardData);
           this.dashboardData.set(dashboardData);
           if (data.gradeStatistics) {
             this.setupCharts(data.gradeStatistics);
@@ -413,7 +412,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.isLoading.set(false);
         },
         error: (error) => {
-          console.error('Błąd ładowania danych dashboard studenta:', error);
+          console.error('❌ Błąd ładowania danych dashboard studenta:', error);
           this.isLoading.set(false);
         },
       });
@@ -465,6 +464,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
             teacherData: data.teacherData,
             parentData: data.parentData,
             adminData: data.adminData,
+            upcomingEvents: data.upcomingEvents || [],
           };
 
           this.dashboardData.set(dashboardData);
@@ -481,15 +481,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private setupCharts(statistics: any): void {
-    console.log('Setting up charts with statistics:', statistics);
-
-    // Use real trend data from statistics or fallback to mock
+    // Prepare trend data with better fallbacks
     const trendLabels = statistics.monthlyTrends?.map(
       (trend: any) => trend.month
     ) || ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze'];
-    const trendValues = statistics.monthlyTrends?.map(
-      (trend: any) => trend.average
-    ) || [statistics.overallAverage || 0];
+
+    const trendValues =
+      statistics.monthlyTrends?.map((trend: any) => trend.average) || [];
+
+    // If no trend values, create a simple line based on overall average
+    if (
+      trendValues.length === 0 ||
+      trendValues.every((val: number) => val === 0)
+    ) {
+      const baseAverage = statistics.overallAverage || 3.5;
+      // Create a slight upward trend from the base average
+      const adjustedValues = trendLabels.map((_: string, index: number) => {
+        return Math.round((baseAverage + index * 0.1) * 100) / 100;
+      });
+      trendValues.splice(0, trendValues.length, ...adjustedValues);
+    }
 
     const trendData = {
       labels: trendLabels,
@@ -501,6 +512,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
           backgroundColor: 'rgba(59, 130, 246, 0.1)',
           tension: 0.4,
           fill: true,
+          pointBackgroundColor: '#3B82F6',
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
         },
       ],
     };
@@ -511,14 +527,64 @@ export class DashboardComponent implements OnInit, OnDestroy {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { display: false },
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#1f2937',
+            bodyColor: '#1f2937',
+            borderColor: '#e5e7eb',
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: false,
+            callbacks: {
+              title: function (context: any) {
+                return `Miesiąc: ${context[0].label}`;
+              },
+              label: function (context: any) {
+                return `Średnia: ${context.parsed.y}`;
+              },
+            },
+          },
         },
         scales: {
-          y: { min: 1, max: 6 },
+          x: {
+            grid: {
+              display: false,
+            },
+            ticks: {
+              color: '#6b7280',
+              font: {
+                size: 12,
+              },
+            },
+          },
+          y: {
+            min: 1,
+            max: 6,
+            grid: {
+              color: 'rgba(107, 114, 128, 0.1)',
+            },
+            ticks: {
+              color: '#6b7280',
+              font: {
+                size: 12,
+              },
+              stepSize: 1,
+            },
+          },
+        },
+        interaction: {
+          intersect: false,
+          mode: 'index',
         },
       },
     });
 
+    // Setup subject averages chart
     const subjectData = {
       labels: statistics.subjectGrades?.map((sg: any) => sg.subjectName) || [],
       datasets: [
@@ -535,7 +601,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
             '#DDA0DD',
             '#98D8C8',
             '#F7DC6F',
+            '#FF8A65',
+            '#81C784',
           ],
+          borderWidth: 0,
+          hoverBorderWidth: 2,
+          hoverBorderColor: '#ffffff',
         },
       ],
     };
@@ -546,7 +617,31 @@ export class DashboardComponent implements OnInit, OnDestroy {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: 'bottom' },
+          legend: {
+            position: 'bottom',
+            labels: {
+              padding: 20,
+              usePointStyle: true,
+              pointStyle: 'circle',
+              font: {
+                size: 11,
+              },
+            },
+          },
+          tooltip: {
+            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            titleColor: '#1f2937',
+            bodyColor: '#1f2937',
+            borderColor: '#e5e7eb',
+            borderWidth: 1,
+            cornerRadius: 8,
+            displayColors: false,
+            callbacks: {
+              label: function (context: any) {
+                return `${context.label}: ${context.parsed}`;
+              },
+            },
+          },
         },
       },
     });
@@ -560,7 +655,10 @@ export class DashboardComponent implements OnInit, OnDestroy {
         id: 1,
         type: 'info',
         title: 'Trwa lekcja',
-        message: `${data.currentLesson.subjectName} w sali ${data.currentLesson.room}`,
+        message: `${
+          data.currentLesson.teacherSubject?.subject?.name ||
+          'Nieznany przedmiot'
+        } w sali ${data.currentLesson.room || 'Nieznana sala'}`,
         time: 'teraz',
         icon: 'pi pi-clock',
       });
@@ -571,7 +669,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
         id: 2,
         type: 'warning',
         title: 'Następna lekcja',
-        message: `${data.nextLesson.subjectName} o ${data.nextLesson.startTime}`,
+        message: `${
+          data.nextLesson.teacherSubject?.subject?.name || 'Nieznany przedmiot'
+        } o ${data.nextLesson.startTime}`,
         time: 'wkrótce',
         icon: 'pi pi-calendar',
       });
@@ -627,6 +727,51 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return time.substring(0, 5);
   }
 
+  getEventIcon(type: string): string {
+    switch (type) {
+      case 'test':
+        return 'pi-file-edit';
+      case 'quiz':
+        return 'pi-file';
+      case 'trip':
+        return 'pi-map-marker';
+      case 'presentation':
+        return 'pi-desktop';
+      case 'meeting':
+        return 'pi-users';
+      case 'event':
+        return 'pi-calendar';
+      default:
+        return 'pi-calendar';
+    }
+  }
+
+  getEventTypeLabel(type: string): string {
+    switch (type) {
+      case 'test':
+        return 'Sprawdzian';
+      case 'quiz':
+        return 'Kartkówka';
+      case 'trip':
+        return 'Wycieczka';
+      case 'presentation':
+        return 'Prezentacja';
+      case 'meeting':
+        return 'Zebranie';
+      case 'event':
+        return 'Wydarzenie';
+      default:
+        return 'Wydarzenie';
+    }
+  }
+
+  getDaysUntilEvent(date: string): number {
+    const eventDate = new Date(date);
+    const today = new Date();
+    const diffTime = eventDate.getTime() - today.getTime();
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  }
+
   getAverageProgress(average: number): number {
     return (average / 6) * 100;
   }
@@ -655,34 +800,80 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadTeacherData(userId: number): Observable<any> {
-    // Mock data for teacher
-    return of({
-      classes: [
-        { name: '3A', studentsCount: 25, subject: 'Matematyka' },
-        { name: '2B', studentsCount: 22, subject: 'Fizyka' },
-        { name: '1C', studentsCount: 20, subject: 'Informatyka' },
-      ],
-      pendingGrades: [
-        {
-          studentName: 'Jan Kowalski',
-          assignment: 'Praca klasowa',
-          date: '2024-01-15',
-        },
-        {
-          studentName: 'Anna Nowak',
-          assignment: 'Kartkówka',
-          date: '2024-01-14',
-        },
-      ],
-      todaySchedule: [
-        { time: '08:00', class: '3A', subject: 'Matematyka', room: '15' },
-        { time: '09:00', class: '2B', subject: 'Fizyka', room: '12' },
-      ],
-      studentProgress: [
-        { class: '3A', average: 4.2, improvement: '+0.3' },
-        { class: '2B', average: 3.8, improvement: '-0.1' },
-      ],
-    }).pipe(delay(500));
+    return this.teacherService.getTeacherDashboardDataByUserId(userId).pipe(
+      map((teacherData: any) => {
+        if (!teacherData) {
+          console.warn('No teacher data found for userId:', userId);
+          // Fallback do mock danych jeśli nie znaleziono nauczyciela
+          return {
+            classes: [
+              { name: '3A', studentsCount: 25, subject: 'Matematyka' },
+              { name: '2B', studentsCount: 22, subject: 'Fizyka' },
+              { name: '1C', studentsCount: 20, subject: 'Informatyka' },
+            ],
+            pendingGrades: [
+              {
+                studentName: 'Jan Kowalski',
+                assignment: 'Praca klasowa',
+                date: '2024-01-15',
+              },
+              {
+                studentName: 'Anna Nowak',
+                assignment: 'Kartkówka',
+                date: '2024-01-14',
+              },
+            ],
+            todaySchedule: [
+              { time: '08:00', class: '3A', subject: 'Matematyka', room: '15' },
+              { time: '09:00', class: '2B', subject: 'Fizyka', room: '12' },
+            ],
+            studentProgress: [
+              { class: '3A', average: 4.2, improvement: '+0.3' },
+              { class: '2B', average: 3.8, improvement: '-0.1' },
+            ],
+          };
+        }
+
+        // Mapuj dane z TeacherService do formatu oczekiwanego przez dashboard
+        return {
+          classes: teacherData.classes.map((cls: any) => ({
+            name: `${cls.number}${cls.letter}`,
+            studentsCount:
+              teacherData.studentProgress.find(
+                (sp: any) => sp.class === `${cls.number}${cls.letter}`
+              )?.studentsCount || 0,
+            subject:
+              teacherData.subjects.length > 0
+                ? teacherData.subjects[0].name
+                : 'Brak przedmiotu',
+          })),
+          pendingGrades: teacherData.pendingGrades || [],
+          todaySchedule: teacherData.todaySchedule || [],
+          studentProgress: teacherData.studentProgress || [],
+          totalStudents: teacherData.totalStudents || 0,
+          totalClasses: teacherData.totalClasses || 0,
+        };
+      }),
+      catchError((error: any) => {
+        console.error('Error loading teacher data:', error);
+        // Fallback do mock danych w przypadku błędu
+        return of({
+          classes: [
+            { name: '3A', studentsCount: 25, subject: 'Matematyka' },
+            { name: '2B', studentsCount: 22, subject: 'Fizyka' },
+          ],
+          pendingGrades: [
+            {
+              studentName: 'Błąd ładowania',
+              assignment: 'Problem z API',
+              date: new Date().toISOString().split('T')[0],
+            },
+          ],
+          todaySchedule: [],
+          studentProgress: [],
+        });
+      })
+    );
   }
 
   private loadParentData(userId: number): Observable<any> {
@@ -763,5 +954,100 @@ export class DashboardComponent implements OnInit, OnDestroy {
         });
       })
     );
+  }
+
+  private loadStudentEvents(studentId: number): Observable<any[]> {
+    // Get the student's class ID and fetch events for that class
+    const student = this.currentStudent();
+
+    if (!student || !student.studentClass?.id) {
+      return of([]);
+    }
+
+    const classId = student.studentClass.id;
+
+    return this.gradesService.getEventsByClass(classId).pipe(
+      map((events: any[]) => {
+        // Show all events for now (we'll fix filtering later)
+        return events
+          .map((event) => ({
+            id: event.id,
+            title: event.title,
+            description: event.description || '',
+            date: event.date,
+            time: this.getLessonStartTime(event.lesson?.lesson_number),
+            type: this.extractEventType(event.title),
+            subject:
+              event.lesson?.teacherSubject?.subject?.name ||
+              'Nieznany przedmiot',
+            teacher: this.getTeacherFullName(
+              event.lesson?.teacherSubject?.teacher
+            ),
+            severity: this.getEventSeverity(this.extractEventType(event.title)),
+            lesson: event.lesson,
+          }))
+          .sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+          );
+      }),
+      catchError((error: any) => {
+        console.error('Error loading student events:', error);
+        return of([]);
+      })
+    );
+  }
+
+  private getLessonStartTime(lessonNumber: number): string {
+    const timeSlots = [
+      { start: '08:00', end: '08:45' },
+      { start: '08:55', end: '09:40' },
+      { start: '09:50', end: '10:35' },
+      { start: '10:45', end: '11:30' },
+      { start: '11:40', end: '12:25' },
+      { start: '12:35', end: '13:20' },
+      { start: '13:30', end: '14:15' },
+      { start: '14:25', end: '15:10' },
+    ];
+
+    if (!lessonNumber || lessonNumber < 1 || lessonNumber > timeSlots.length) {
+      return '08:00'; // Default to first lesson time
+    }
+
+    return timeSlots[lessonNumber - 1].start;
+  }
+
+  private extractEventType(title: string): string {
+    const titleLower = title.toLowerCase();
+    if (titleLower.includes('sprawdzian')) return 'test';
+    if (titleLower.includes('kartkówka') || titleLower.includes('kartkowka'))
+      return 'quiz';
+    if (titleLower.includes('wycieczka')) return 'trip';
+    if (titleLower.includes('prezentacja')) return 'presentation';
+    if (titleLower.includes('zebranie')) return 'meeting';
+    return 'event';
+  }
+
+  private getEventSeverity(
+    type: string
+  ): 'success' | 'info' | 'warn' | 'danger' {
+    switch (type) {
+      case 'test':
+        return 'warn';
+      case 'quiz':
+        return 'info';
+      case 'trip':
+        return 'success';
+      case 'presentation':
+        return 'info';
+      case 'meeting':
+        return 'warn';
+      default:
+        return 'info';
+    }
+  }
+
+  private getTeacherFullName(teacher: any): string {
+    if (!teacher) return 'Nieznany nauczyciel';
+    return `${teacher.name} ${teacher.lastname}`.trim();
   }
 }

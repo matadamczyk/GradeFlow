@@ -29,22 +29,10 @@
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-content">
     <div class="grid">
-      <div class="col-12 lg:col-4">
-        <div class="loading-card profile-loading">
-          <p-skeleton height="120px" class="mb-3"></p-skeleton>
-          <p-skeleton height="80px" class="mb-2"></p-skeleton>
-          <p-skeleton height="60px"></p-skeleton>
-        </div>
-      </div>
-      <div class="col-12 lg:col-8">
-        <div class="loading-card stats-loading">
+      <div class="col-12">
+        <div class="loading-card">
           <p-skeleton height="60px" class="mb-3"></p-skeleton>
-          <div class="grid">
-            <div class="col-6 md:col-3" *ngFor="let item of [1, 2, 3, 4]">
-              <p-skeleton height="80px"></p-skeleton>
-            </div>
-          </div>
-          <p-skeleton height="300px" class="mt-3"></p-skeleton>
+          <p-skeleton height="400px"></p-skeleton>
         </div>
       </div>
     </div>
@@ -53,9 +41,9 @@
   <!-- Main Content -->
   <div *ngIf="!isLoading && userProfile" class="account-content">
     <div class="grid">
-      <!-- Enhanced Profile Card -->
+      <!-- Profile Summary Card -->
       <div class="col-12 lg:col-4">
-        <div class="profile-card">
+        <div class="profile-summary-card">
           <!-- Profile Header -->
           <div class="profile-header">
             <div class="avatar-section">
@@ -84,153 +72,29 @@
             </div>
           </div>
 
-          <!-- Profile Details -->
-          <div class="profile-details">
-            <div class="detail-item" *ngIf="userProfile.phone">
-              <div class="detail-icon">
-                <i class="pi pi-phone"></i>
-              </div>
-              <div class="detail-content">
-                <span class="detail-label">Telefon</span>
-                <span class="detail-value">{{ userProfile.phone }}</span>
-              </div>
-            </div>
-
-            <div class="detail-item" *ngIf="userProfile.address">
-              <div class="detail-icon">
-                <i class="pi pi-map-marker"></i>
-              </div>
-              <div class="detail-content">
-                <span class="detail-label">Adres</span>
-                <span class="detail-value">{{ userProfile.address }}</span>
-              </div>
-            </div>
-
-            <div class="detail-item" *ngIf="userProfile.dateOfBirth">
-              <div class="detail-icon">
+          <!-- Quick Stats -->
+          <div class="quick-stats">
+            <div class="stat-item">
+              <div class="stat-icon">
                 <i class="pi pi-calendar"></i>
               </div>
-              <div class="detail-content">
-                <span class="detail-label">Data urodzenia</span>
-                <span class="detail-value">{{
-                  formatDateOnly(userProfile.dateOfBirth)
+              <div class="stat-content">
+                <span class="stat-label">Członek od</span>
+                <span class="stat-value">{{
+                  formatDateOnly(userProfile.accountCreated!)
                 }}</span>
               </div>
             </div>
 
-            <div class="detail-item" *ngIf="userProfile.lastLogin">
-              <div class="detail-icon">
+            <div class="stat-item" *ngIf="userProfile.lastLogin">
+              <div class="stat-icon">
                 <i class="pi pi-clock"></i>
               </div>
-              <div class="detail-content">
-                <span class="detail-label">Ostatnie logowanie</span>
-                <span class="detail-value">{{
+              <div class="stat-content">
+                <span class="stat-label">Ostatnie logowanie</span>
+                <span class="stat-value">{{
                   formatDate(userProfile.lastLogin)
                 }}</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Role-specific Information -->
-          <div
-            class="role-section"
-            *ngIf="
-              userProfile.studentClass ||
-              userProfile.teacherSubjects ||
-              userProfile.parentChildren
-            "
-          >
-            <p-divider styleClass="custom-divider"></p-divider>
-
-            <!-- Student Info -->
-            <div
-              *ngIf="userProfile.role === UserRole.STUDENT"
-              class="role-info student-info"
-            >
-              <div class="role-header">
-                <div class="role-icon">
-                  <i class="pi pi-graduation-cap"></i>
-                </div>
-                <h4>Informacje ucznia</h4>
-              </div>
-              <div class="role-content">
-                <div class="info-item" *ngIf="userProfile.studentClass">
-                  <span class="info-label">Klasa:</span>
-                  <p-tag
-                    [value]="userProfile.studentClass"
-                    severity="info"
-                  ></p-tag>
-                </div>
-                <div class="info-item" *ngIf="userProfile.studentNumber">
-                  <span class="info-label">Numer w dzienniku:</span>
-                  <p-badge
-                    [value]="userProfile.studentNumber.toString()"
-                  ></p-badge>
-                </div>
-              </div>
-            </div>
-
-            <!-- Teacher Info -->
-            <div
-              *ngIf="userProfile.role === UserRole.TEACHER"
-              class="role-info teacher-info"
-            >
-              <div class="role-header">
-                <div class="role-icon">
-                  <i class="pi pi-book"></i>
-                </div>
-                <h4>Informacje nauczyciela</h4>
-              </div>
-              <div class="role-content">
-                <div
-                  class="subjects-section"
-                  *ngIf="userProfile.teacherSubjects"
-                >
-                  <span class="info-label">Przedmioty:</span>
-                  <div class="subjects-tags">
-                    <p-tag
-                      *ngFor="
-                        let subject of userProfile.teacherSubjects;
-                        trackBy: trackBySubject
-                      "
-                      [value]="subject"
-                      severity="info"
-                      styleClass="subject-tag"
-                    ></p-tag>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Parent Info -->
-            <div
-              *ngIf="userProfile.role === UserRole.PARENT"
-              class="role-info parent-info"
-            >
-              <div class="role-header">
-                <div class="role-icon">
-                  <i class="pi pi-users"></i>
-                </div>
-                <h4>Informacje rodzica</h4>
-              </div>
-              <div class="role-content">
-                <div
-                  class="children-section"
-                  *ngIf="userProfile.parentChildren"
-                >
-                  <span class="info-label">Dzieci:</span>
-                  <div class="children-tags">
-                    <p-tag
-                      *ngFor="
-                        let child of userProfile.parentChildren;
-                        trackBy: trackByChild
-                      "
-                      [value]="child"
-                      severity="success"
-                      styleClass="child-tag"
-                    ></p-tag>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -249,228 +113,391 @@
         </div>
       </div>
 
-      <!-- Main Content Area -->
+      <!-- Main Content Area with Tabs -->
       <div class="col-12 lg:col-8">
-        <!-- Enhanced Statistics Card -->
-        <div *ngIf="statistics" class="statistics-section">
-          <div class="section-header">
-            <div class="header-content">
-              <div class="header-icon">
-                <i class="pi pi-chart-bar"></i>
-              </div>
-              <div class="header-text">
-                <h3>Statystyki</h3>
-                <p>Przegląd aktywności w systemie</p>
-              </div>
-            </div>
-          </div>
+        <div class="main-content-panel">
+          <p-tabView styleClass="profile-tabs">
+            <!-- Informacje podstawowe -->
+            <p-tabPanel header="Informacje podstawowe">
+              <ng-template pTemplate="header">
+                <div class="tab-header">
+                  <i class="pi pi-info-circle"></i>
+                  <span>Informacje podstawowe</span>
+                </div>
+              </ng-template>
 
-          <div class="statistics-content">
-            <!-- Student Statistics -->
-            <div
-              *ngIf="userProfile.role === UserRole.STUDENT"
-              class="stats-grid"
-            >
-              <div class="stat-card">
-                <div class="stat-icon student-grades">
-                  <i class="pi pi-star"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.totalGrades }}</div>
-                  <div class="stat-label">Oceny</div>
-                </div>
-              </div>
+              <div class="tab-content-wrapper">
+                <div class="grid">
+                  <!-- Contact Information -->
+                  <div class="col-12 md:col-6">
+                    <p-card styleClass="info-section-card">
+                      <ng-template pTemplate="header">
+                        <div class="card-header">
+                          <div class="card-icon contact-icon">
+                            <i class="pi pi-id-card"></i>
+                          </div>
+                          <h4>Dane kontaktowe</h4>
+                        </div>
+                      </ng-template>
 
-              <div class="stat-card">
-                <div class="stat-icon student-average">
-                  <i class="pi pi-chart-line"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.averageGrade }}</div>
-                  <div class="stat-label">Średnia</div>
-                </div>
-              </div>
+                      <div class="info-items">
+                        <div class="info-item" *ngIf="userProfile.phone">
+                          <span class="info-label">Telefon</span>
+                          <span class="info-value">{{
+                            userProfile.phone
+                          }}</span>
+                        </div>
 
-              <div class="stat-card">
-                <div class="stat-icon student-attendance">
-                  <i class="pi pi-calendar-plus"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.attendanceRate }}%</div>
-                  <div class="stat-label">Frekwencja</div>
-                </div>
-              </div>
+                        <div class="info-item" *ngIf="userProfile.address">
+                          <span class="info-label">Adres</span>
+                          <span class="info-value">{{
+                            userProfile.address
+                          }}</span>
+                        </div>
 
-              <div class="stat-card">
-                <div class="stat-icon student-assignments">
-                  <i class="pi pi-file-check"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">
-                    {{ statistics.completedAssignments }}/{{
-                      statistics.totalAssignments
-                    }}
+                        <div class="info-item" *ngIf="userProfile.dateOfBirth">
+                          <span class="info-label">Data urodzenia</span>
+                          <span class="info-value">{{
+                            formatDateOnly(userProfile.dateOfBirth)
+                          }}</span>
+                        </div>
+
+                        <div
+                          class="no-info"
+                          *ngIf="
+                            !userProfile.phone &&
+                            !userProfile.address &&
+                            !userProfile.dateOfBirth
+                          "
+                        >
+                          <i class="pi pi-info-circle"></i>
+                          <span>Brak dodatkowych danych kontaktowych</span>
+                        </div>
+                      </div>
+                    </p-card>
                   </div>
-                  <div class="stat-label">Zadania</div>
-                </div>
-              </div>
-            </div>
 
-            <!-- Teacher Statistics -->
-            <div
-              *ngIf="userProfile.role === UserRole.TEACHER"
-              class="stats-grid"
-            >
-              <div class="stat-card">
-                <div class="stat-icon teacher-students">
-                  <i class="pi pi-users"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.totalStudents }}</div>
-                  <div class="stat-label">Uczniowie</div>
-                </div>
-              </div>
+                  <!-- Account Details -->
+                  <div class="col-12 md:col-6">
+                    <p-card styleClass="info-section-card">
+                      <ng-template pTemplate="header">
+                        <div class="card-header">
+                          <div class="card-icon account-icon">
+                            <i class="pi pi-shield"></i>
+                          </div>
+                          <h4>Szczegóły konta</h4>
+                        </div>
+                      </ng-template>
 
-              <div class="stat-card">
-                <div class="stat-icon teacher-classes">
-                  <i class="pi pi-home"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.totalClasses }}</div>
-                  <div class="stat-label">Klasy</div>
-                </div>
-              </div>
+                      <div class="info-items">
+                        <div class="info-item">
+                          <span class="info-label">Email</span>
+                          <span class="info-value">{{
+                            userProfile.email
+                          }}</span>
+                        </div>
 
-              <div class="stat-card">
-                <div class="stat-icon teacher-graded">
-                  <i class="pi pi-check"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">
-                    {{ statistics.gradedAssignments }}
+                        <div class="info-item">
+                          <span class="info-label">Rola</span>
+                          <p-tag
+                            [value]="getRoleLabel(userProfile.role)"
+                            [styleClass]="getRoleBadgeClass(userProfile.role)"
+                          ></p-tag>
+                        </div>
+
+                        <div class="info-item">
+                          <span class="info-label">Data utworzenia</span>
+                          <span class="info-value">{{
+                            formatDateOnly(userProfile.accountCreated!)
+                          }}</span>
+                        </div>
+                      </div>
+                    </p-card>
                   </div>
-                  <div class="stat-label">Ocenione prace</div>
+                </div>
+
+                <!-- Quick Actions -->
+                <div class="col-12">
+                  <p-card styleClass="info-section-card">
+                    <ng-template pTemplate="header">
+                      <div class="card-header">
+                        <div class="card-icon actions-icon">
+                          <i class="pi pi-bolt"></i>
+                        </div>
+                        <h4>Szybkie akcje</h4>
+                      </div>
+                    </ng-template>
+
+                    <div class="quick-actions-grid">
+                      <p-button
+                        label="Oceny"
+                        icon="pi pi-chart-line"
+                        [outlined]="true"
+                        styleClass="action-btn"
+                        *ngIf="userProfile.role === UserRole.STUDENT"
+                        routerLink="/grades"
+                      ></p-button>
+
+                      <p-button
+                        label="Plan zajęć"
+                        icon="pi pi-calendar-clock"
+                        [outlined]="true"
+                        styleClass="action-btn"
+                        routerLink="/timetable"
+                      ></p-button>
+
+                      <p-button
+                        label="Dashboard"
+                        icon="pi pi-th-large"
+                        [outlined]="true"
+                        styleClass="action-btn"
+                        routerLink="/dashboard"
+                      ></p-button>
+
+                      <p-button
+                        label="Kontakt"
+                        icon="pi pi-send"
+                        [outlined]="true"
+                        styleClass="action-btn"
+                        routerLink="/contact"
+                      ></p-button>
+                    </div>
+                  </p-card>
                 </div>
               </div>
+            </p-tabPanel>
 
-              <div class="stat-card">
-                <div class="stat-icon teacher-pending">
-                  <i class="pi pi-clock"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.pendingGrades }}</div>
-                  <div class="stat-label">Do oceny</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Parent Statistics -->
-            <div
-              *ngIf="userProfile.role === UserRole.PARENT"
-              class="stats-grid"
+            <!-- Informacje specyficzne dla roli -->
+            <p-tabPanel
+              header="Informacje roli"
+              *ngIf="
+                userProfile.role === UserRole.STUDENT ||
+                userProfile.role === UserRole.TEACHER ||
+                userProfile.role === UserRole.PARENT
+              "
             >
-              <div class="stat-card">
-                <div class="stat-icon parent-children">
-                  <i class="pi pi-heart"></i>
+              <ng-template pTemplate="header">
+                <div class="tab-header">
+                  <i [class]="getRoleIcon(userProfile.role)"></i>
+                  <span>{{ getRoleLabel(userProfile.role) }}</span>
                 </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.totalChildren }}</div>
-                  <div class="stat-label">Dzieci</div>
+              </ng-template>
+
+              <div class="tab-content-wrapper">
+                <!-- Student Information -->
+                <div
+                  *ngIf="userProfile.role === UserRole.STUDENT"
+                  class="role-content"
+                >
+                  <div class="grid">
+                    <div class="col-12 md:col-6">
+                      <p-card styleClass="role-info-card student-card">
+                        <ng-template pTemplate="header">
+                          <div class="card-header">
+                            <div class="card-icon student-icon">
+                              <i class="pi pi-graduation-cap"></i>
+                            </div>
+                            <h4>Klasa</h4>
+                          </div>
+                        </ng-template>
+
+                        <div class="role-info-content">
+                          <div
+                            class="info-display"
+                            *ngIf="userProfile.studentClass"
+                          >
+                            <p-tag
+                              [value]="userProfile.studentClass"
+                              severity="info"
+                              styleClass="large-tag"
+                            ></p-tag>
+                          </div>
+                          <div
+                            class="no-info"
+                            *ngIf="!userProfile.studentClass"
+                          >
+                            <i class="pi pi-info-circle"></i>
+                            <span>Brak przypisanej klasy</span>
+                          </div>
+                        </div>
+                      </p-card>
+                    </div>
+
+                    <div class="col-12 md:col-6">
+                      <p-card styleClass="role-info-card student-card">
+                        <ng-template pTemplate="header">
+                          <div class="card-header">
+                            <div class="card-icon student-icon">
+                              <i class="pi pi-user-edit"></i>
+                            </div>
+                            <h4>Wychowawca</h4>
+                          </div>
+                        </ng-template>
+
+                        <div class="role-info-content">
+                          <div
+                            class="info-display"
+                            *ngIf="userProfile.tutorName"
+                          >
+                            <div class="tutor-info">
+                              <i class="pi pi-user tutor-icon"></i>
+                              <span class="tutor-name">{{
+                                userProfile.tutorName
+                              }}</span>
+                            </div>
+                          </div>
+                          <div class="no-info" *ngIf="!userProfile.tutorName">
+                            <i class="pi pi-info-circle"></i>
+                            <span>Brak przypisanego wychowawcy</span>
+                          </div>
+                        </div>
+                      </p-card>
+                    </div>
+
+                    <div
+                      class="col-12 md:col-6"
+                      *ngIf="userProfile.studentNumber"
+                    >
+                      <p-card styleClass="role-info-card student-card">
+                        <ng-template pTemplate="header">
+                          <div class="card-header">
+                            <div class="card-icon student-icon">
+                              <i class="pi pi-id-card"></i>
+                            </div>
+                            <h4>Numer w dzienniku</h4>
+                          </div>
+                        </ng-template>
+
+                        <div class="role-info-content">
+                          <div class="info-display">
+                            <p-badge
+                              [value]="userProfile.studentNumber.toString()"
+                              styleClass="large-badge"
+                            ></p-badge>
+                          </div>
+                        </div>
+                      </p-card>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Teacher Information -->
+                <div
+                  *ngIf="userProfile.role === UserRole.TEACHER"
+                  class="role-content"
+                >
+                  <p-card styleClass="role-info-card teacher-card">
+                    <ng-template pTemplate="header">
+                      <div class="card-header">
+                        <div class="card-icon teacher-icon">
+                          <i class="pi pi-book"></i>
+                        </div>
+                        <h4>Przedmioty nauczania</h4>
+                      </div>
+                    </ng-template>
+
+                    <div class="role-info-content">
+                      <div
+                        class="subjects-container"
+                        *ngIf="
+                          userProfile.teacherSubjects &&
+                          userProfile.teacherSubjects.length > 0
+                        "
+                      >
+                        <div class="subjects-grid">
+                          <p-tag
+                            *ngFor="
+                              let subject of userProfile.teacherSubjects;
+                              trackBy: trackBySubject
+                            "
+                            [value]="subject"
+                            severity="success"
+                            styleClass="subject-tag"
+                            [icon]="'pi pi-book'"
+                          ></p-tag>
+                        </div>
+                      </div>
+                      <div
+                        class="no-info"
+                        *ngIf="
+                          !userProfile.teacherSubjects ||
+                          userProfile.teacherSubjects.length === 0
+                        "
+                      >
+                        <i class="pi pi-info-circle"></i>
+                        <span>Brak przypisanych przedmiotów</span>
+                      </div>
+                    </div>
+                  </p-card>
+                </div>
+
+                <!-- Parent Information -->
+                <div
+                  *ngIf="userProfile.role === UserRole.PARENT"
+                  class="role-content"
+                >
+                  <p-card styleClass="role-info-card parent-card">
+                    <ng-template pTemplate="header">
+                      <div class="card-header">
+                        <div class="card-icon parent-icon">
+                          <i class="pi pi-users"></i>
+                        </div>
+                        <h4>Dzieci</h4>
+                      </div>
+                    </ng-template>
+
+                    <div class="role-info-content">
+                      <div
+                        class="children-container"
+                        *ngIf="
+                          userProfile.parentChildren &&
+                          userProfile.parentChildren.length > 0
+                        "
+                      >
+                        <div class="children-grid">
+                          <p-tag
+                            *ngFor="
+                              let child of userProfile.parentChildren;
+                              trackBy: trackByChild
+                            "
+                            [value]="child"
+                            severity="warn"
+                            styleClass="child-tag"
+                            [icon]="'pi pi-heart'"
+                          ></p-tag>
+                        </div>
+                      </div>
+                      <div
+                        class="no-info"
+                        *ngIf="
+                          !userProfile.parentChildren ||
+                          userProfile.parentChildren.length === 0
+                        "
+                      >
+                        <i class="pi pi-info-circle"></i>
+                        <span>Brak przypisanych dzieci</span>
+                      </div>
+                    </div>
+                  </p-card>
                 </div>
               </div>
+            </p-tabPanel>
 
-              <div class="stat-card">
-                <div class="stat-icon parent-average">
-                  <i class="pi pi-chart-line"></i>
+            <!-- Edytuj profil -->
+            <p-tabPanel header="Edytuj profil">
+              <ng-template pTemplate="header">
+                <div class="tab-header">
+                  <i class="pi pi-user-edit"></i>
+                  <span>Edytuj profil</span>
                 </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.averageGrade }}</div>
-                  <div class="stat-label">Średnia ocen</div>
-                </div>
-              </div>
+              </ng-template>
 
-              <div class="stat-card">
-                <div class="stat-icon parent-events">
-                  <i class="pi pi-calendar"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.upcomingEvents }}</div>
-                  <div class="stat-label">Nadchodzące wydarzenia</div>
-                </div>
-              </div>
-
-              <div class="stat-card">
-                <div class="stat-icon parent-messages">
-                  <i class="pi pi-envelope"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.unreadMessages }}</div>
-                  <div class="stat-label">Nieprzeczytane wiadomości</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Admin Statistics -->
-            <div *ngIf="userProfile.role === UserRole.ADMIN" class="stats-grid">
-              <div class="stat-card">
-                <div class="stat-icon admin-users">
-                  <i class="pi pi-users"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.totalUsers }}</div>
-                  <div class="stat-label">Użytkownicy</div>
-                </div>
-              </div>
-
-              <div class="stat-card">
-                <div class="stat-icon admin-students">
-                  <i class="pi pi-graduation-cap"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.totalStudents }}</div>
-                  <div class="stat-label">Uczniowie</div>
-                </div>
-              </div>
-
-              <div class="stat-card">
-                <div class="stat-icon admin-teachers">
-                  <i class="pi pi-book"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.totalTeachers }}</div>
-                  <div class="stat-label">Nauczyciele</div>
-                </div>
-              </div>
-
-              <div class="stat-card">
-                <div class="stat-icon admin-uptime">
-                  <i class="pi pi-server"></i>
-                </div>
-                <div class="stat-info">
-                  <div class="stat-value">{{ statistics.systemUptime }}%</div>
-                  <div class="stat-label">Dostępność systemu</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Enhanced Settings Tabs -->
-        <div class="settings-section">
-          <p-tabView styleClass="custom-tabview">
-            <!-- Profile Settings Tab -->
-            <p-tabPanel header="Edytuj profil" leftIcon="pi pi-user">
-              <div class="tab-content">
+              <div class="tab-content-wrapper">
                 <form
                   [formGroup]="profileForm"
                   (ngSubmit)="onUpdateProfile()"
                   class="profile-form"
                 >
-                  <div class="form-header">
-                    <h4><i class="pi pi-user-edit"></i> Edycja profilu</h4>
-                    <p>Zaktualizuj swoje dane osobowe</p>
-                  </div>
-
                   <div class="form-grid">
                     <div class="form-row">
                       <div class="input-container">
@@ -589,19 +616,21 @@
               </div>
             </p-tabPanel>
 
-            <!-- Password Change Tab -->
-            <p-tabPanel header="Zmień hasło" leftIcon="pi pi-lock">
-              <div class="tab-content">
+            <!-- Zmień hasło -->
+            <p-tabPanel header="Zmień hasło">
+              <ng-template pTemplate="header">
+                <div class="tab-header">
+                  <i class="pi pi-lock"></i>
+                  <span>Zmień hasło</span>
+                </div>
+              </ng-template>
+
+              <div class="tab-content-wrapper">
                 <form
                   [formGroup]="passwordForm"
                   (ngSubmit)="onChangePassword()"
                   class="password-form"
                 >
-                  <div class="form-header">
-                    <h4><i class="pi pi-lock"></i> Zmiana hasła</h4>
-                    <p>Zaktualizuj swoje hasło dostępu</p>
-                  </div>
-
                   <div class="form-grid">
                     <div class="form-row full-width">
                       <div class="input-container">
@@ -693,111 +722,6 @@
                     ></p-button>
                   </div>
                 </form>
-              </div>
-            </p-tabPanel>
-
-            <!-- Account Settings Tab -->
-            <p-tabPanel header="Ustawienia konta" leftIcon="pi pi-cog">
-              <div class="tab-content">
-                <div class="account-settings">
-                  <!-- Account Information Panel -->
-                  <div class="settings-panel account-info-panel">
-                    <div class="panel-header">
-                      <div class="panel-icon">
-                        <i class="pi pi-info-circle"></i>
-                      </div>
-                      <div class="panel-title">
-                        <h4>Informacje o koncie</h4>
-                        <p>Podstawowe dane Twojego konta</p>
-                      </div>
-                    </div>
-
-                    <div class="panel-content">
-                      <div class="account-info-grid">
-                        <div class="info-item">
-                          <div class="info-icon">
-                            <i class="pi pi-calendar-plus"></i>
-                          </div>
-                          <div class="info-details">
-                            <span class="info-label"
-                              >Data utworzenia konta</span
-                            >
-                            <span class="info-value">{{
-                              formatDate(userProfile.accountCreated!)
-                            }}</span>
-                          </div>
-                        </div>
-
-                        <div class="info-item">
-                          <div class="info-icon">
-                            <i class="pi pi-sign-in"></i>
-                          </div>
-                          <div class="info-details">
-                            <span class="info-label">Ostatnie logowanie</span>
-                            <span class="info-value">{{
-                              formatDate(userProfile.lastLogin!)
-                            }}</span>
-                          </div>
-                        </div>
-
-                        <div class="info-item">
-                          <div class="info-icon">
-                            <i class="pi pi-envelope"></i>
-                          </div>
-                          <div class="info-details">
-                            <span class="info-label">Adres email</span>
-                            <span class="info-value">{{
-                              userProfile.email
-                            }}</span>
-                          </div>
-                        </div>
-
-                        <div class="info-item">
-                          <div class="info-icon">
-                            <i class="pi pi-shield"></i>
-                          </div>
-                          <div class="info-details">
-                            <span class="info-label">Rola w systemie</span>
-                            <p-tag
-                              [value]="getRoleLabel(userProfile.role)"
-                              [styleClass]="getRoleBadgeClass(userProfile.role)"
-                            ></p-tag>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <!-- Informacja o zarządzaniu kontem -->
-                  <div class="settings-panel info-panel">
-                    <div class="panel-header">
-                      <div class="panel-icon">
-                        <i class="pi pi-info"></i>
-                      </div>
-                      <div class="panel-title">
-                        <h4>Zarządzanie kontem</h4>
-                        <p>Informacje dotyczące administracji konta</p>
-                      </div>
-                    </div>
-
-                    <div class="panel-content">
-                      <div class="info-message">
-                        <i class="pi pi-info-circle"></i>
-                        <div class="info-text">
-                          <p>
-                            W przypadku problemów z kontem lub konieczności
-                            wprowadzenia zmian w danych, skontaktuj się z
-                            administratorem systemu lub sekretariatem szkoły.
-                          </p>
-                          <p>
-                            <strong>Uwaga:</strong> Dane w systemie są chronione
-                            zgodnie z regulaminem szkoły i przepisami RODO.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             </p-tabPanel>
           </p-tabView>

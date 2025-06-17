@@ -142,7 +142,10 @@
                   </ng-template>
                   <p>Aktualna lekcja</p>
                   <small *ngIf="dashboardData()?.currentLesson">
-                    {{ dashboardData()?.currentLesson?.subjectName }}
+                    {{
+                      dashboardData()?.currentLesson?.teacherSubject?.subject
+                        ?.name || 'Nieznany przedmiot'
+                    }}
                   </small>
                   <small *ngIf="!dashboardData()?.currentLesson">
                     Brak zajęć
@@ -168,7 +171,10 @@
                   </ng-template>
                   <p>Następna lekcja</p>
                   <small *ngIf="dashboardData()?.nextLesson">
-                    {{ dashboardData()?.nextLesson?.subjectName }}
+                    {{
+                      dashboardData()?.nextLesson?.teacherSubject?.subject
+                        ?.name || 'Nieznany przedmiot'
+                    }}
                   </small>
                   <small *ngIf="!dashboardData()?.nextLesson">
                     Brak zajęć
@@ -494,30 +500,57 @@
             </p-card>
           </div>
 
-          <!-- Today's Schedule -->
+          <!-- Do oceny -->
           <div class="col-12 md:col-6">
             <p-card>
               <ng-template pTemplate="header">
                 <div class="card-header">
-                  <h3><i class="pi pi-calendar"></i> Plan na dziś</h3>
+                  <h3><i class="pi pi-clock"></i> Do oceny</h3>
+                  <p-button
+                    label="Zobacz wszystko"
+                    [text]="true"
+                    size="small"
+                    (onClick)="navigateToGrades()"
+                  >
+                  </p-button>
                 </div>
               </ng-template>
-              <div class="schedule-content">
+
+              <div
+                class="pending-list"
+                *ngIf="
+                  dashboardData()?.teacherData?.pendingGrades?.length;
+                  else noPendingGrades
+                "
+              >
                 <div
-                  class="schedule-item"
+                  class="pending-item"
                   *ngFor="
-                    let lesson of dashboardData()?.teacherData?.todaySchedule
+                    let pending of dashboardData()?.teacherData?.pendingGrades
                   "
                 >
-                  <div class="lesson-time">{{ lesson.time }}</div>
-                  <div class="lesson-details">
-                    <div class="lesson-subject">{{ lesson.subject }}</div>
-                    <div class="lesson-class">
-                      Klasa {{ lesson.class }} • Sala {{ lesson.room }}
+                  <div class="pending-info">
+                    <div class="student-name">
+                      <strong>{{ pending.studentName }}</strong>
+                      <small>{{ formatDate(pending.date) }}</small>
+                    </div>
+                    <div class="assignment-details">
+                      <p-tag
+                        value="{{ pending.assignment }}"
+                        severity="warn"
+                      ></p-tag>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <ng-template #noPendingGrades>
+                <div class="empty-state">
+                  <i class="pi pi-check-circle"></i>
+                  <p>Wszystko ocenione!</p>
+                  <small>Brak prac do sprawdzenia</small>
+                </div>
+              </ng-template>
             </p-card>
           </div>
         </div>
@@ -652,55 +685,98 @@
           </p-card>
         </div>
 
-        <!-- Teacher Section - Pending Grades -->
-        <div class="pending-grades-section" *ngIf="isTeacher()">
+        <!-- Upcoming Events - Student -->
+        <div class="upcoming-events-section" *ngIf="isStudent()">
           <p-card>
             <ng-template pTemplate="header">
               <div class="card-header">
-                <h3><i class="pi pi-clock"></i> Do oceny</h3>
-                <p-button
-                  label="Zobacz wszystko"
-                  [text]="true"
-                  size="small"
-                  (onClick)="navigateToGrades()"
+                <h3>
+                  <i class="pi pi-calendar-plus"></i> Nadchodzące wydarzenia
+                </h3>
+                <p-badge
+                  [value]="dashboardData()?.upcomingEvents?.length || 0"
+                  severity="info"
                 >
-                </p-button>
+                </p-badge>
               </div>
             </ng-template>
 
             <div
-              class="pending-list"
+              class="upcoming-events-list"
               *ngIf="
-                dashboardData()?.teacherData?.pendingGrades?.length;
-                else noPendingGrades
+                dashboardData()?.upcomingEvents?.length;
+                else noUpcomingEvents
               "
             >
               <div
-                class="pending-item"
-                *ngFor="
-                  let pending of dashboardData()?.teacherData?.pendingGrades
-                "
+                class="event-item"
+                *ngFor="let event of dashboardData()?.upcomingEvents"
               >
-                <div class="pending-info">
-                  <div class="student-name">
-                    <strong>{{ pending.studentName }}</strong>
-                    <small>{{ formatDate(pending.date) }}</small>
+                <div class="event-icon">
+                  <i class="pi" [ngClass]="getEventIcon(event.type)"></i>
+                </div>
+                <div class="event-content">
+                  <div class="event-header">
+                    <div class="event-title">
+                      <strong>{{ event.title }}</strong>
+                      <p-tag
+                        [value]="getEventTypeLabel(event.type)"
+                        [severity]="event.severity"
+                        [rounded]="true"
+                        size="small"
+                      >
+                      </p-tag>
+                    </div>
+                    <div class="event-date">
+                      <span class="event-day">{{
+                        formatDate(event.date)
+                      }}</span>
+                      <small class="event-time">{{
+                        formatTime(event.time)
+                      }}</small>
+                    </div>
                   </div>
-                  <div class="assignment-details">
-                    <p-tag
-                      value="{{ pending.assignment }}"
-                      severity="warn"
-                    ></p-tag>
+                  <div class="event-details">
+                    <div class="event-subject">
+                      <i class="pi pi-book"></i>
+                      {{ event.subject }}
+                    </div>
+                    <div class="event-teacher">
+                      <i class="pi pi-user"></i>
+                      {{ event.teacher }}
+                    </div>
+                  </div>
+                  <div class="event-description" *ngIf="event.description">
+                    <small>{{ event.description }}</small>
+                  </div>
+                  <div class="event-countdown">
+                    <small
+                      class="countdown-text"
+                      [class.urgent]="getDaysUntilEvent(event.date) <= 1"
+                      [class.soon]="getDaysUntilEvent(event.date) <= 3"
+                    >
+                      <ng-container *ngIf="getDaysUntilEvent(event.date) === 0"
+                        >Dziś</ng-container
+                      >
+                      <ng-container *ngIf="getDaysUntilEvent(event.date) === 1"
+                        >Jutro</ng-container
+                      >
+                      <ng-container *ngIf="getDaysUntilEvent(event.date) > 1">
+                        Za {{ getDaysUntilEvent(event.date) }} dni
+                      </ng-container>
+                    </small>
                   </div>
                 </div>
               </div>
             </div>
 
-            <ng-template #noPendingGrades>
+            <ng-template #noUpcomingEvents>
               <div class="empty-state">
-                <i class="pi pi-check-circle"></i>
-                <p>Wszystko ocenione!</p>
-                <small>Brak prac do sprawdzenia</small>
+                <i class="pi pi-calendar-plus"></i>
+                <p>Brak nadchodzących wydarzeń</p>
+                <small
+                  >Wydarzenia pojawią się tutaj gdy zostaną zaplanowane</small
+                >
               </div>
             </ng-template>
           </p-card>
@@ -812,8 +888,51 @@
           </p-card>
         </div>
 
+        <!-- Teacher Today's Schedule Section -->
+        <div class="col-13 mb-4" *ngIf="isTeacher()">
+          <p-card>
+            <ng-template pTemplate="header">
+              <div class="card-header">
+                <h3><i class="pi pi-calendar"></i> Plan na dziś</h3>
+                <p-button
+                  label="Pełny plan"
+                  [text]="true"
+                  size="small"
+                  (onClick)="navigateToTimetable()"
+                >
+                </p-button>
+              </div>
+            </ng-template>
+            <div class="schedule-content">
+              <div
+                class="schedule-item"
+                *ngFor="
+                  let lesson of dashboardData()?.teacherData?.todaySchedule
+                "
+              >
+                <div class="lesson-time">{{ lesson.time }}</div>
+                <div class="lesson-details">
+                  <div class="lesson-subject">{{ lesson.subject }}</div>
+                  <div class="lesson-class">
+                    Klasa {{ lesson.class }} • Sala {{ lesson.room }}
+                  </div>
+                </div>
+              </div>
+
+              <div
+                *ngIf="!dashboardData()?.teacherData?.todaySchedule?.length"
+                class="empty-state"
+              >
+                <i class="pi pi-calendar"></i>
+                <p>Brak zajęć na dziś</p>
+                <small>Miłego dnia wolnego!</small>
+              </div>
+            </div>
+          </p-card>
+        </div>
+
         <!-- Today's Timetable -->
-        <div class="today-timetable-section">
+        <div class="today-timetable-section" *ngIf="!isTeacher()">
           <p-card>
             <ng-template pTemplate="header">
               <div class="card-header">
@@ -847,9 +966,17 @@
                   <small>{{ formatTime(lesson.endTime) }}</small>
                 </div>
                 <div class="lesson-details">
-                  <h4>{{ lesson.subjectName }}</h4>
-                  <p>{{ lesson.teacherName }}</p>
-                  <small>Sala {{ lesson.room }}</small>
+                  <h4>
+                    {{
+                      lesson.teacherSubject?.subject?.name ||
+                        'Nieznany przedmiot'
+                    }}
+                  </h4>
+                  <p>
+                    {{ lesson.teacherSubject?.teacher?.name }}
+                    {{ lesson.teacherSubject?.teacher?.lastname }}
+                  </p>
+                  <small>Sala {{ lesson.room || 'Nieznana' }}</small>
                 </div>
               </div>
             </div>

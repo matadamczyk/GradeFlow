@@ -51,7 +51,6 @@ export class WelcomeLayoutComponent implements OnInit, OnDestroy {
   }
 
   openLoginDialog() {
-    console.log('Welcome - otwieranie dialogu logowania');
     this.displayDialog.set(true);
   }
 
@@ -60,11 +59,9 @@ export class WelcomeLayoutComponent implements OnInit, OnDestroy {
   }
 
   onLoginSuccess() {
-    console.log('Welcome - onLoginSuccess wywołane');
     this.displayDialog.set(false);
 
     setTimeout(() => {
-      console.log('Welcome - przekierowanie na dashboard');
       this.router.navigate(['/dashboard']);
     }, 100);
   }
