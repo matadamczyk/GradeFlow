@@ -78,7 +78,7 @@ export class ContactComponent implements OnInit {
       this.isSubmitting.set(true);
       const formData = this.contactForm.value;
   
-      this.http.post('http://localhost:8080/contact/send', formData).subscribe({
+      this.http.post('http://localhost:8080/api/contact/send', formData).subscribe({
         next: () => {
           this.messageService.add({
             severity: 'success',

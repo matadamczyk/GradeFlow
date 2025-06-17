@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.UUID;
 
-@RequestMapping("/contact")
+@RequestMapping("/api/contact")
 @RestController
 public class ContactController {
 
