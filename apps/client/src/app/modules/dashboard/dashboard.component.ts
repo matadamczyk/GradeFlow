@@ -3,6 +3,7 @@ import {
   AuthService,
   GradesService,
   TimetableService,
+  TeacherService,
 } from '../../core/services';
 import { Component, OnDestroy, OnInit, computed, signal } from '@angular/core';
 import { Observable, Subject, forkJoin, of, takeUntil } from 'rxjs';
@@ -149,7 +150,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private gradesService: GradesService,
     private timetableService: TimetableService,
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private teacherService: TeacherService
   ) {}
 
   ngOnInit(): void {
@@ -750,34 +752,78 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   private loadTeacherData(userId: number): Observable<any> {
-    // Mock data for teacher
-    return of({
-      classes: [
-        { name: '3A', studentsCount: 25, subject: 'Matematyka' },
-        { name: '2B', studentsCount: 22, subject: 'Fizyka' },
-        { name: '1C', studentsCount: 20, subject: 'Informatyka' },
-      ],
-      pendingGrades: [
-        {
-          studentName: 'Jan Kowalski',
-          assignment: 'Praca klasowa',
-          date: '2024-01-15',
-        },
-        {
-          studentName: 'Anna Nowak',
-          assignment: 'Kartkówka',
-          date: '2024-01-14',
-        },
-      ],
-      todaySchedule: [
-        { time: '08:00', class: '3A', subject: 'Matematyka', room: '15' },
-        { time: '09:00', class: '2B', subject: 'Fizyka', room: '12' },
-      ],
-      studentProgress: [
-        { class: '3A', average: 4.2, improvement: '+0.3' },
-        { class: '2B', average: 3.8, improvement: '-0.1' },
-      ],
-    }).pipe(delay(500));
+    console.log('Loading teacher data for userId:', userId);
+    
+    return this.teacherService.getTeacherDashboardDataByUserId(userId).pipe(
+      map((teacherData: any) => {
+        if (!teacherData) {
+          console.warn('No teacher data found for userId:', userId);
+          // Fallback do mock danych jeśli nie znaleziono nauczyciela
+          return {
+            classes: [
+              { name: '3A', studentsCount: 25, subject: 'Matematyka' },
+              { name: '2B', studentsCount: 22, subject: 'Fizyka' },
+              { name: '1C', studentsCount: 20, subject: 'Informatyka' },
+            ],
+            pendingGrades: [
+              {
+                studentName: 'Jan Kowalski',
+                assignment: 'Praca klasowa',
+                date: '2024-01-15',
+              },
+              {
+                studentName: 'Anna Nowak',
+                assignment: 'Kartkówka',
+                date: '2024-01-14',
+              },
+            ],
+            todaySchedule: [
+              { time: '08:00', class: '3A', subject: 'Matematyka', room: '15' },
+              { time: '09:00', class: '2B', subject: 'Fizyka', room: '12' },
+            ],
+            studentProgress: [
+              { class: '3A', average: 4.2, improvement: '+0.3' },
+              { class: '2B', average: 3.8, improvement: '-0.1' },
+            ],
+          };
+        }
+
+        console.log('Teacher data loaded successfully:', teacherData);
+        
+        // Mapuj dane z TeacherService do formatu oczekiwanego przez dashboard
+        return {
+          classes: teacherData.classes.map((cls: any) => ({
+            name: `${cls.number}${cls.letter}`,
+            studentsCount: teacherData.studentProgress.find((sp: any) => sp.class === `${cls.number}${cls.letter}`)?.studentsCount || 0,
+            subject: teacherData.subjects.length > 0 ? teacherData.subjects[0].name : 'Brak przedmiotu',
+          })),
+          pendingGrades: teacherData.pendingGrades || [],
+          todaySchedule: teacherData.todaySchedule || [],
+          studentProgress: teacherData.studentProgress || [],
+          totalStudents: teacherData.totalStudents || 0,
+          totalClasses: teacherData.totalClasses || 0,
+        };
+      }),
+      catchError((error: any) => {
+        console.error('Error loading teacher data:', error);
+        // Fallback do mock danych w przypadku błędu
+        return of({
+          classes: [
+            { name: '3A', studentsCount: 25, subject: 'Matematyka' },
+            { name: '2B', studentsCount: 22, subject: 'Fizyka' },
+          ],
+          pendingGrades: [
+            {
+              studentName: 'Błąd ładowania',
+              assignment: 'Problem z API',
+              date: new Date().toISOString().split('T')[0],
+            },
+          ],
+          todaySchedule: [],
+          studentProgress: [],
+        });
+      })
+    );
   }
 
   private loadParentData(userId: number): Observable<any> {

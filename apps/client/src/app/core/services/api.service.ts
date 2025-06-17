@@ -125,6 +125,20 @@ export class ApiService {
     );
   }
 
+  // Teacher by userId (similar workaround as student)
+  getTeacherByUserId(userId: number): Observable<any> {
+    // Workaround: get all teachers and filter by userId client-side
+    return this.getAllTeachers().pipe(
+      map((teachers: any[]) => {
+        const teacher = teachers.find((t) => t.userId === userId);
+        if (!teacher) {
+          throw new Error(`No teacher found for user ID: ${userId}`);
+        }
+        return teacher;
+      })
+    );
+  }
+
   // Classes
   getAllClasses(): Observable<any[]> {
     return this.get<any[]>('/classes');
@@ -149,5 +163,25 @@ export class ApiService {
     // For now, we'll use all timetables and filter client-side
     // TODO: Backend should provide endpoint for student-specific timetable
     return this.getAllTimetables();
+  }
+
+  // Teacher specific endpoints
+  getTeachersByStudentClass(classId: number): Observable<any[]> {
+    return this.get<any[]>(`/teachers/studentClass/${classId}`);
+  }
+
+  // Students by class
+  getStudentsByClass(classId: number): Observable<any[]> {
+    return this.get<any[]>(`/students/studentClass/${classId}`);
+  }
+
+  // Teacher-Subject assignments
+  getTeacherSubjectAssignments(): Observable<any[]> {
+    return this.get<any[]>('/teacherSubjects');
+  }
+
+  // Additional grade endpoints for teachers
+  getGradesByStudentAndTeacherSubject(studentId: number, teacherSubjectId: number): Observable<any[]> {
+    return this.get<any[]>(`/grades/student/${studentId}/teacherSubject/${teacherSubjectId}`);
   }
 }

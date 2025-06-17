@@ -7,3 +7,4 @@ export * from './auth.service';
 export * from './grades.service';
 export * from './timetable.service';
 export * from './account.service';
+export * from './teacher.service';
