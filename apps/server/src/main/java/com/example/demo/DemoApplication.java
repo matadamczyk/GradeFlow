@@ -47,7 +47,7 @@ public class DemoApplication {
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
       .authorizeHttpRequests(auth -> auth
-        .requestMatchers("/api/users/login", "/api/users/register").permitAll()
+        .requestMatchers("/api/users/login", "/api/users/register", "/api/contact/send").permitAll()
         .anyRequest().authenticated()
       )
       .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

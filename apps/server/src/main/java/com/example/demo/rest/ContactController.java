@@ -1,67 +1,60 @@
 package com.example.demo.rest;
 
-import com.example.demo.entity.Role;
-import com.example.demo.entity.User;
-import com.example.demo.dao.GradeRepository;
-import com.example.demo.dao.UserRepository;
 import com.example.demo.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @RequestMapping("/api/contact")
 @RestController
 public class ContactController {
-    @Autowired
-    private UserRepository userRepository;
     private final EmailService emailService;
-    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public ContactController(EmailService emailService, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public ContactController(EmailService emailService) {
         this.emailService = emailService;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    @PreAuthorize("permitAll()") // Allow access to all users
     @PostMapping("/send")
-    public ResponseEntity<String> sendEmail(@RequestBody Map<String, String> request) {
+    public ResponseEntity<Map<String, String>> sendEmail(@RequestBody Map<String, String> request) {
         try {
             String email = request.get("email");
             String name = request.get("name");
+            String subject = request.get("subject");
+            String message = request.get("message");
 
-            if (email == null || name == null) {
-                return ResponseEntity.badRequest().body("Email and name are required");
+            if (email == null || name == null || subject == null || message == null) {
+                Map<String, String> errorResponse = new HashMap<>();
+                errorResponse.put("error", "All fields are required");
+                return ResponseEntity.badRequest().body(errorResponse);
             }
 
-            String generatedPassword = UUID.randomUUID().toString().replace("-", "").substring(0, 8);
-            User user = new User();
-            user.setEmail(email);
-            user.setPassword(passwordEncoder.encode(generatedPassword));
-            user.setRole(Role.STUDENT);
-
-//            try {
-//                userRepository.save(user);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                throw new RuntimeException("Failed to save user: " + e.getMessage());
-//            }
-
-            emailService.sendEmail(email, email, generatedPassword);
-
-            return ResponseEntity.ok("User created and email sent successfully");
+            String emailSubject = "Nowa wiadomość kontaktowa od: " + name;
+            String emailBody = String.format(
+                "Wiadomość od: %s (%s)\n" +
+                "Temat: %s\n\n" +
+                "Treść:\n%s",
+                name, email, subject, message
+            );
+            
+            emailService.sendEmail("gradeflow25@gmail.com", emailSubject, emailBody);
+            
+            Map<String, String> successResponse = new HashMap<>();
+            successResponse.put("message", "Wiadomość wysłana pomyślnie");
+            successResponse.put("status", "success");
+            return ResponseEntity.ok(successResponse);
 
         } catch (Exception e) {
             e.printStackTrace();
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("error", "Server error: " + e.getMessage());
+            errorResponse.put("status", "error");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                 .body("Server error: " + e.getMessage());
+                                 .body(errorResponse);
         }
     }
 }

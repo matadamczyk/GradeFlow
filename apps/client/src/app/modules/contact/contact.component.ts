@@ -79,22 +79,9 @@ export class ContactComponent implements OnInit {
       this.isSubmitting.set(true);
 
       const formData = this.contactForm.value;
-
-      if (formData.subject === 'account-creation') {
-        this.createAccount(formData);
-      } else {
-        setTimeout(() => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Wiadomość wysłana',
-            detail: 'Dziękujemy za kontakt! Odpowiemy w ciągu 24 godzin.',
-            life: 5000,
-          });
-
-          this.contactForm.reset();
-          this.isSubmitting.set(false);
-        }, 2000);
-      }
+      
+      // Send all contact messages to the backend
+      this.sendContactMessage(formData);
     } else {
       Object.keys(this.contactForm.controls).forEach((key) => {
         this.contactForm.get(key)?.markAsTouched();
@@ -109,30 +96,44 @@ export class ContactComponent implements OnInit {
     }
   }
 
-  private createAccount(formData: any): void {
+  private sendContactMessage(formData: any): void {
     const requestData = {
       email: formData.email,
-      name: formData.name
+      name: formData.name,
+      subject: formData.subject,
+      message: formData.message
     };
 
     this.apiService.post('/contact/send', requestData)
       .subscribe({
-        next: (response) => {
+        next: (response: any) => {
           this.messageService.add({
             severity: 'success',
-            summary: 'Konto utworzone',
-            detail: 'Konto zostało utworzone pomyślnie. Sprawdź swoją skrzynkę e-mail w celu otrzymania hasła.',
+            summary: 'Wiadomość wysłana',
+            detail: response.message || 'Dziękujemy za kontakt! Odpowiemy w ciągu 24 godzin.',
             life: 5000,
           });
           this.contactForm.reset();
           this.isSubmitting.set(false);
         },
         error: (error) => {
-          console.error('Błąd podczas tworzenia konta:', error);
+          console.error('Błąd podczas wysyłania wiadomości:', error);
+          
+          // Handle different types of errors
+          let errorMessage = 'Wystąpił błąd podczas wysyłania wiadomości. Spróbuj ponownie.';
+          
+          if (error.error && error.error.error) {
+            errorMessage = error.error.error;
+          } else if (error.error && typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (error.message) {
+            errorMessage = error.message;
+          }
+          
           this.messageService.add({
             severity: 'error',
-            summary: 'Błąd tworzenia konta',
-            detail: 'Wystąpił błąd podczas tworzenia konta. Spróbuj ponownie.',
+            summary: 'Błąd wysyłania',
+            detail: errorMessage,
             life: 5000,
           });
           this.isSubmitting.set(false);

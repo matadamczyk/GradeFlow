@@ -15,9 +15,19 @@ public class EmailService {
 
     public void sendEmail(String to, String username, String password, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("gradeflow25@gmail.com"); // Dodaj from field
         message.setTo(to);
         message.setSubject("[nowe konto] " + username);
         message.setText(text + "\nHasło: " + password);
+        mailSender.send(message);
+    }
+
+    public void sendEmail(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom("gradeflow25@gmail.com"); // Dodaj from field
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
         mailSender.send(message);
     }
 }
