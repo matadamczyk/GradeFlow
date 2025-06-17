@@ -50,10 +50,14 @@ export class GradesService {
         // Group by subject for subject grades
         const subjectGrades = this.calculateSubjectGrades(grades);
 
+        // Calculate monthly trends
+        const monthlyTrends = this.calculateMonthlyTrends(grades);
+
         return {
           overallAverage,
           subjectGrades,
           totalGrades,
+          monthlyTrends,
         };
       }),
       catchError((error: any) => {
@@ -63,11 +67,14 @@ export class GradesService {
           this.mockDataService.getOverallAverage(studentId);
         const totalGrades =
           this.mockDataService.getGradesByStudent(studentId).length;
+        const mockGrades = this.mockDataService.getGradesByStudent(studentId);
+        const monthlyTrends = this.calculateMonthlyTrends(mockGrades);
 
         return of({
           overallAverage,
           subjectGrades,
           totalGrades,
+          monthlyTrends,
         });
       }),
       delay(300)
@@ -207,5 +214,90 @@ export class GradesService {
     }));
 
     return of(averages).pipe(delay(500));
+  }
+
+  private calculateMonthlyTrends(grades: any[]): any[] {
+    if (grades.length === 0) {
+      // Return default trend data if no grades
+      return [
+        { month: 'Sty', average: 0 },
+        { month: 'Lut', average: 0 },
+        { month: 'Mar', average: 0 },
+        { month: 'Kwi', average: 0 },
+        { month: 'Maj', average: 0 },
+        { month: 'Cze', average: 0 },
+      ];
+    }
+
+    // Get current year
+    const currentYear = new Date().getFullYear();
+    
+    // Month names in Polish
+    const monthNames = [
+      'Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze',
+      'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'
+    ];
+
+    // Group grades by month
+    const monthlyGrades = new Map<string, any[]>();
+    
+    grades.forEach(grade => {
+      const gradeDate = new Date(grade.date);
+      if (gradeDate.getFullYear() === currentYear) {
+        const monthKey = monthNames[gradeDate.getMonth()];
+        if (!monthlyGrades.has(monthKey)) {
+          monthlyGrades.set(monthKey, []);
+        }
+        monthlyGrades.get(monthKey)!.push(grade);
+      }
+    });
+
+    // Calculate averages for each month
+    const trends: any[] = [];
+    const currentMonth = new Date().getMonth();
+    
+    // Show trends for the past 6 months or available months
+    for (let i = Math.max(0, currentMonth - 5); i <= currentMonth; i++) {
+      const monthName = monthNames[i];
+      const monthGrades = monthlyGrades.get(monthName) || [];
+      
+      if (monthGrades.length > 0) {
+        const average = monthGrades.reduce((sum, grade) => sum + grade.grade_value, 0) / monthGrades.length;
+        trends.push({
+          month: monthName,
+          average: Math.round(average * 100) / 100
+        });
+      } else if (trends.length > 0) {
+        // If no grades for this month, use the last known average
+        trends.push({
+          month: monthName,
+          average: trends[trends.length - 1].average
+        });
+      } else {
+        // If this is the first month and no grades, use overall average or 0
+        const overallAvg = grades.length > 0 
+          ? grades.reduce((sum, grade) => sum + grade.grade_value, 0) / grades.length
+          : 3.5; // Default starting average
+        trends.push({
+          month: monthName,
+          average: Math.round(overallAvg * 100) / 100
+        });
+      }
+    }
+
+    // Ensure we have at least 3 data points for a meaningful trend
+    if (trends.length < 3) {
+      const lastAverage = trends.length > 0 ? trends[trends.length - 1].average : 3.5;
+      while (trends.length < 6) {
+        const monthIndex = (currentMonth - (6 - trends.length)) % 12;
+        if (monthIndex < 0) break;
+        trends.unshift({
+          month: monthNames[monthIndex],
+          average: lastAverage
+        });
+      }
+    }
+
+    return trends;
   }
 }
