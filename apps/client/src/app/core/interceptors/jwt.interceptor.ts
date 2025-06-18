@@ -20,17 +20,6 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   const token = authService.getToken();
   const isLoggedIn = authService.isLoggedIn();
-  const currentUser = authService.getCurrentUser();
-
-  console.log('JWT Interceptor:', {
-    url: req.url,
-    method: req.method,
-    isAuthUrl,
-    isLoggedIn,
-    hasToken: !!token,
-    userRole: currentUser?.role,
-    userId: currentUser?.id
-  });
 
   if (!isAuthUrl && isLoggedIn) {
     if (token) {
@@ -39,7 +28,6 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log('Adding Authorization header:', `Bearer ${token.substring(0, 20)}...`);
       return next(authReq);
     } else {
       console.error('No token available despite being logged in!');

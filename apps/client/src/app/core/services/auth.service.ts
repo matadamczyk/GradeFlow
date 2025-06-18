@@ -146,8 +146,6 @@ export class AuthService {
 
         this.currentUserSubject.next(user);
 
-        console.log('🎭 Mock login successful for:', credentials.email);
-
         return of(user);
       })
     );
@@ -156,13 +154,11 @@ export class AuthService {
   // Method to enable mock mode (for e2e tests)
   enableMockMode(): void {
     (this as any).MOCK_MODE = true;
-    console.log('🎭 Mock mode enabled for e2e tests');
   }
 
   // Method to disable mock mode
   disableMockMode(): void {
     (this as any).MOCK_MODE = false;
-    console.log('🎭 Mock mode disabled');
   }
 
   logout(): void {

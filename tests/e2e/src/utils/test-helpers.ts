@@ -72,12 +72,12 @@ export async function enableMockMode(page: Page): Promise<void> {
       const authService = (window as any).ng?.getInjector()?.get('AuthService');
       if (authService && typeof authService.enableMockMode === 'function') {
         authService.enableMockMode();
-        console.log('🎭 Mock mode enabled via AuthService');
+        // console.log('🎭 Mock mode enabled via AuthService');
       } else {
-        console.log('🎭 Mock mode enabled via window flag');
+        // console.log('🎭 Mock mode enabled via window flag');
       }
     } catch (error) {
-      console.log('🎭 Mock mode set via window flag (Angular not ready)');
+      // console.log('🎭 Mock mode set via window flag (Angular not ready)');
     }
   });
 }
@@ -163,7 +163,7 @@ export async function testResponsiveness(page: Page, selector: string) {
     const element = page.locator(selector);
     await expect(element).toBeVisible();
     
-    console.log(`Element ${selector} jest widoczny na ${viewport.name}`);
+    // console.log(`Element ${selector} jest widoczny na ${viewport.name}`);
   }
 }
 

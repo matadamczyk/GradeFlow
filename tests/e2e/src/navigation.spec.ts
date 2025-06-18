@@ -12,7 +12,7 @@ test.describe('Nawigacja w aplikacji', () => {
     if (await navigation.isVisible()) {
       await expect(navigation).toBeVisible();
     } else {
-      console.log('Nawigacja nie została jeszcze zaimplementowana');
+      // not implemented
     }
   });
 
@@ -37,7 +37,7 @@ test.describe('Nawigacja w aplikacji', () => {
         // Wróć do strony głównej dla następnego testu
         await page.goto('/');
       } else {
-        console.log(`Link ${link.name} nie został jeszcze zaimplementowany`);
+        // not implemented
       }
     }
   });
@@ -63,7 +63,6 @@ test.describe('Nawigacja w aplikacji', () => {
       
       expect(scrollWidth).toBeLessThanOrEqual(clientWidth + 20); // +20 dla marginesu błędu
       
-      console.log(`Test responsywności dla ${viewport.device} (${viewport.width}x${viewport.height}) - OK`);
     }
   });
 
@@ -79,7 +78,7 @@ test.describe('Nawigacja w aplikacji', () => {
       const count = await breadcrumbItems.count();
       expect(count).toBeGreaterThan(0);
     } else {
-      console.log('Breadcrumbs nie zostały jeszcze zaimplementowane');
+      // not implemented
     }
   });
 }); 

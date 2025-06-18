@@ -480,18 +480,7 @@ export class GradesComponent implements OnInit {
     if (student) {
       this.addGradeForm.patchValue({ student: student });
     }
-    
-    // Debug authorization
-    const currentUser = this.currentUser();
-    const token = localStorage.getItem('token');
-    console.log('Opening add grade dialog - User info:', {
-      user: currentUser,
-      role: currentUser?.role,
-      isTeacher: this.isTeacher(),
-      hasToken: !!token,
-      token: token ? token.substring(0, 30) + '...' : 'No token'
-    });
-    
+
     this.showAddGradeDialog = true;
   }
 
@@ -619,86 +608,86 @@ export class GradesComponent implements OnInit {
   onSubmitGrade(): void {
     if (this.addGradeForm.valid) {
       const formValue = this.addGradeForm.value;
-      
+
       // Get the first available lesson for this class and teacher subject
-      this.apiService.getTimetableByStudentClass(this.selectedClass().id).subscribe({
-        next: (timetable) => {
-          // Find a lesson for the teacher subject
-          const teacherSubjectId = this.teacherSubjects()[0]?.id;
-          const lesson = timetable.find(t => t.teacherSubject?.id === teacherSubjectId);
-          const lessonId = lesson?.lesson_id || 1; // Fallback to 1 if no lesson found
-          
-          const gradeData = {
-            student_id: formValue.student.id,
-            teacher_subject_id: teacherSubjectId,
-            lesson_id: lessonId,
-            grade_value: parseFloat(formValue.gradeValue),
-            grade_weight: parseInt(formValue.gradeWeight),
-            comment: formValue.comment || '',
-            date: formValue.date, // Backend should handle date conversion
-          };
+      this.apiService
+        .getTimetableByStudentClass(this.selectedClass().id)
+        .subscribe({
+          next: (timetable) => {
+            // Find a lesson for the teacher subject
+            const teacherSubjectId = this.teacherSubjects()[0]?.id;
+            const lesson = timetable.find(
+              (t) => t.teacherSubject?.id === teacherSubjectId
+            );
+            const lessonId = lesson?.lesson_id || 1; // Fallback to 1 if no lesson found
 
-          console.log('Sending grade data:', gradeData); // Debug log
-          
-          this.gradesService.addGrade(gradeData).subscribe({
-            next: (result) => {
-              this.messageService.add({
-                severity: 'success',
-                summary: 'Sukces',
-                detail: 'Ocena została dodana pomyślnie',
-              });
-              this.closeAddGradeDialog();
-              // Refresh data
-              this.loadClassStatistics(this.selectedClass().id);
-              this.refreshStudentData();
-            },
-            error: (error) => {
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Błąd',
-                detail: 'Nie udało się dodać oceny',
-              });
-              console.error('Error adding grade:', error);
-            },
-          });
-        },
-        error: (error) => {
-          console.error('Error getting timetable:', error);
-          // Fallback: use hardcoded lesson_id
-          const gradeData = {
-            student_id: formValue.student.id,
-            teacher_subject_id: this.teacherSubjects()[0]?.id,
-            lesson_id: 1,
-            grade_value: parseFloat(formValue.gradeValue),
-            grade_weight: parseInt(formValue.gradeWeight),
-            comment: formValue.comment || '',
-            date: formValue.date,
-          };
+            const gradeData = {
+              student_id: formValue.student.id,
+              teacher_subject_id: teacherSubjectId,
+              lesson_id: lessonId,
+              grade_value: parseFloat(formValue.gradeValue),
+              grade_weight: parseInt(formValue.gradeWeight),
+              comment: formValue.comment || '',
+              date: formValue.date, // Backend should handle date conversion
+            };
 
-          console.log('Sending grade data (fallback):', gradeData);
-          
-          this.gradesService.addGrade(gradeData).subscribe({
-            next: (result) => {
-              this.messageService.add({
-                severity: 'success',
-                summary: 'Sukces',
-                detail: 'Ocena została dodana pomyślnie',
-              });
-              this.closeAddGradeDialog();
-              this.loadClassStatistics(this.selectedClass().id);
-              this.refreshStudentData();
-            },
-            error: (error) => {
-              this.messageService.add({
-                severity: 'error',
-                summary: 'Błąd',
-                detail: 'Nie udało się dodać oceny',
-              });
-              console.error('Error adding grade:', error);
-            },
-          });
-        }
-      });
+            this.gradesService.addGrade(gradeData).subscribe({
+              next: (_result) => {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Sukces',
+                  detail: 'Ocena została dodana pomyślnie',
+                });
+                this.closeAddGradeDialog();
+                // Refresh data
+                this.loadClassStatistics(this.selectedClass().id);
+                this.refreshStudentData();
+              },
+              error: (error) => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Błąd',
+                  detail: 'Nie udało się dodać oceny',
+                });
+                console.error('Error adding grade:', error);
+              },
+            });
+          },
+          error: (error) => {
+            console.error('Error getting timetable:', error);
+            // Fallback: use hardcoded lesson_id
+            const gradeData = {
+              student_id: formValue.student.id,
+              teacher_subject_id: this.teacherSubjects()[0]?.id,
+              lesson_id: 1,
+              grade_value: parseFloat(formValue.gradeValue),
+              grade_weight: parseInt(formValue.gradeWeight),
+              comment: formValue.comment || '',
+              date: formValue.date,
+            };
+
+            this.gradesService.addGrade(gradeData).subscribe({
+              next: (_result) => {
+                this.messageService.add({
+                  severity: 'success',
+                  summary: 'Sukces',
+                  detail: 'Ocena została dodana pomyślnie',
+                });
+                this.closeAddGradeDialog();
+                this.loadClassStatistics(this.selectedClass().id);
+                this.refreshStudentData();
+              },
+              error: (error) => {
+                this.messageService.add({
+                  severity: 'error',
+                  summary: 'Błąd',
+                  detail: 'Nie udało się dodać oceny',
+                });
+                console.error('Error adding grade:', error);
+              },
+            });
+          },
+        });
     }
   }
 
@@ -714,7 +703,7 @@ export class GradesComponent implements OnInit {
       };
 
       this.gradesService.createEvent(eventData).subscribe({
-        next: (result) => {
+        next: (_result) => {
           this.messageService.add({
             severity: 'success',
             summary: 'Sukces',
@@ -740,9 +729,10 @@ export class GradesComponent implements OnInit {
     if (this.editGradeForm.valid && this.selectedGrade()) {
       const formValue = this.editGradeForm.value;
       const selectedGrade = this.selectedGrade();
-      
+
       const gradeData = {
-        teacher_subject_id: selectedGrade.teacherSubject?.id || this.teacherSubjects()[0]?.id,
+        teacher_subject_id:
+          selectedGrade.teacherSubject?.id || this.teacherSubjects()[0]?.id,
         lesson_id: selectedGrade.lesson?.lesson_id || 1,
         grade_value: parseFloat(formValue.gradeValue),
         grade_weight: parseInt(formValue.gradeWeight),
@@ -750,41 +740,36 @@ export class GradesComponent implements OnInit {
         date: formValue.date,
       };
 
-      console.log('Updating grade with data:', gradeData); // Debug log
-
-      this.gradesService
-        .updateGrade(selectedGrade.id, gradeData)
-        .subscribe({
-          next: (result: any) => {
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Sukces',
-              detail: 'Ocena została zaktualizowana pomyślnie',
-            });
-            this.closeEditGradeDialog();
-            // Refresh data
-            this.loadClassStatistics(this.selectedClass().id);
-            this.refreshStudentData();
-            // Update the selected student grades if dialog is open
-            if (this.showStudentGradesDialog && this.selectedStudent()) {
-              const updatedStudent =
-                this.selectedClassStudentsWithGrades().find(
-                  (s) => s.id === this.selectedStudent().id
-                );
-              if (updatedStudent) {
-                this.selectedStudentGrades.set(updatedStudent.grades || []);
-              }
+      this.gradesService.updateGrade(selectedGrade.id, gradeData).subscribe({
+        next: (_result: any) => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Sukces',
+            detail: 'Ocena została zaktualizowana pomyślnie',
+          });
+          this.closeEditGradeDialog();
+          // Refresh data
+          this.loadClassStatistics(this.selectedClass().id);
+          this.refreshStudentData();
+          // Update the selected student grades if dialog is open
+          if (this.showStudentGradesDialog && this.selectedStudent()) {
+            const updatedStudent = this.selectedClassStudentsWithGrades().find(
+              (s) => s.id === this.selectedStudent().id
+            );
+            if (updatedStudent) {
+              this.selectedStudentGrades.set(updatedStudent.grades || []);
             }
-          },
-          error: (error: any) => {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Błąd',
-              detail: 'Nie udało się zaktualizować oceny',
-            });
-            console.error('Error updating grade:', error);
-          },
-        });
+          }
+        },
+        error: (error: any) => {
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Błąd',
+            detail: 'Nie udało się zaktualizować oceny',
+          });
+          console.error('Error updating grade:', error);
+        },
+      });
     }
   }
 

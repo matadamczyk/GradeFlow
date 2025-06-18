@@ -14,7 +14,6 @@ test.describe('Autoryzacja użytkowników', () => {
       await expect(loginElement).toBeVisible();
     } else {
       // Jeśli nie ma widocznego elementu logowania, sprawdź czy użytkownik jest już zalogowany
-      console.log('Brak widocznego elementu logowania - użytkownik może być już zalogowany');
     }
   });
 
@@ -32,16 +31,13 @@ test.describe('Autoryzacja użytkowników', () => {
     
     // Przykład: Sprawdź czy przekierowanie nastąpiło
     // await expect(page).toHaveURL(/.*dashboard/);
-    
-    console.log('Test logowania - wymagana implementacja po stworzeniu formularza logowania');
+  
   });
 
   test('powinien obsługiwać wylogowanie', async ({ page }) => {
     // Szablon testu wylogowania
     // await page.click('[data-testid="logout-button"]');
     // await expect(page).toHaveURL(/.*login/);
-    
-    console.log('Test wylogowania - wymagana implementacja po stworzeniu funkcjonalności wylogowania');
   });
 
   test('powinien walidować nieprawidłowe dane logowania', async ({ page }) => {
@@ -53,7 +49,5 @@ test.describe('Autoryzacja użytkowników', () => {
     
     // Sprawdź czy wyświetla się komunikat o błędzie
     // await expect(page.locator('[data-testid="error-message"]')).toBeVisible();
-    
-    console.log('Test walidacji - wymagana implementacja po stworzeniu walidacji formularza');
   });
 }); 
