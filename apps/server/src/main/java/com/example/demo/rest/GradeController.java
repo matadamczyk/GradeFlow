@@ -86,6 +86,18 @@ public class GradeController {
   @PreAuthorize("hasRole('ADMIN') or hasRole('TEACHER')")
   @PostMapping("/add")
   public ResponseEntity<?> addGrade(@RequestBody GradeRequest request){
+    // Debug user authorization
+    try {
+      User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+      System.out.println("AddGrade - Current user: " + currentUser.getEmail() + ", Role: " + currentUser.getRole());
+    } catch (Exception e) {
+      System.out.println("AddGrade - Error getting current user: " + e.getMessage());
+    }
+    
+    System.out.println("AddGrade - Request data: studentId=" + request.getStudentId() + 
+                      ", teacherSubjectId=" + request.getTeacherSubjectId() + 
+                      ", lessonId=" + request.getLessonId());
+
     Student student = studentRepository.findById(request.getStudentId())
       .orElseThrow(() -> new IllegalArgumentException("Invalid student ID"));
 
@@ -115,6 +127,7 @@ public class GradeController {
     Grade grade = new Grade(student,teacherSubject,lesson,date,grade_value,grade_weight,comment);
     gradeRepository.save(grade);
 
+    System.out.println("AddGrade - Grade added successfully");
     return ResponseEntity.ok(grade);
   }
 
