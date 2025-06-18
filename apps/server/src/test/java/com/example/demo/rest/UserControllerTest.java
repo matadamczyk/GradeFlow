@@ -1,6 +1,5 @@
 package com.example.demo.rest;
 
-import com.example.demo.dao.GradeRepository;
 import com.example.demo.dao.UserRepository;
 import com.example.demo.dto.LoginRequest;
 import com.example.demo.entity.Role;
@@ -11,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.OngoingStubbing;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,7 +30,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @ActiveProfiles("test")
-public class UserControlerTest {
+public class UserControllerTest {
 
   private User testUser = new User(1,"mail@gmail.com","pass", Role.ADMIN);
   private UserController userController;
