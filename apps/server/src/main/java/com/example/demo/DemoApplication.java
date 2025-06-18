@@ -28,16 +28,31 @@ public class DemoApplication {
   private JwtAuthenticationFilter jwtAuthenticationFilter;
 
   public static void main(String[] args) {
-    // UNCOMMENT IF LAUNCHING LOCALLY
-    Dotenv dotenv = Dotenv.load();
-    // System.setProperty("SPRING_DATASOURCE_URL", dotenv.get("SPRING_DATASOURCE_URL"));
-    // System.setProperty("SPRING_DATASOURCE_USERNAME", dotenv.get("SPRING_DATASOURCE_USERNAME"));
-    // System.setProperty("SPRING_DATASOURCE_PASSWORD", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
-    System.setProperty("SPRING_MAIL_HOST", dotenv.get("SPRING_MAIL_HOST"));
-    System.setProperty("SPRING_MAIL_PORT", dotenv.get("SPRING_MAIL_PORT"));
-    System.setProperty("SPRING_MAIL_USERNAME", dotenv.get("SPRING_MAIL_USERNAME"));
-    System.setProperty("SPRING_MAIL_PASSWORD", dotenv.get("SPRING_MAIL_PASSWORD"));
+    try {
+      Dotenv dotenv = Dotenv.configure()
+        .ignoreIfMissing()
+        .load();
+      
+      setPropertyIfExists("SPRING_MAIL_HOST", dotenv.get("SPRING_MAIL_HOST"));
+      setPropertyIfExists("SPRING_MAIL_PORT", dotenv.get("SPRING_MAIL_PORT"));
+      setPropertyIfExists("SPRING_MAIL_USERNAME", dotenv.get("SPRING_MAIL_USERNAME"));
+      setPropertyIfExists("SPRING_MAIL_PASSWORD", dotenv.get("SPRING_MAIL_PASSWORD"));
+      
+      // Uncomment these lines if you want to use database credentials from .env file
+      // setPropertyIfExists("SPRING_DATASOURCE_URL", dotenv.get("SPRING_DATASOURCE_URL"));
+      // setPropertyIfExists("SPRING_DATASOURCE_USERNAME", dotenv.get("SPRING_DATASOURCE_USERNAME"));
+      // setPropertyIfExists("SPRING_DATASOURCE_PASSWORD", dotenv.get("SPRING_DATASOURCE_PASSWORD"));
+    } catch (Exception e) {
+      System.out.println("No .env file found, using system environment variables");
+    }
+    
     SpringApplication.run(DemoApplication.class, args);
+  }
+  
+  private static void setPropertyIfExists(String propertyName, String value) {
+    if (value != null && !value.trim().isEmpty()) {
+      System.setProperty(propertyName, value);
+    }
   }
 
   @Bean
